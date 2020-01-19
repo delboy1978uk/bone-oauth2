@@ -1,0 +1,19 @@
+{
+  "name": "delboy1978uk/bone-oauth2",
+  "description": "OAuth2 functionality for Bone Mvc Framework",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Derek Stephen McLean",
+      "email": "delboy1978uk@gmail.com"
+    }
+  ],
+  "require": {
+    "delboy1978uk/user": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bone\\OAuth2\\": "src/"
+    }
+  }
+}
