@@ -2,6 +2,7 @@
 
 namespace Bone\OAuth2\Command;
 
+use Del\Criteria\UserCriteria;
 use Del\Service\UserService;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
@@ -60,7 +61,11 @@ class ClientCommand extends Command
         $this->setHelp('Create a new OAuth2 client application');
     }
 
-    private function userQuestion(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    private function userQuestion(InputInterface $input, OutputInterface $output): void
     {
         $question = new Question('Enter the email of the account: ', false);
         $email = $this->helper->ask($input, $output, $question);
@@ -73,6 +78,8 @@ class ClientCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int|null
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     protected function execute(InputInterface $input, OutputInterface $output)

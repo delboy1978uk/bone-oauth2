@@ -54,5 +54,4 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
         }
         return $user;
     }
-
 }
