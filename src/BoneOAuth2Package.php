@@ -12,6 +12,13 @@ use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Entity\RefreshToken;
 use Bone\OAuth2\Entity\Scope;
+use Bone\OAuth2\Repository\AccessTokenRepository;
+use Bone\OAuth2\Repository\AuthCodeRepository;
+use Bone\OAuth2\Repository\ClientRepository;
+use Bone\OAuth2\Repository\RefreshTokenRepository;
+use Bone\OAuth2\Repository\ScopeRepository;
+use Bone\OAuth2\Repository\UserRepository;
+use Bone\OAuth2\Service\ClientService;
 use Doctrine\ORM\EntityManager;
 
 class BoneOAuth2Package implements RegistrationInterface
@@ -22,65 +29,65 @@ class BoneOAuth2Package implements RegistrationInterface
     public function addToContainer(Container $c)
     {
         // AccessToken
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(AccessToken::class);
         };
-        $c['repository.AccessToken'] = $c->factory($function);
+        $c[AccessTokenRepository::class] = $c->factory($function);
 
         // AuthCode
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(AuthCode::class);
         };
-        $c['repository.AuthCode'] = $c->factory($function);
+        $c[AuthCodeRepository::class] = $c->factory($function);
 
         // Client
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(Client::class);
         };
-        $c['repository.Client'] = $c->factory($function);
+        $c[ClientRepository::class] = $c->factory($function);
 
-        $function = function ($c) {
-            $repository = $c['repository.Client'];
+        $function = function (Container $c) {
+            $repository = $c->get(ClientRepository::class);
 
             return new ClientService($repository);
         };
-        $c['oauth.service.client'] = $c->factory($function);
+        $c[ClientService::class] = $c->factory($function);
 
         // RefreshToken
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(RefreshToken::class);
         };
-        $c['repository.RefreshToken'] = $c->factory($function);
+        $c[RefreshTokenRepository::class] = $c->factory($function);
 
         // Scope
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(Scope::class);
         };
-        $c['repository.Scope'] = $c->factory($function);
+        $c[ScopeRepository::class] = $c->factory($function);
 
         // User
-        $function = function ($c) {
+        $function = function (Container $c) {
             /** @var EntityManager $entityManager */
-            $entityManager = $c['doctrine.entity_manager'];
+            $entityManager = $c->get(EntityManager::class);
 
             return $entityManager->getRepository(OAuthUser::class);
         };
-        $c['repository.User'] = $c->factory($function);
+        $c[UserRepository::class] = $c->factory($function);
     }
 
     /**
