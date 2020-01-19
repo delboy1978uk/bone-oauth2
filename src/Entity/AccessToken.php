@@ -2,7 +2,7 @@
 
 namespace Bone\OAuth2\Entity;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -11,7 +11,7 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\AccessTokenTrait;
 
 /**
-* @ORM\Entity(repositoryClass="OAuth\Repository\AccessTokenRepository")
+* @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\AccessTokenRepository")
 * @ORM\Table(name="AccessToken")
 */
 class AccessToken implements AccessTokenEntityInterface
@@ -28,13 +28,13 @@ class AccessToken implements AccessTokenEntityInterface
 
     /**
      * @var ArrayCollection $scopes
-     * @ORM\ManyToMany(targetEntity="Oauth\Scope", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Bone\OAuth2\Entity\Scope", cascade={"persist"})
      * @ORM\JoinTable(name="AccessToken_Scope")
      */
     protected $scopes;
 
     /**
-     * @var DateTime
+     * @var DateTimeImmutable
      * @ORM\Column(type="datetime",nullable=true)
      */
     protected $expiryDateTime;
@@ -47,7 +47,7 @@ class AccessToken implements AccessTokenEntityInterface
 
     /**
      * @var ClientEntityInterface
-     * @ORM\ManyToOne(targetEntity="OAuth\Client")
+     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
      * @ORM\JoinColumn(name="client", referencedColumnName="id")
      */
     protected $client;
@@ -122,7 +122,7 @@ class AccessToken implements AccessTokenEntityInterface
     /**
      * Get the token's expiry date time.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      */
     public function getExpiryDateTime()
     {
@@ -132,9 +132,9 @@ class AccessToken implements AccessTokenEntityInterface
     /**
      * Set the date time when the token expires.
      *
-     * @param DateTime $dateTime
+     * @param DateTimeImmutable $dateTime
      */
-    public function setExpiryDateTime(DateTime $dateTime)
+    public function setExpiryDateTime(DateTimeImmutable $dateTime)
     {
         $this->expiryDateTime = $dateTime;
     }

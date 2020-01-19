@@ -2,14 +2,14 @@
 
 namespace Bone\OAuth2\Entity;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
 
 /**
- * @ORM\Entity(repositoryClass="OAuth\Repository\RefreshTokenRepository")
+ * @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\RefreshTokenRepository")
  * @ORM\Table(name="RefreshToken")
  */
 class RefreshToken implements RefreshTokenEntityInterface
@@ -30,12 +30,12 @@ class RefreshToken implements RefreshTokenEntityInterface
 
     /**
      * @var AccessTokenEntityInterface
-     * @ORM\ManyToOne(targetEntity="OAuth\AccessToken")
+     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\AccessToken")
      */
     protected $accessToken;
 
     /**
-     * @var DateTime
+     * @var DateTimeImmutable
      * @ORM\Column(type="datetime",nullable=true)
      */
     protected $expiryDateTime;
@@ -65,7 +65,7 @@ class RefreshToken implements RefreshTokenEntityInterface
     /**
      * Get the token's expiry date time.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      */
     public function getExpiryDateTime()
     {
@@ -75,9 +75,9 @@ class RefreshToken implements RefreshTokenEntityInterface
     /**
      * Set the date time when the token expires.
      *
-     * @param DateTime $dateTime
+     * @param DateTimeImmutable$dateTime
      */
-    public function setExpiryDateTime(DateTime $dateTime)
+    public function setExpiryDateTime(DateTimeImmutable $dateTime)
     {
         $this->expiryDateTime = $dateTime;
     }

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 
 /**
- * @ORM\Entity(repositoryClass="OAuth\Repository\ClientRepository")
+ * @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\ClientRepository")
  * @ORM\Table(name="Client",uniqueConstraints={@ORM\UniqueConstraint(name="indentifier_idx", columns={"identifier"})})
  */
 class Client implements ClientEntityInterface
@@ -71,7 +71,7 @@ class Client implements ClientEntityInterface
 
     /**
      * @var OAuthUser $user/**
-     * @ORM\ManyToOne(targetEntity="OAuth\OAuthUser", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser", cascade={"merge"})
      */
     private $user;
 

@@ -3,6 +3,7 @@
 namespace Bone\OAuth2\Entity;
 
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
@@ -10,7 +11,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
 /**
- * @ORM\Entity(repositoryClass="OAuth\Repository\AuthCodeRepository")
+ * @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\AuthCodeRepository")
  * @ORM\Table(name="AuthCode")
  */
 class AuthCode implements AuthCodeEntityInterface
@@ -35,14 +36,14 @@ class AuthCode implements AuthCodeEntityInterface
 
     /**
      * @var OAuthUser
-     * @ORM\OneToOne(targetEntity="OAuth\OAuthUser")
+     * @ORM\OneToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
      * @ORM\JoinColumn(name="user", referencedColumnName="id")
      */
     protected $userIdentifier;
 
     /**
      * @var ClientEntityInterface
-     * @ORM\ManyToOne(targetEntity="OAuth\Client")
+     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
      * @ORM\JoinColumn(name="client", referencedColumnName="id")
      */
     protected $client;
@@ -121,9 +122,9 @@ class AuthCode implements AuthCodeEntityInterface
     /**
      * Set the date time when the token expires.
      *
-     * @param DateTime $dateTime
+     * @param DateTimeImmutable $dateTime
      */
-    public function setExpiryDateTime(DateTime $dateTime)
+    public function setExpiryDateTime(DateTimeImmutable $dateTime)
     {
         $this->expiryDateTime = $dateTime;
     }
