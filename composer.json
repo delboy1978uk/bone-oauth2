@@ -10,7 +10,7 @@
   ],
   "require": {
     "delboy1978uk/user": "^4.0",
-    "league/oauth2-client": "8.0.0"
+    "league/oauth2-server": "^8.0"
   },
   "autoload": {
     "psr-4": {
