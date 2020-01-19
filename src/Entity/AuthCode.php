@@ -1,6 +1,6 @@
 <?php
 
-namespace OAuth;
+namespace Bone\OAuth2\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;

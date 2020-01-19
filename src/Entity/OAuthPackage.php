@@ -1,5 +1,5 @@
 <?php
-namespace OAuth;
+namespace Bone\OAuth2\Entity;
 
 use Del\Common\Container\RegistrationInterface;
 use Doctrine\ORM\EntityManager;

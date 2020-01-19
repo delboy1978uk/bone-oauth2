@@ -1,6 +1,6 @@
 <?php
 
-namespace OAuth;
+namespace Bone\OAuth2\Entity;
 
 use Del\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
