@@ -8,9 +8,15 @@
       "email": "delboy1978uk@gmail.com"
     }
   ],
+  "minimum-stability": "dev",
   "require": {
     "delboy1978uk/user": "^4.0",
-    "league/oauth2-server": "^8.0"
+    "league/oauth2-server": "^8.0",
+    "delboy1978uk/bone": "dev-master"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
   },
   "autoload": {
     "psr-4": {

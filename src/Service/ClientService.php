@@ -2,7 +2,7 @@
 
 namespace Bone\OAuth2\Service;
 
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ClientRepository;
 
 /**

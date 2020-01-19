@@ -6,7 +6,7 @@ use Del\Repository\UserRepository as UserRepo;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\Client;
 
 class UserRepository extends UserRepo implements UserRepositoryInterface
 {

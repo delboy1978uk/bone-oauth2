@@ -16,8 +16,8 @@ trait EncryptableFieldEntity
     {
         $this->bcrypt = new Bcrypt();
         $this->bcrypt->setCost(14);
-        $encryptedPassword = $this->bcrypt->create($value);
-        return $encryptedPassword;
+
+        return $this->bcrypt->create($value);
     }
 
     /**
@@ -29,6 +29,7 @@ trait EncryptableFieldEntity
     {
         $this->bcrypt = new Bcrypt();
         $this->bcrypt->setCost(14);
+
         return $this->bcrypt->verify($value, $encryptedValue);
     }
 }

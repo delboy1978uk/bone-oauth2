@@ -3,11 +3,11 @@
 namespace Bone\OAuth2\Repository;
 
 use Doctrine\ORM\UnitOfWork;
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\Client;
 use Doctrine\ORM\EntityRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
-use Bone\OAuth2\OAuthUser;
+use Bone\OAuth2\Entity\OAuthUser;
 
 class ClientRepository extends EntityRepository implements ClientRepositoryInterface
 {
@@ -40,6 +40,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
     /**
      * @param Client $client
      * @return Client
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function create(Client $client)
@@ -59,6 +60,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
     /**
      * @param Client $client
      * @return Client
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function save(Client $client)
@@ -69,6 +71,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
     /**
      * @param Client $client
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function delete(Client $client)
@@ -76,4 +79,17 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
         $this->_em->remove($client);
         $this->_em->flush($client);
     }
+
+    /**
+     * @param string $clientIdentifier
+     * @param string|null $clientSecret
+     * @param string|null $grantType
+     * @return bool|void
+     */
+    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    {
+        // TODO: Implement validateClient() method.
+    }
+
+
 }

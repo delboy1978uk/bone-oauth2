@@ -3,11 +3,11 @@
 namespace Bone\OAuth2\Command;
 
 use Del\Service\UserService;
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
-use Bone\OAuth2\Scope;
+use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
-use Bone\OAuth2\OAuthUser as User;
+use Bone\OAuth2\Entity\OAuthUser as User;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;

@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class OAuth2 implements MiddlewareInterface, SessionAwareInterface
+class OAuth2 implements MiddlewareInterface
 {
 
     /**

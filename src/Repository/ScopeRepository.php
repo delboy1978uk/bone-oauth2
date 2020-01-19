@@ -7,8 +7,8 @@ use Exception;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
-use Bone\OAuth2\Client;
-use Bone\OAuth2\Scope;
+use Bone\OAuth2\Entity\Client;
+use Bone\OAuth2\Entity\Scope;
 
 class ScopeRepository extends EntityRepository implements ScopeRepositoryInterface
 {
@@ -49,23 +49,27 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
     /**
      * @param Scope $scope
      * @return Scope
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function create(Scope $scope)
     {
         $this->_em->persist($scope);
         $this->_em->flush($scope);
+
         return $scope;
     }
 
     /**
      * @param Scope $scope
      * @return Scope
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function save(Scope $scope)
     {
         $this->_em->flush($scope);
+
         return $scope;
     }
 }

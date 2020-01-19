@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\UnitOfWork;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
-use Bone\OAuth2\AccessToken;
-use Bone\OAuth2\RefreshToken;
+use Bone\OAuth2\Entity\AccessToken;
+use Bone\OAuth2\Entity\RefreshToken;
 
 /**
  * Class RefreshTokenRepository
@@ -26,6 +26,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
     /**
      * @param RefreshTokenEntityInterface $refreshTokenEntity
      * @return RefreshTokenEntityInterface
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity)
@@ -72,11 +73,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
     public function isRefreshTokenRevoked($tokenId)
     {
         $token = $this->_em->find(RefreshToken::class, $tokenId);
-        if ($token instanceof RefreshTokenEntityInterface) {
 
-            return false;
-        }
-
-        return true;
+        return !($token instanceof RefreshTokenEntityInterface);
     }
 }

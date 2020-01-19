@@ -2,13 +2,13 @@
 
 namespace Bone\OAuth2\Repository;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
-use Bone\OAuth2\AuthCode;
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\AuthCode;
+use Bone\OAuth2\Entity\Client;
 
 class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryInterface
 {
@@ -28,7 +28,7 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
      */
     public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity)
     {
-        $date = new DateTime();
+        $date = new DateTimeImmutable();
         $date->modify('+24 hours');
         $authCodeEntity->setExpiryDateTime($date);
         /** @var Client $client */
@@ -37,7 +37,6 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         $authCodeEntity->setClient($client);
         $this->_em->persist($authCodeEntity);
         $this->_em->flush();
-        return;
     }
 
     /**
@@ -57,15 +56,13 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
 
     /**
      * @param string $codeId
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
     public function isAuthCodeRevoked($codeId)
     {
         /** @var AuthCode $code */
         $code = $this->findOneBy(['identifier' => $codeId]);
-        if (!$code || $code->getExpiryDateTime() < new DateTime() || $code->isRevoked()) {
-            return true;
-        }
-        return false;
+        return !$code || $code->getExpiryDateTime() < new DateTimeImmutable() || $code->isRevoked();
     }
 }

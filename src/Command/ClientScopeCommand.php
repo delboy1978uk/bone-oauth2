@@ -4,9 +4,9 @@ namespace Bone\OAuth2\Command;
 
 use Doctrine\Common\Collections\Collection;
 use Exception;
-use Bone\OAuth2\Client;
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
-use Bone\OAuth2\Scope;
+use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;

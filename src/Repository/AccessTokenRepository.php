@@ -7,13 +7,14 @@ use Exception;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
-use Bone\OAuth2\AccessToken;
+use Bone\OAuth2\Entity\AccessToken;
 
 class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
     /**
      * @param AccessTokenEntityInterface $accessTokenEntity
      * @return AccessTokenEntityInterface
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): AccessTokenEntityInterface
@@ -45,10 +46,8 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
     {
         /** @var null|AccessToken $token */
         $token = $this->findOneBy(['identifier' => $tokenId]);
-        if(!$token || $token->isRevoked()) {
-            return true;
-        }
-        return false;
+
+        return !$token || $token->isRevoked();
     }
 
     /**
@@ -59,8 +58,6 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
      */
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null): AccessToken
     {
-        $token =  new AccessToken();
-
-        return $token;
+        return new AccessToken();
     }
 }
