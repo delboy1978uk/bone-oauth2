@@ -64,7 +64,7 @@ Keys can be stored out of the config array and fetched as an environment variabl
 return [
     'oauth2' => [
         'privateKeyPath' => '/path/to/private.key',
-        'publicKeyPath' => 'path/to/private.key',
+        'publicKeyPath' => '/path/to/private.key',
         'encryptionKey' => 'generatedKeyString',
     ],   
 ];

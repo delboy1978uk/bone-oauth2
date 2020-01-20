@@ -153,7 +153,7 @@ class BoneOAuth2Package implements RegistrationInterface
         $c[AuthorizationServerMiddleware::class] = new AuthorizationServerMiddleware($c->get(AuthorizationServer::class));
 
         // Resource Server Middleware
-        $c[ResourceServerMiddleware::class] = new ResourceServerMiddleware($c->get(AuthorizationServer::class));
+        $c[ResourceServerMiddleware::class] = new ResourceServerMiddleware($c->get(ResourceServer::class));
 
     }
 
