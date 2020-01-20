@@ -47,9 +47,9 @@ or use your passphrase if provided on private key generation:
 openssl rsa -in private.key -passin pass:_passphrase_ -pubout -out public.key
 ```
 The private key must be kept secret (i.e. out of the web-root of the authorization server). The authorization server also requires the public key.
-```
+
 If a passphrase has been used to generate private key it must be provided to the authorization server.
-```
+
 The public key should be distributed to any services (for example resource servers) that validate access tokens.
 #### generate an encryption key
 Run this command and add to your config.
@@ -63,9 +63,10 @@ Keys can be stored out of the config array and fetched as an environment variabl
 
 return [
     'oauth2' => [
-        '' => '',
+        'privateKeyPath' => '/path/to/private.key',
+        'publicKeyPath' => 'path/to/private.key',
+        'encryptionKey' => 'generatedKeyString',
     ],   
 ];
 ```
-
 ## usage
