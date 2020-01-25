@@ -6,6 +6,8 @@ namespace Bone\OAuth2;
 
 use Barnacle\Container;
 use Barnacle\RegistrationInterface;
+use Bone\Mvc\Router\RouterConfigInterface;
+use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\AuthCode;
 use Bone\OAuth2\Entity\Client;
@@ -24,11 +26,10 @@ use Doctrine\ORM\EntityManager;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
-use League\OAuth2\Server\Middleware\AuthorizationServerMiddleware;
-use League\OAuth2\Server\Middleware\ResourceServerMiddleware;
 use League\OAuth2\Server\ResourceServer;
+use League\Route\Router;
 
-class BoneOAuth2Package implements RegistrationInterface
+class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
 {
     /**
      * @param Container $c
@@ -149,13 +150,22 @@ class BoneOAuth2Package implements RegistrationInterface
         };
         $c[ResourceServer::class] = $c->factory($function);
 
-        // Auth Server Middleware
-        $c[AuthorizationServerMiddleware::class] = new AuthorizationServerMiddleware($c->get(AuthorizationServer::class));
-
-        // Resource Server Middleware
-        $c[ResourceServerMiddleware::class] = new ResourceServerMiddleware($c->get(ResourceServer::class));
-
+        // AuthServerController::
+        $c[AuthServerController::class] = $c->factory(function (Container $c) {
+            return new AuthServerController($c->get(AuthorizationServer::class));
+        });
     }
+
+    /**
+     * @param Container $c
+     * @param Router $router
+     */
+    public function addRoutes(Container $c, Router $router)
+    {
+        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction']);
+        $router->map('POST', '/oauth2/token', [AuthServerController::class, 'tokenAction']);
+    }
+
 
     /**
      * @return string
