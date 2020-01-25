@@ -25,6 +25,7 @@ use DateInterval;
 use Doctrine\ORM\EntityManager;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
+use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use League\Route\Router;
@@ -116,6 +117,12 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
                 $encryptionKey
             );
 
+            // Enable the client credentials grant on the server with a token TTL of 1 hour
+            $server->enableGrantType(
+                new ClientCredentialsGrant(),
+                new DateInterval('PT1H')
+            );
+
             // Enable the authentication code grant on the server with a token TTL of 1 hour
             $server->enableGrantType(
                 new AuthCodeGrant(
@@ -163,7 +170,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
     public function addRoutes(Container $c, Router $router)
     {
         $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction']);
-        $router->map('POST', '/oauth2/token', [AuthServerController::class, 'tokenAction']);
+        $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
     }
 
 

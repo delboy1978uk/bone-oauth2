@@ -80,8 +80,6 @@ class AuthServerController
      *         required=false,
      *     )
      * )
-     */
-    /**
      * @param ServerRequestInterface $request
      * @param array $args
      * @return ResponseInterface
@@ -96,6 +94,7 @@ class AuthServerController
             // Validate the HTTP request and return an AuthorizationRequest object.
             // The auth request object can be serialized into a user's session
             $authRequest = $server->validateAuthorizationRequest($request);
+            die(var_dump($authRequest));
             // Once the user has logged in set the user on the AuthorizationRequest
             $authRequest->setUser(new OAuthUser());
             // Once the user has approved or denied the client update the status
@@ -105,12 +104,10 @@ class AuthServerController
             $response = $server->completeAuthorizationRequest($authRequest, $response);
 
         } catch (OAuthServerException $e) {
-            $response = $e->generateHttpResponse($response);
-
-        } catch (Exception $e) {
-            $body = new Stream('php://temp', 'r+');
-            $body->write($e->getMessage());
-            $response = $response->withStatus(500)->withBody($body);
+            $response = new JsonResponse([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTrace(),
+            ]);
         }
 
         $redirectUri = $response->getHeader('Location');
@@ -178,6 +175,10 @@ class AuthServerController
      *         required=false,
      *     ),
      * )
+     *
+     * @param ServerRequestInterface $request
+     * @param array $args
+     * @return ResponseInterface
      */
     public function accessTokenAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
