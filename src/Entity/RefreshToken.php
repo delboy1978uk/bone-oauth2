@@ -24,7 +24,7 @@ class RefreshToken implements RefreshTokenEntityInterface
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="string", length=255)
      */
     protected $identifier;
 

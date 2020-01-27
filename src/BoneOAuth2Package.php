@@ -11,6 +11,7 @@ use Bone\Mvc\Router\RouterConfigInterface;
 use Bone\Mvc\View\PlatesEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
+use Bone\OAuth2\Controller\ExampleController;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\AuthCode;
 use Bone\OAuth2\Entity\Client;
@@ -182,8 +183,9 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
      */
     public function addRoutes(Container $c, Router $router)
     {
-        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction']);
+        $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction']);
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
+        $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);
         $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])
         ->middleware($c->get(SessionAuth::class));
     }

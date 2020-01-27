@@ -202,4 +202,12 @@ class AccessToken implements AccessTokenEntityInterface
     {
         return $this->id;
     }
+
+    /**
+     * @param ArrayCollection $scopes
+     */
+    public function setScopes(ArrayCollection $scopes): void
+    {
+        $this->scopes = $scopes;
+    }
 }

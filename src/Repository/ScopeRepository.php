@@ -35,6 +35,7 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
     {
         /** @var Client $clientEntity */
         $clientScopes = $clientEntity->getScopes()->getValues();
+
         $finalScopes = array_uintersect($scopes, $clientScopes, function($a, $b) {
             return strcmp(spl_object_hash($a), spl_object_hash($b));
         });

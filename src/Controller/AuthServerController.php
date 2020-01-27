@@ -94,7 +94,7 @@ class AuthServerController
             // Validate the HTTP request and return an AuthorizationRequest object.
             // The auth request object can be serialized into a user's session
             $authRequest = $server->validateAuthorizationRequest($request);
-            die(var_dump($authRequest));
+
             // Once the user has logged in set the user on the AuthorizationRequest
             $authRequest->setUser(new OAuthUser());
             // Once the user has approved or denied the client update the status
@@ -124,7 +124,7 @@ class AuthServerController
 
     /**
      * @OA\Post(
-     *     path="/oauth2/access-token",
+     *     path="/oauth2/token",
      *     operationId="accessToken",
      *     @OA\Response(response="200", description="An access token"),
      *     tags={"auth"},
@@ -184,10 +184,11 @@ class AuthServerController
     {
         /* @var AuthorizationServer $server */
         $server = $this->server;
-        $response = new Response();
+        $response = new JsonResponse([]);
 
         try {
             $response = $server->respondToAccessTokenRequest($request, $response);
+            $response->getBody()->rewind(); // Insane that we have to do this haha!
         } catch (OAuthServerException $e) {
             $response = new JsonResponse([
                 'error' => $e->getMessage(),

@@ -2,6 +2,7 @@
 
 namespace Bone\OAuth2\Repository;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -58,6 +59,11 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
      */
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null): AccessToken
     {
-        return new AccessToken();
+        $accessToken = new AccessToken();
+        $accessToken->setClient($clientEntity);
+        $accessToken->setScopes(new ArrayCollection($scopes));
+        $accessToken->setUserIdentifier($userIdentifier);
+
+        return $accessToken;
     }
 }

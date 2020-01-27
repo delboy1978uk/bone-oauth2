@@ -11,10 +11,12 @@
   "minimum-stability": "dev",
   "require": {
     "php": "^7.1",
+    "ext-curl": "*",
     "ext-json": "*",
     "delboy1978uk/user": "^4.0",
     "league/oauth2-server": "^8.0",
-    "delboy1978uk/bone": "^3.3"
+    "delboy1978uk/bone": "^3.3",
+    "delboy1978uk/bone-doctrine": "dev-master"
   }
   ,
   "require-dev": {

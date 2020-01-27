@@ -28,8 +28,7 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
      */
     public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity)
     {
-        $date = new DateTimeImmutable();
-        $date->modify('+24 hours');
+        $date = new DateTimeImmutable('+24 hours');
         $authCodeEntity->setExpiryDateTime($date);
         /** @var Client $client */
         $client = $this->_em->getRepository(Client::class)
@@ -63,6 +62,7 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
     {
         /** @var AuthCode $code */
         $code = $this->findOneBy(['identifier' => $codeId]);
+
         return !$code || $code->getExpiryDateTime() < new DateTimeImmutable() || $code->isRevoked();
     }
 }

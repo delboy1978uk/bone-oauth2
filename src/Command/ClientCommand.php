@@ -96,6 +96,8 @@ class ClientCommand extends Command
 
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
         $isClientCredentials = $this->helper->ask($input, $output, $question);
+        /** @todo web browser and native apps should use auth_code with PKCE */
+        $usePKCE = false;
 
         if ($isClientCredentials) {
             $authGrant = 'client_credentials';
@@ -109,24 +111,15 @@ class ClientCommand extends Command
 
             $question = new ConfirmationQuestion('Is this a trusted first party app? ', true);
             $confidential = (int) $this->helper->ask($input, $output, $question);
+            $authGrant = 'auth_code';
 
             switch ($clientType) {
+                case 'server':
+                    break;
+                case 'native':
                 case 'browser':
                     $authGrant = 'auth_code';
-                    break;
-                case 'useragent':
-                case 'native':
-                    $grants = [
-                        'native' => [
-                            0 => 'auth_code',
-                            1 => 'password',
-                        ],
-                        'useragent' => [
-                            0 => 'implicit',
-                            1 => 'password',
-                        ],
-                    ];
-                    $authGrant = $grants[$clientType][$confidential];
+                    $usePKCE = true;
                     break;
             }
         }
