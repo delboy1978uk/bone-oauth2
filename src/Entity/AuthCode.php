@@ -36,7 +36,7 @@ class AuthCode implements AuthCodeEntityInterface
 
     /**
      * @var OAuthUser
-     * @ORM\OneToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
+     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
      * @ORM\JoinColumn(name="user", referencedColumnName="id")
      */
     protected $userIdentifier;
@@ -142,9 +142,29 @@ class AuthCode implements AuthCodeEntityInterface
     /**
      * Get the token user's identifier.
      *
+     * @return int
+     */
+    public function getUserIdentifier(): int
+    {
+        return $this->userIdentifier->getId();
+    }
+
+    /**
+     * Set the identifier of the user associated with the token.
+     *
+     * @param OAuthUser $identifier The identifier of the user
+     */
+    public function setUser(OAuthUser $user): void
+    {
+        $this->userIdentifier = $user;
+    }
+
+    /**
+     * Get the token user's identifier.
+     *
      * @return OAuthUser
      */
-    public function getUserIdentifier()
+    public function getUser()
     {
         return $this->userIdentifier;
     }

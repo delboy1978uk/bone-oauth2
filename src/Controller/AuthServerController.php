@@ -3,29 +3,45 @@
 namespace Bone\OAuth2\Controller;
 
 use Bone\Exception;
+use Bone\Mvc\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
+use Bone\OAuth2\Service\PermissionService;
+use Bone\Server\SessionAwareInterface;
+use Bone\Traits\HasSessionTrait;
 use Del\Entity\User;
+use Del\Service\UserService;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
+use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Stream;
 
-class AuthServerController
+class AuthServerController extends Controller implements SessionAwareInterface
 {
+    use HasSessionTrait;
+
     /** @var AuthorizationServer $server */
     private $server;
+
+    /** @var UserService $userService */
+    private $userService;
+
+    /** @var PermissionService $userService */
+    private $permissionService;
 
     /**
      * AuthServerController constructor.
      * @param AuthorizationServer $server
      */
-    public function __construct(AuthorizationServer $server)
+    public function __construct(AuthorizationServer $server, UserService $userService, PermissionService $permissionService)
     {
         $this->server = $server;
+        $this->userService = $userService;
+        $this->permissionService = $permissionService;
     }
 
     /**
@@ -94,13 +110,36 @@ class AuthServerController
             // Validate the HTTP request and return an AuthorizationRequest object.
             // The auth request object can be serialized into a user's session
             $authRequest = $server->validateAuthorizationRequest($request);
+            $userId = $this->getSession()->get('user');
+            /** @var OAuthUser $user */
+            $user = $this->userService->findUserById($userId);
+            $authRequest->setUser($user);
+            $scopes = $authRequest->getScopes();
+            $client = $authRequest->getClient();
+            $userScopes = $this->permissionService->getScopes($user, $client);
+            $missingScopes = array_diff_key($scopes, $userScopes);
+            $approvedCount = count($scopes) - count($missingScopes);
 
-            // Once the user has logged in set the user on the AuthorizationRequest
-            $authRequest->setUser(new OAuthUser());
+            if (count($missingScopes) && $request->getMethod() === 'GET') {
+                $body = $this->getView()->render('boneoauth2::authorize', [
+                    'scopes' => $scopes,
+                    'approvedCount' => $approvedCount,
+                    'missingScopes' => $missingScopes,
+                    'client' => $client,
+                    'user' => $user,
+                ]);
+
+                return new HtmlResponse($body);
+            }
+
+            if (count($missingScopes) && $request->getMethod() === 'POST') {
+                $this->permissionService->addScopes($user, $client, $missingScopes);
+            }
+
             // Once the user has approved or denied the client update the status
             // (true = approved, false = denied)
-            $authRequest->setAuthorizationApproved(true);
             // Return the HTTP redirect response
+            $authRequest->setAuthorizationApproved(true);
             $response = $server->completeAuthorizationRequest($authRequest, $response);
 
         } catch (OAuthServerException $e) {

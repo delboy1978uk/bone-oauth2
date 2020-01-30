@@ -13,10 +13,10 @@ class OAuthUser extends BaseUser implements UserEntityInterface
 {
 
     /**
-     * @return int
+     * @return self
      */
     public function getIdentifier()
     {
-        return $this->getId();
+        return $this;
     }
 }
