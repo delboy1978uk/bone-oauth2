@@ -2,23 +2,20 @@
 
 namespace Bone\OAuth2\Controller;
 
-use Bone\Exception;
+use Exception;
 use Bone\Mvc\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\Server\SessionAwareInterface;
 use Bone\Traits\HasSessionTrait;
-use Del\Entity\User;
 use Del\Service\UserService;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\Stream;
 
 class AuthServerController extends Controller implements SessionAwareInterface
 {
@@ -143,14 +140,21 @@ class AuthServerController extends Controller implements SessionAwareInterface
             $response = $server->completeAuthorizationRequest($authRequest, $response);
 
         } catch (OAuthServerException $e) {
-            $response = new JsonResponse([
+            return new JsonResponse([
                 'error' => $e->getMessage(),
-                'trace' => $e->getTrace(),
-            ]);
+            ], $e->getHttpStatusCode());
+        } catch (Exception $e) {
+            $code = $e->getCode();
+            $status = ($code > 399 && $code < 600) ? $code : 500;
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], $status);
         }
 
         $redirectUri = $response->getHeader('Location');
+
         if (!empty($redirectUri)) {
+
             if ($redirectUri[0][0] === '?') {
                 $uri = \str_replace('?', '', $redirectUri[0]);
                 \parse_str($uri, $vars);

@@ -2,11 +2,8 @@
 
 namespace Bone\OAuth2\Http\Middleware;
 
-use Bone\Server\SessionAwareInterface;
-use Bone\Traits\HasSessionTrait;
-use Del\Exception\UserException;
 use Del\Service\UserService;
-use Del\SessionManager;
+use Exception;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -14,6 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Diactoros\Response\JsonResponse;
 
 class ResourceServerMiddleware implements MiddlewareInterface
 {
@@ -25,14 +23,18 @@ class ResourceServerMiddleware implements MiddlewareInterface
     /** @var ResponseFactoryInterface $responseFactory */
     private $responseFactory;
 
+    /** @var UserService $userService */
+    private $userService;
+
     /**
      * ResourceServer constructor.
      * @param ResourceServer $resourceServer
      */
-    public function __construct(ResourceServer $resourceServer, ResponseFactoryInterface $responseFactory)
+    public function __construct(ResourceServer $resourceServer, UserService $userService, ResponseFactoryInterface $responseFactory)
     {
         $this->resourceServer = $resourceServer;
         $this->responseFactory = $responseFactory;
+        $this->userService = $userService;
     }
 
 
@@ -45,16 +47,24 @@ class ResourceServerMiddleware implements MiddlewareInterface
     {
         try {
             $request = $this->resourceServer->validateAuthenticatedRequest($request);
-        } catch (OAuthServerException $exception) {
-            return $exception->generateHttpResponse($this->responseFactory->createResponse());
-            // @codeCoverageIgnoreStart
-        } catch (\Exception $exception) {
-            return (new OAuthServerException($exception->getMessage(), 0, 'unknown_error', 500))
-                ->generateHttpResponse($this->responseFactory->createResponse());
-            // @codeCoverageIgnoreEnd
+            $userId = $request->getAttribute('oauth_user_id');
+
+            if ($userId) {
+                $user = $this->userService->findUserById($userId);
+                $request = $request->withAttribute('user', $user);
+            }
+
+            return $handler->handle($request);
+
+        } catch (OAuthServerException $e) {
+            $status = $e->getHttpStatusCode();
+        } catch (Exception $e) {
+            $code = $e->getCode();
+            $status = ($code > 399 && $code < 600) ? $e->getCode() : 500;
         }
 
-        // Pass the request on to the next responder in the chain
-        return $handler->handle($request);
+        return new JsonResponse([
+            'error' => $e->getMessage(),
+        ], $status);
     }
 }

@@ -19,6 +19,7 @@ use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Entity\RefreshToken;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Entity\UserApprovedScope;
+use Bone\OAuth2\Http\Middleware\ResourceServerMiddleware;
 use Bone\OAuth2\Repository\AccessTokenRepository;
 use Bone\OAuth2\Repository\AuthCodeRepository;
 use Bone\OAuth2\Repository\ClientRepository;
@@ -39,6 +40,7 @@ use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use League\Route\Router;
+use Zend\Diactoros\ResponseFactory;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
 {
@@ -200,6 +202,11 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
         });
 
         // AuthServerController::
+        $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
+            return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class), new ResponseFactory());
+        });
+
+        // AuthServerController::
         $c[ApiKeyController::class] = $c->factory(function (Container $c) {
             return Init::controller(new ApiKeyController($c->get(ClientService::class)), $c);
         });
@@ -217,6 +224,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
             ->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);
+        $router->map('GET', '/ping', [ExampleController::class, 'pingAction'])->middleware($c->get(ResourceServerMiddleware::class));
         $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])
         ->middleware($c->get(SessionAuth::class));
     }
