@@ -1,5 +1,6 @@
 # bone-oauth2
-Integration of delboy1978uk/user for BoneMvcFramework - WIP
+[![Latest Stable Version](https://poser.pugx.org/delboy1978uk/bone-oauth2/v/stable)](https://packagist.org/packages/delboy1978uk/bone-oauth2) [![Total Downloads](https://poser.pugx.org/delboy1978uk/bone-oauth2/downloads)](https://packagist.org/packages/delboy1978uk/bone-oauth2) [![License](https://poser.pugx.org/delboy1978uk/bone-oauth2/license)](https://packagist.org/packages/delboy1978uk/bone-oauth2)<br />
+OAuth2 Authorization and Resource Server functionality for Bone MVC Framework
 
 ## installation
 Install via composer from the root of your Bone Mvc project
@@ -70,6 +71,7 @@ return [
 ];
 ```
 ## usage
+#### server side
 You can create a client using the `vendor/bin/apictl` command. You can also create scopes, and grant scopes to clients.
 
 To lock down an endpoint to require an access token, simply add the `ResourceServerMiddleware` to the route or route 
@@ -98,6 +100,12 @@ scopes granted for the request.
         return new JsonResponse(['random' => 'data']);
     }
 ```
-## roadmap
+#### client side
+Clients connect using the standard OAuth2 flow described in RFC6749, the two endpoints in your Bone App are
+- /oauth2/authorize
+- /oauth2/token
+#### site users
+Logged in users now have an additional end point which they can go to, `/user/api-keys`, where they can get a new API key, or delete existing ones.
+### roadmap
 - v1.1.0 Client and Token admin panel
 - v1.2.0 Internationalisation
