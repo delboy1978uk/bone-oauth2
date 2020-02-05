@@ -37,14 +37,14 @@ class AuthCode implements AuthCodeEntityInterface
     /**
      * @var OAuthUser
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
-     * @ORM\JoinColumn(name="user", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $userIdentifier;
 
     /**
      * @var ClientEntityInterface
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
-     * @ORM\JoinColumn(name="client", referencedColumnName="id")
+     * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $client;
 

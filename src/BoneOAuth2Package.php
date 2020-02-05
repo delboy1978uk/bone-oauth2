@@ -218,15 +218,16 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
      */
     public function addRoutes(Container $c, Router $router)
     {
-        $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])
-        ->middleware($c->get(SessionAuthRedirect::class));
-        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])
-            ->middleware($c->get(SessionAuthRedirect::class));
+        $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
+        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);
         $router->map('GET', '/ping', [ExampleController::class, 'pingAction'])->middleware($c->get(ResourceServerMiddleware::class));
-        $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])
-        ->middleware($c->get(SessionAuth::class));
+        $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])->middleware($c->get(SessionAuth::class));
+        $router->map('GET', '/user/api-keys/add', [ApiKeyController::class, 'addAction'])->middleware($c->get(SessionAuth::class));
+        $router->map('POST', '/user/api-keys/add', [ApiKeyController::class, 'addSubmitAction'])->middleware($c->get(SessionAuth::class));
+        $router->map('GET', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteConfirmAction'])->middleware($c->get(SessionAuth::class));
+        $router->map('POST', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteAction'])->middleware($c->get(SessionAuth::class));
     }
 
 

@@ -67,7 +67,7 @@ class Client implements ClientEntityInterface
      * @var bool $confidential
      * @ORM\Column(type="boolean")
      */
-    private $confidential;
+    private $confidential = false;
 
     /**
      * @var OAuthUser $user/**
@@ -79,7 +79,7 @@ class Client implements ClientEntityInterface
      * @var Collection $scopes
      * @ORM\ManyToMany(targetEntity="Scope")
      * @ORM\JoinTable(name="Client_Scope",
-     *      joinColumns={@ORM\JoinColumn(name="client_id", referencedColumnName="id")},
+     *      joinColumns={@ORM\JoinColumn(name="client_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="scope_id", referencedColumnName="id")}
      *      )
      */

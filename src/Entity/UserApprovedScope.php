@@ -23,21 +23,21 @@ class UserApprovedScope
     /**
      * @var OAuthUser $user
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
-     * @ORM\JoinColumn(name="user", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE")
      */
     private $user;
 
     /**
      * @var ClientEntityInterface $client
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
-     * @ORM\JoinColumn(name="client", referencedColumnName="id")
+     * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
      */
     private $client;
 
     /**
      * @var ScopeEntityInterface $scope
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Scope")
-     * @ORM\JoinColumn(name="scope", referencedColumnName="id")
+     * @ORM\JoinColumn(name="scope", referencedColumnName="id", onDelete="CASCADE")
      */
     private $scope;
 

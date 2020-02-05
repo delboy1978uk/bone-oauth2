@@ -48,7 +48,7 @@ class AccessToken implements AccessTokenEntityInterface
     /**
      * @var ClientEntityInterface
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
-     * @ORM\JoinColumn(name="client", referencedColumnName="id")
+     * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $client;
 

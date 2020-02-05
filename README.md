@@ -70,3 +70,34 @@ return [
 ];
 ```
 ## usage
+You can create a client using the `vendor/bin/apictl` command. You can also create scopes, and grant scopes to clients.
+
+To lock down an endpoint to require an access token, simply add the `ResourceServerMiddleware` to the route or route 
+group in your Bone Framework Package class 
+```php
+$router->map('GET', '/ping', [ExampleController::class, 'pingAction'])->middleware($c->get(ResourceServerMiddleware::class));
+```
+In your controller, you will have access to the user, which is now an instance of `OAuthUser`. You can also get the 
+scopes granted for the request.
+```php
+    /**
+     * @param $request
+     * @param array $args
+     * @return ResponseInterface
+     * @throws \Exception
+     */
+    public function someAction(ServerRequestInterface $request, array $args) : ResponseInterface
+    {
+        /** @var \Bone\OAuth2\Entity\OAuthUser $user */
+        $user = $request->getAttribute('user');
+        
+        if (!in_array('email', $request->getAttribute('oauth_scopes'))) {
+            throw new Exception('How dare you!', 403);
+        }
+
+        return new JsonResponse(['random' => 'data']);
+    }
+```
+## roadmap
+- v1.1.0 Client and Token admin panel
+- v1.2.0 Internationalisation

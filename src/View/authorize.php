@@ -11,7 +11,11 @@
                 <div class="col-md-8 col-md-offset-2">
                     <img src="/img/skull_and_crossbones.png" />
                     <h1>Do you authorise this app?</h1>
-                    <p class="lead"><?= $client->getName(); ?></p>
+                    <img src="<?= $client->getIcon() ;?>>" alt="<?= $client->getName(); ?>" class="img-rounded" />
+                    <p class="lead">
+                        <strong><?= $client->getName(); ?></strong><br>
+                        <?= $client->getDescription() ;?>
+                    </p>
                     <div class="page-scroll">
                         <div class="well overflow" style="color: black;">
                             <ul>
