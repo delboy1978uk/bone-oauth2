@@ -13,9 +13,9 @@ use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 class AuthServerController extends Controller implements SessionAwareInterface
 {

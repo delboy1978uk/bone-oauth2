@@ -2,7 +2,7 @@
 
 namespace Bone\OAuth2\Traits;
 
-use Zend\Crypt\Password\Bcrypt;
+use Laminas\Crypt\Password\Bcrypt;
 
 trait EncryptableFieldEntity
 {

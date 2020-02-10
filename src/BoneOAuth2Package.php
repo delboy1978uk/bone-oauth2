@@ -40,7 +40,7 @@ use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use League\Route\Router;
-use Zend\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ResponseFactory;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
 {

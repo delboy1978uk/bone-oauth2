@@ -6,7 +6,7 @@ use Bone\OAuth2\Entity\OAuthUser;
 use DateTime;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 class ExampleController
 {

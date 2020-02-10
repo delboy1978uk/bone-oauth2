@@ -11,7 +11,7 @@ use Bone\OAuth2\Service\ClientService;
 use Del\Form\Form;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 class ApiKeyController extends Controller
 {
