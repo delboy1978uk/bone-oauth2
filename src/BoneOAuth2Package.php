@@ -31,6 +31,7 @@ use Bone\OAuth2\Service\ClientService;
 use Bone\OAuth2\Service\PermissionService;
 use BoneMvc\Module\BoneMvcUser\Http\Middleware\SessionAuth;
 use BoneMvc\Module\BoneMvcUser\Http\Middleware\SessionAuthRedirect;
+use Bone\Mvc\Router;
 use DateInterval;
 use Del\Service\UserService;
 use Doctrine\ORM\EntityManager;
@@ -39,7 +40,6 @@ use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
-use League\Route\Router;
 use Laminas\Diactoros\ResponseFactory;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
