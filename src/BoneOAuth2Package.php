@@ -8,7 +8,7 @@ use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Mvc\Controller\Init;
 use Bone\Mvc\Router\RouterConfigInterface;
-use Bone\Mvc\View\PlatesEngine;
+use Bone\View\PlatesEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Controller\ExampleController;
