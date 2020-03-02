@@ -3,7 +3,7 @@
 namespace Bone\OAuth2\Controller;
 
 use Bone\Exception;
-use Bone\Mvc\Controller;
+use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Form\ApiKeyForm;
