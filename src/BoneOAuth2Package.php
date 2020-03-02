@@ -7,7 +7,7 @@ namespace Bone\OAuth2;
 use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Controller\Init;
-use Bone\Router\Router;ConfigInterface;
+use Bone\Router\RouterConfigInterface;
 use Bone\View\PlatesEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
