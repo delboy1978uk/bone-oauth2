@@ -8,7 +8,7 @@ use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Controller\Init;
 use Bone\Router\RouterConfigInterface;
-use Bone\View\PlatesEngine;
+use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Controller\ExampleController;
@@ -49,8 +49,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
      */
     public function addToContainer(Container $c)
     {
-        /** @var PlatesEngine $viewEngine */
-        $viewEngine = $c->get(PlatesEngine::class);
+        /** @var ViewEngine $viewEngine */
+        $viewEngine = $c->get(ViewEngine::class);
         $viewEngine->addFolder('boneoauth2', __DIR__ . '/View/');
 
         // AccessToken
