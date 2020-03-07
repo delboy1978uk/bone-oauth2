@@ -2,7 +2,7 @@
 
 namespace Bone\OAuth2\Form;
 
-use Bone\Form;
+use Bone\I18n\Form;
 use Del\Form\Field\Radio;
 use Del\Form\Field\Submit;
 use Del\Form\Field\Text;
