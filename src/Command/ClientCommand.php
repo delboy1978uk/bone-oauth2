@@ -69,8 +69,6 @@ class ClientCommand extends Command
     {
         $question = new Question('Enter the email of the account: ', false);
         $email = $this->helper->ask($input, $output, $question);
-
-        $this->userService->setUserClass(User::class);
         /** @var User $user */
         $this->user = $this->userService->findUserByEmail($email);
     }

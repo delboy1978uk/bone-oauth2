@@ -6,7 +6,12 @@ namespace Bone\OAuth2;
 
 use Barnacle\Container;
 use Barnacle\RegistrationInterface;
+use Bone\Console\CommandRegistrationInterface;
 use Bone\Controller\Init;
+use Bone\OAuth2\Command\ClientCommand;
+use Bone\OAuth2\Command\ClientScopeCommand;
+use Bone\OAuth2\Command\ScopeCreateCommand;
+use Bone\OAuth2\Command\ScopeListCommand;
 use Bone\Router\RouterConfigInterface;
 use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
@@ -33,6 +38,7 @@ use Bone\User\Http\Middleware\SessionAuth;
 use Bone\User\Http\Middleware\SessionAuthRedirect;
 use Bone\Router\Router;
 use DateInterval;
+use Del\Console\UserCommand;
 use Del\Service\UserService;
 use Doctrine\ORM\EntityManager;
 use League\OAuth2\Server\AuthorizationServer;
@@ -42,7 +48,7 @@ use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use Laminas\Diactoros\ResponseFactory;
 
-class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
+class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface
 {
     /**
      * @param Container $c
@@ -246,4 +252,30 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface
     {
         return true;
     }
+
+    /**
+     * @param Container $container
+     * @return array
+     */
+    public function registerConsoleCommands(Container $container): array
+    {
+        // Override the Del\Entity\User with our OAuth user class
+        /** @var UserService $userService */
+        $userService = $container[UserService::class];
+        $userService->setUserClass(OAuthUser::class);
+        $userCommand = new UserCommand($userService);
+        $userCommand->setName('user:reset-pass');
+        $clientService = $container->get(ClientService::class);
+        $scopeRepository = $container->get(ScopeRepository::class);
+        $clientCommand = new ClientCommand($clientService, $userService, $scopeRepository);
+        $scopeCreateCommand = new ScopeCreateCommand($scopeRepository);
+        $scopeListCommand = new ScopeListCommand($scopeRepository);
+        $clientScopeCommand = new ClientScopeCommand($clientService, $scopeRepository);
+
+        return [
+            $userCommand, $clientCommand, $scopeCreateCommand, $scopeListCommand, $clientScopeCommand,
+        ];
+    }
+
+
 }
