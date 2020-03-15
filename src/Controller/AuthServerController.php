@@ -7,7 +7,7 @@ use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\Server\SessionAwareInterface;
-use Bone\Traits\HasSessionTrait;
+use Bone\Server\Traits\HasSessionTrait;
 use Del\Service\UserService;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
