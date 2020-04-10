@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2;
 
 use Barnacle\Container;
+use Barnacle\EntityRegistrationInterface;
 use Barnacle\RegistrationInterface;
 use Bone\Console\CommandRegistrationInterface;
 use Bone\Controller\Init;
@@ -48,7 +49,7 @@ use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use Laminas\Diactoros\ResponseFactory;
 
-class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface
+class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface
 {
     /**
      * @param Container $c
@@ -243,14 +244,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
     public function getEntityPath(): string
     {
         return __DIR__ . '/Entity';
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEntityPath(): bool
-    {
-        return true;
     }
 
     /**
