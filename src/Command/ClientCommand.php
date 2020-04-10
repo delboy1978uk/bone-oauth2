@@ -89,7 +89,7 @@ class ClientCommand extends Command
 
         if (!$this->user) {
             $output->writeln('User not found. Exiting.');
-            return null;
+            return 1;
         }
 
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
