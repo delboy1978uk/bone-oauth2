@@ -72,5 +72,7 @@ class ScopeCreateCommand extends Command
         $this->scopeRepository->create($scope);
 
         $output->writeln('Scope created.');
+
+        return 0;
     }
 }

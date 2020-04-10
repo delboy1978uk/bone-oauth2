@@ -174,5 +174,7 @@ class ClientCommand extends Command
         $this->clientService->getClientRepository()->create($client);
 
         $output->writeln('Client created.');
+
+        return 0;
     }
 }

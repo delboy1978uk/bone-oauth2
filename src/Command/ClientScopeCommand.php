@@ -66,6 +66,7 @@ class ClientScopeCommand extends Command
         $output->writeln(' ');
         $output->writeln('Client scope administration');
         $operation = $input->getArgument('operation');
+
         switch ($operation) {
             case 'list';
                 $this->listScopes($input, $output);
@@ -78,6 +79,8 @@ class ClientScopeCommand extends Command
                 break;
         }
         $output->writeln(' ');
+
+        return 0;
     }
 
     /**
@@ -89,6 +92,7 @@ class ClientScopeCommand extends Command
     private function getArgOrGetUpset(InputInterface $input, string $argName)
     {
         $value = $input->getArgument($argName);
+
         if (!$value) {
             throw new Exception('No ' . $argName . ' provided');
         }

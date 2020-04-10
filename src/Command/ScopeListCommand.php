@@ -51,12 +51,16 @@ class ScopeListCommand extends Command
     {
         $output->writeln('Listing scopes...');
         $scopes = $this->scopeRepository->findAll();
+
         if (!count($scopes)) {
             $output->writeln('No scopes found.');
         }
+
         /** @var Scope $scope */
         foreach ($scopes as $scope) {
             $output->writeln(' - ' . $scope->getIdentifier());
         }
+
+        return 0;
     }
 }
