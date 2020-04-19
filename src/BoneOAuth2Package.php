@@ -229,7 +229,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);
-        $router->map('GET', '/ping', [ExampleController::class, 'pingAction'])->middleware($c->get(ResourceServerMiddleware::class));
+        $router->map('GET', '/ping', [ExampleController::class, 'pingAction']);
         $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])->middleware($c->get(SessionAuth::class));
         $router->map('GET', '/user/api-keys/add', [ApiKeyController::class, 'addAction'])->middleware($c->get(SessionAuth::class));
         $router->map('POST', '/user/api-keys/add', [ApiKeyController::class, 'addSubmitAction'])->middleware($c->get(SessionAuth::class));

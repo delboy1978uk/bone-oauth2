@@ -57,9 +57,11 @@ class ExampleController
     }
 
     /**
-     * This /ping an example API endpoint locked down by OAuth2
-     * See the routing config in the Package class has the middleware attached
-     *
+     * @OA\Get(
+     *     path="/ping",
+     *     tags={"status"},
+     *     @OA\Response(response="200", description="Sends a response with the time")
+     * )
      * @param $request
      * @param array $args
      * @return ResponseInterface
@@ -68,16 +70,9 @@ class ExampleController
     public function pingAction(ServerRequestInterface $request, array $args) : ResponseInterface
     {
         $now = new DateTime();
-        /** @var OAuthUser $user */
-        $user = $request->getAttribute('user');
         $data = [
             'pong' => $now->format('Y-m-d H:i:s'),
-            'email' => $user->getEmail()
         ];
-
-        if (!in_array('email', $request->getAttribute('oauth_scopes'))) {
-            unset($data['email']);
-        }
 
         return new JsonResponse($data);
     }
