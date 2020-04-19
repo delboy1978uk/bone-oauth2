@@ -57,6 +57,7 @@ class ExampleController
     }
 
     /**
+     * Check basic connectivity. Returns a timestamp.
      * @OA\Get(
      *     path="/ping",
      *     tags={"status"},

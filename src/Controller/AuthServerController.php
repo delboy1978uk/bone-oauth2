@@ -42,7 +42,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
     }
 
     /**
-     *
+     * Authorize a client via OAuth2
      * @OA\Get(
      *     path="/oauth2/authorize",
      *     @OA\Response(response="200", description="An access token"),
@@ -166,6 +166,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
     }
 
     /**
+     * Fetch an OAuth2 access token
      * @OA\Post(
      *     path="/oauth2/token",
      *     operationId="accessToken",
