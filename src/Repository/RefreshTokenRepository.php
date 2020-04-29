@@ -52,7 +52,8 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
      */
     public function revokeRefreshToken($tokenId)
     {
-        $token = $this->_em->find(RefreshToken::class, $tokenId);
+        $token = $this->findOneBy(['identifier' => $tokenId]);
+
         if ($token instanceof RefreshTokenEntityInterface) {
             $this->_em->remove($token);
             $this->_em->flush();
@@ -72,10 +73,9 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
      */
     public function isRefreshTokenRevoked($tokenId)
     {
-        $token = $this->_em->find(RefreshToken::class, $tokenId);
+        $token = $this->findOneBy(['identifier' => $tokenId]);
 
-        if (!$token instanceof RefreshToken) {
-            error_log($tokenId . ' not found.');
+        if (!$token) {
             return true;
         }
 
