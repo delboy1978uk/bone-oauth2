@@ -74,6 +74,11 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
     {
         $token = $this->_em->find(RefreshToken::class, $tokenId);
 
-        return !($token instanceof RefreshTokenEntityInterface);
+        if (!$token instanceof RefreshToken) {
+            error_log($tokenId . ' not found.');
+            return true;
+        }
+
+        return $token->isRevoked();
     }
 }
