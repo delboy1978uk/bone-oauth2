@@ -50,47 +50,44 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *     @OA\Parameter(
      *         name="response_type",
      *         in="query",
-     *         type="string",
      *         description="the type of response",
      *         required=true,
-     *         default="code"
+     *         @OA\Schema(type="string", default="code")
      *     ),
      *     @OA\Parameter(
      *         name="client_id",
      *         in="query",
-     *         type="string",
      *         description="the client identifier",
      *         required=true,
-     *         default="testclient"
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="client_secret",
      *         in="query",
-     *         type="string",
      *         description="the client identifier",
      *         required=false,
-     *         default="testclient"
+     *         @OA\Schema(type="string", default="testclient")
      *     ),
      *     @OA\Parameter(
      *         name="redirect_uri",
      *         in="query",
-     *         type="string",
      *         description="where to send the response",
-     *         required=false
+     *         required=false,
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="state",
      *         in="query",
-     *         type="string",
      *         description="with a CSRF token. This parameter is optional but highly recommended.",
      *         required=false,
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="scope",
      *         in="query",
-     *         type="string",
      *         description="allowed scopes, space separated",
      *         required=false,
+     *         @OA\Schema(type="string", default="basic")
      *     )
      * )
      * @param ServerRequestInterface $request
@@ -175,48 +172,44 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *     @OA\Parameter(
      *         name="grant_type",
      *         in="formData",
-     *         type="string",
      *         description="the type of grant",
      *         required=true,
-     *         default="client_credentials",
+     *         @OA\Schema(type="string", default="client_credentials")
      *     ),
      *     @OA\Parameter(
      *         name="client_id",
      *         in="formData",
-     *         type="string",
      *         description="the client id",
      *         required=true,
-     *         default="ceac682a9a4808bf910ad49134230e0e"
+     *         @OA\Schema(type="string", default="0123456789abcdef")
      *     ),
      *     @OA\Parameter(
      *         name="client_secret",
      *         in="formData",
-     *         type="string",
      *         description="the client secret",
      *         required=false,
-     *         default="JDJ5JDEwJGNEd1J1VEdOY0YxS3QvL0pWQzMxay52"
+     *         @OA\Schema(type="string", default="0123456789abcdef")
      *     ),
      *     @OA\Parameter(
      *         name="scope",
      *         in="formData",
-     *         type="string",
      *         description="the scopes you wish to use",
      *         required=false,
-     *         default="admin"
+     *         @OA\Schema(type="string", default="basic")
      *     ),
      *     @OA\Parameter(
      *         name="redirect_uri",
      *         in="formData",
-     *         type="string",
      *         description="with the same redirect URI the user was redirect back to",
      *         required=false,
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="code",
      *         in="formData",
-     *         type="string",
      *         description="with the authorization code from the query string",
      *         required=false,
+     *         @OA\Schema(type="string")
      *     ),
      * )
      *
