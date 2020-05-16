@@ -32,7 +32,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
     public function revokeAccessToken($tokenId)
     {
         /** @var AccessToken $token */
-        $token = $this->find($tokenId);
+        $token = $this->findBy(['identifier' => $tokenId]);
         if(!$token) {
             throw new Exception('Token not found', 404);
         }
