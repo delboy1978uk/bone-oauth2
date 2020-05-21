@@ -32,7 +32,9 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         $authCodeEntity->setExpiryDateTime($date);
         /** @var Client $client */
         $client = $this->_em->getRepository(Client::class)
-                    ->findOneBy(['identifier' => $authCodeEntity->getClient()->getIdentifier()]);
+            ->findOneBy([
+                'identifier' => $authCodeEntity->getClient()->getIdentifier()
+            ]);
         $authCodeEntity->setClient($client);
         $this->_em->persist($authCodeEntity);
         $this->_em->flush();
@@ -46,9 +48,11 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
     {
         /** @var AuthCode $token */
         $code = $this->findOneBy(['identifier' => $codeId]);
+
         if(!$code) {
             throw new Exception('Token not found', 404);
         }
+
         $code->setRevoked(true);
         $this->_em->flush($code);
     }

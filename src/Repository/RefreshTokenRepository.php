@@ -32,11 +32,13 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
     public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity)
     {
         $accessToken = $refreshTokenEntity->getAccessToken();
+
         if ($this->_em->getUnitOfWork()->getEntityState($accessToken) !== UnitOfWork::STATE_MANAGED) {
             /** @var AccessToken $accessToken */
             $accessToken = $this->_em->merge($accessToken);
             $refreshTokenEntity->setAccessToken($accessToken);
         }
+
         $this->_em->persist($refreshTokenEntity);
         $this->_em->flush();
 

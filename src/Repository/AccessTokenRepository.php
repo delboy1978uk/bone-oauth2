@@ -22,6 +22,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
     {
         $this->_em->persist($accessTokenEntity);
         $this->_em->flush();
+
         return $accessTokenEntity;
     }
 
@@ -32,10 +33,12 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
     public function revokeAccessToken($tokenId)
     {
         /** @var AccessToken $token */
-        $token = $this->findBy(['identifier' => $tokenId]);
+        $token = $this->findOneBy(['identifier' => $tokenId]);
+
         if(!$token) {
             throw new Exception('Token not found', 404);
         }
+
         $token->setRevoked(true);
         $this->_em->flush($token);
     }
