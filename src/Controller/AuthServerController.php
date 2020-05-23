@@ -239,4 +239,65 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
         return $response;
     }
+
+    /**
+     * Register an OAuth2 Client
+     * @OA\Post(
+     *     path="/oauth2/register",
+     *     operationId="registerClient",
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 required={"grant_type", "client_id"},
+     *                 @OA\Property(
+     *                     property="grant_type",
+     *                     type="string",
+     *                     default="client_credentials",
+     *                     description="the type of grant"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="client_id",
+     *                     type="string",
+     *                     description="the client id"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="client_secret",
+     *                     type="string",
+     *                     description="the client secret"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="scope",
+     *                     type="string",
+     *                     description="the scopes you wish to use"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="redirect_uri",
+     *                     type="string",
+     *                     description="the redirect url for post authorization"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="code",
+     *                     type="string",
+     *                     description="with the authorization code from the query string"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="An access token"),
+     *     tags={"auth"},
+     *     security={
+     *         {"oauth2": {"register"}}
+     *     }
+     * )
+     * @param ServerRequestInterface $request
+     * @param array $args
+     * @return ResponseInterface
+     */
+    public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
+    {
+        $response = new JsonResponse([]);
+
+        return $response;
+    }
 }

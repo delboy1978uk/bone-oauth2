@@ -13,6 +13,7 @@ use Bone\OAuth2\Command\ClientCommand;
 use Bone\OAuth2\Command\ClientScopeCommand;
 use Bone\OAuth2\Command\ScopeCreateCommand;
 use Bone\OAuth2\Command\ScopeListCommand;
+use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
 use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
@@ -235,6 +236,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $router->map('POST', '/user/api-keys/add', [ApiKeyController::class, 'addSubmitAction'])->middleware($c->get(SessionAuth::class));
         $router->map('GET', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteConfirmAction'])->middleware($c->get(SessionAuth::class));
         $router->map('POST', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteAction'])->middleware($c->get(SessionAuth::class));
+        $router->map('POST', '/oauth2/register', [AuthServerController::class, 'registerAction'])
+            ->middleware($c->get(ResourceServerMiddleware::class, new ScopeCheck(['register'])));
     }
 
 
