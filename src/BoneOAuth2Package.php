@@ -204,7 +204,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             $authServer = $c->get(AuthorizationServer::class);
             $userService = $c->get(UserService::class);
             $permissionService = $c->get(PermissionService::class);
-            $controller = new AuthServerController($authServer, $userService, $permissionService);
+            $clientService = $c->get(ClientService::class);
+            $controller = new AuthServerController($authServer, $userService, $permissionService, $clientService);
 
             return Init::controller($controller, $c);
         });

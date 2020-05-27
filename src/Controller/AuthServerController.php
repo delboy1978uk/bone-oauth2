@@ -2,7 +2,9 @@
 
 namespace Bone\OAuth2\Controller;
 
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Form\RegisterClientForm;
+use Bone\OAuth2\Service\ClientService;
 use Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
@@ -31,15 +33,19 @@ class AuthServerController extends Controller implements SessionAwareInterface
     /** @var PermissionService $userService */
     private $permissionService;
 
+    /** @var ClientService $clientService */
+    private $clientService;
+
     /**
      * AuthServerController constructor.
      * @param AuthorizationServer $server
      */
-    public function __construct(AuthorizationServer $server, UserService $userService, PermissionService $permissionService)
+    public function __construct(AuthorizationServer $server, UserService $userService, PermissionService $permissionService, ClientService $clientService)
     {
         $this->server = $server;
         $this->userService = $userService;
         $this->permissionService = $permissionService;
+        $this->clientService = $clientService;
     }
 
     /**
@@ -295,6 +301,22 @@ class AuthServerController extends Controller implements SessionAwareInterface
         $form->populate($body);
 
         if ($form->isValid()) {
+            $formData = $form->getValues();
+            $data = [
+                'name' => $formData['client_name'],
+                'description' => 'auto registered client',
+                'redirectUri' => $formData['redirect_uris'],
+                'grantType' => 'auth_code',
+                'icon' => $formData['logo_uri'],
+                'confidential' => false,
+            ];
+
+            $user = $this->userService->findUserById(1);
+            $client = $this->clientService->createFromArray($data, $user);
+            $this->clientService->getClientRepository()->create($client);
+
+            var_dump($client); exit;
+
             $body = ['result' => 'ok'];
         } else {
             $body = ['result' => 'fail'];
