@@ -2,6 +2,7 @@
 
 namespace Bone\OAuth2\Controller;
 
+use Bone\OAuth2\Form\RegisterClientForm;
 use Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
@@ -249,37 +250,30 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
-     *                 required={"grant_type", "client_id"},
+     *                 required={"redirect_uris", "client_id", "token_endpoint_auth_method", "logo_uri"},
      *                 @OA\Property(
-     *                     property="grant_type",
-     *                     type="string",
-     *                     default="client_credentials",
-     *                     description="the type of grant"
+     *                     property="redirect_uris",
+     *                     type="array",
+     *                     description="an array of redirect uri's (only one supported at present)",
+     *                     @OA\Items(type="string", example="http://fake/callback")
      *                 ),
      *                 @OA\Property(
-     *                     property="client_id",
+     *                     property="client_name",
+     *                     description="the client name",
      *                     type="string",
-     *                     description="the client id"
+     *                     example="Test Client"
      *                 ),
      *                 @OA\Property(
-     *                     property="client_secret",
+     *                     property="token_endpoint_auth_method",
+     *                     description="none, client_secret_post, or client_secret_basic",
      *                     type="string",
-     *                     description="the client secret"
+     *                     example="client_secret_basic"
      *                 ),
      *                 @OA\Property(
-     *                     property="scope",
+     *                     property="logo_uri",
+     *                     description="the application's logo",
      *                     type="string",
-     *                     description="the scopes you wish to use"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="redirect_uri",
-     *                     type="string",
-     *                     description="the redirect url for post authorization"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="code",
-     *                     type="string",
-     *                     description="with the authorization code from the query string"
+     *                     example="https://fake/image.jpg"
      *                 )
      *             )
      *         )
@@ -296,7 +290,17 @@ class AuthServerController extends Controller implements SessionAwareInterface
      */
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $response = new JsonResponse([]);
+        $body = $request->getParsedBody();
+        $form = new RegisterClientForm('register');
+        $form->populate($body);
+
+        if ($form->isValid()) {
+            $body = ['result' => 'ok'];
+        } else {
+            $body = ['result' => 'fail'];
+        }
+
+        $response = new JsonResponse($body);
 
         return $response;
     }

@@ -45,6 +45,7 @@ class ClientService
         $secret = password_hash($name . $time  . 'bone', PASSWORD_BCRYPT);
         $base64 = base64_encode($secret);
         $client->setSecret($base64);
+
         return $client;
     }
 
@@ -75,6 +76,7 @@ class ClientService
         $client->setGrantType($data['grantType']);
         $client->setUser($user);
         $this->generateSecret($client);
+
         if ($data['confidential'] === true || $data['confidential'] === 'confidential') {
             $client->setConfidential(true);
         }
