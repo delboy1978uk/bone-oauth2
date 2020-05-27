@@ -5,6 +5,7 @@ namespace Bone\OAuth2\Controller;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Service\ClientService;
+use DateTime;
 use Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
@@ -293,37 +294,14 @@ class AuthServerController extends Controller implements SessionAwareInterface
      * @param ServerRequestInterface $request
      * @param array $args
      * @return ResponseInterface
+     * @todo right now we only create auth_code clients via this endpoint, check token_endpoint_auth_method
      */
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $body = $request->getParsedBody();
+        $post = $request->getParsedBody();
         $form = new RegisterClientForm('register');
-        $form->populate($body);
+        $form->populate($post);
 
-        if ($form->isValid()) {
-            $formData = $form->getValues();
-            $data = [
-                'name' => $formData['client_name'],
-                'description' => 'auto registered client',
-                'redirectUri' => $formData['redirect_uris'],
-                'grantType' => 'auth_code',
-                'icon' => $formData['logo_uri'],
-                'confidential' => false,
-            ];
-
-            $user = $this->userService->findUserById(1);
-            $client = $this->clientService->createFromArray($data, $user);
-            $this->clientService->getClientRepository()->create($client);
-
-            var_dump($client); exit;
-
-            $body = ['result' => 'ok'];
-        } else {
-            $body = ['result' => 'fail'];
-        }
-
-        $response = new JsonResponse($body);
-
-        return $response;
+        return $this->clientService->registerNewClient($form);
     }
 }

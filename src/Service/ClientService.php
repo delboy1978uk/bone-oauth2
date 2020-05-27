@@ -4,7 +4,10 @@ namespace Bone\OAuth2\Service;
 
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
+use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Repository\ClientRepository;
+use Laminas\Diactoros\Response\JsonResponse;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ClientService
@@ -82,5 +85,49 @@ class ClientService
         }
 
         return $client;
+    }
+
+    /**
+     * @param RegisterClientForm $form
+     * @return ResponseInterface
+     */
+    public function registerNewClient(RegisterClientForm $form): ResponseInterface
+    {
+        if ($form->isValid()) {
+            $formData = $form->getValues();
+            $data = [
+                'name' => $formData['client_name'] . microtime(),
+                'description' => 'auto registered client',
+                'redirectUri' => $formData['redirect_uris'],
+                'grantType' => 'auth_code',
+                'icon' => $formData['logo_uri'],
+                'confidential' => false,
+            ];
+
+            $user = $this->findUserById(1);
+            $client = $this->createFromArray($data, $user);
+            $this->getClientRepository()->create($client);
+            $now = new DateTime();
+
+            $body = [
+                'client_id' => $client->getIdentifier(),
+                'client_id_issued_at' => $now->format('Y-m-d\TH:i:s\Z'),
+            ];
+            $code = 200;
+        } else {
+            $errors = $form->getErrorMessages();
+
+            foreach ($errors as $field => $fieldErrors) {
+                $body['error'] = 'Invalid request.';
+                $body['error_description'] = $field . ' - ' . $fieldErrors[0];
+                break;
+            }
+
+            $code = 400;
+        }
+
+        $response = new JsonResponse($body);
+
+        return $response->withStatus($code);
     }
 }
