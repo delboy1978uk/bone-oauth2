@@ -15,7 +15,7 @@ class RegisterClientForm extends Form
 {
     public function init()
     {
-        $redirect = new Text('redirect_uri');
+        $redirect = new Text('redirect_uris');
         $redirect->setRequired(true);
         $validator = new ValidatorAdapterZf(new Uri());
         $redirect->addValidator($validator);
