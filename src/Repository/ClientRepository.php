@@ -28,6 +28,10 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
         return $client;
     }
+    public function getEntityManager()
+    {
+        return parent::getEntityManager();
+    }
 
     /**
      * @param Client $client

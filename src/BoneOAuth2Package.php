@@ -9,6 +9,7 @@ use Barnacle\EntityRegistrationInterface;
 use Barnacle\RegistrationInterface;
 use Bone\Console\CommandRegistrationInterface;
 use Bone\Controller\Init;
+use Bone\Http\Middleware\JsonParse;
 use Bone\OAuth2\Command\ClientCommand;
 use Bone\OAuth2\Command\ClientScopeCommand;
 use Bone\OAuth2\Command\ScopeCreateCommand;
@@ -238,7 +239,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $router->map('GET', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteConfirmAction'])->middleware($c->get(SessionAuth::class));
         $router->map('POST', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteAction'])->middleware($c->get(SessionAuth::class));
         $router->map('POST', '/oauth2/register', [AuthServerController::class, 'registerAction'])
-            ->middleware($c->get(ResourceServerMiddleware::class, new ScopeCheck(['register'])));
+            ->middlewares([$c->get(ResourceServerMiddleware::class), new ScopeCheck(['register']), new JsonParse()]);
     }
 
 

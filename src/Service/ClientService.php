@@ -6,6 +6,7 @@ use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Repository\ClientRepository;
+use DateTime;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 
@@ -104,7 +105,7 @@ class ClientService
                 'confidential' => false,
             ];
 
-            $user = $this->findUserById(1);
+            $user = $this->getClientRepository()->getEntityManager()->getRepository(OAuthUser::class)->find(1);
             $client = $this->createFromArray($data, $user);
             $this->getClientRepository()->create($client);
             $now = new DateTime();

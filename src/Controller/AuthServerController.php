@@ -255,7 +255,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *     operationId="registerClient",
      *     @OA\RequestBody(
      *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
+     *             mediaType="application/json",
      *             @OA\Schema(
      *                 required={"redirect_uris", "client_id", "token_endpoint_auth_method", "logo_uri"},
      *                 @OA\Property(
@@ -299,6 +299,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $post = $request->getParsedBody();
+        $post['redirect_uris'] = $post['redirect_uris'][0];
         $form = new RegisterClientForm('register');
         $form->populate($post);
 
