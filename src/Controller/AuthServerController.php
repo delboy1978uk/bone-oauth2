@@ -299,7 +299,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $post = $request->getParsedBody();
-        $post['redirect_uris'] = $post['redirect_uris'][0];
+        $post['redirect_uris'] = $post['redirect_uris'];
         $form = new RegisterClientForm('register');
         $form->populate($post);
 
