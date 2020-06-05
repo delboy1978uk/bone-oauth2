@@ -4,9 +4,11 @@ namespace Bone\OAuth2\Service;
 
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
+use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Repository\ClientRepository;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 
@@ -106,12 +108,15 @@ class ClientService
             ];
 
             $user = $this->getClientRepository()->getEntityManager()->getRepository(OAuthUser::class)->find(1);
+            $scope = $this->getClientRepository()->getEntityManager()->getRepository(Scope::class)->findOneBy(['identifier' => 'basic']);
             $client = $this->createFromArray($data, $user);
+            $client->setScopes(new ArrayCollection([$scope]));
             $this->getClientRepository()->create($client);
             $now = new DateTime();
 
             $body = [
                 'client_id' => $client->getIdentifier(),
+                'client_secret' => $client->getSecret(),
                 'client_id_issued_at' => $now->format('Y-m-d\TH:i:s\Z'),
             ];
             $code = 200;
