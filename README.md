@@ -31,6 +31,10 @@ migrant diff
 migrant migrate
 ```
 #### generate a public and private key
+Firstly go into the `data/keys` directory.
+```
+cd data/keys
+```
 Use openssl to generate a private key.
 ```
 openssl genrsa -out private.key 2048
@@ -53,6 +57,10 @@ If a passphrase has been used to generate private key it must be provided to the
 
 The public key should be distributed to any services (for example resource servers) that validate access tokens.
 #### generate an encryption key
+Go back to the project root.
+```
+cd ../..
+```
 Run this command and add to your config.
 ```
 vendor/bin/generate-defuse-key
@@ -72,7 +80,7 @@ return [
 ```
 ## usage
 #### server side
-You can create a client using the `vendor/bin/apictl` command. You can also create scopes, and grant scopes to clients.
+You can create a client using the `vendor/bin/bone` command. You can also create scopes, and grant scopes to clients.
 
 To lock down an endpoint to require an access token, simply add the `ResourceServerMiddleware` to the route or route 
 group in your Bone Framework Package class 
