@@ -14,12 +14,12 @@ Simply add the Package to Bone's packages config
 
 // use statements here
 use Bone\OAuth2\BoneOAuth2Package;
-use Del\UserPackage;
+use Bone\User\BoneUserPackage;
 
 return [
     'packages' => [
         // packages here (order is important)...,
-        UserPackage::class,
+        BoneUserPackage::class,
         BoneOAuth2Package::class,
     ],
     // ...
@@ -27,32 +27,28 @@ return [
 ```
 Run database migrations to generate the tables
 ```
-migrant diff
-migrant migrate
+vendor/bin/bone migrant:diff
+vendor/bin/bone migrant:migrate
 ```
 #### generate a public and private key
 Firstly go into the `data/keys` directory.
 ```
 cd data/keys
 ```
-Use openssl to generate a private key.
+Use openssl to generate a private key, then extract the public key from the private key:
 ```
 openssl genrsa -out private.key 2048
+openssl rsa -in private.key -pubout -out public.key
+chmod 660 public.key
+chmod 660 private.key
 ```
-If you want to provide a passphrase for your private key run this command instead:
+If you want to provide a passphrase for your private key run these commands instead:
 ```
 openssl genrsa -passout pass:_passphrase_ -out private.key 2048
-```
-then extract the public key from the private key:
-```
-openssl rsa -in private.key -pubout -out public.key
-```
-or use your passphrase if provided on private key generation:
-```
 openssl rsa -in private.key -passin pass:_passphrase_ -pubout -out public.key
+chmod 660 public.key
+chmod 660 private.key
 ```
-The private key must be kept secret (i.e. out of the web-root of the authorization server). The authorization server also requires the public key.
-
 If a passphrase has been used to generate private key it must be provided to the authorization server.
 
 The public key should be distributed to any services (for example resource servers) that validate access tokens.
@@ -114,6 +110,11 @@ Clients connect using the standard OAuth2 flow described in RFC6749, the two end
 - /oauth2/token
 #### site users
 Logged in users now have an additional end point which they can go to, `/user/api-keys`, where they can get a new API key, or delete existing ones.
-### roadmap
-- v1.1.0 Client and Token admin panel
-- v1.2.0 Internationalisation
+#### console
+You also have access to more `bone` command options:
+```
+bone client:create
+bone client:create
+bone scope:create
+bone scope:list
+```
