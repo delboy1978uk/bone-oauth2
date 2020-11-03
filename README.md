@@ -29,6 +29,7 @@ Run database migrations to generate the tables
 ```
 vendor/bin/bone migrant:diff
 vendor/bin/bone migrant:migrate
+vendor/bin/bone migrant:generate-proxies
 ```
 #### generate a public and private key
 Firstly go into the `data/keys` directory.
