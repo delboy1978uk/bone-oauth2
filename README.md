@@ -3,7 +3,7 @@
 OAuth2 Authorization and Resource Server functionality for Bone MVC Framework
 
 ## installation
-Install via composer from the root of your Bone Mvc project
+Install via composer from the root of your Bone Framework project
 ```
 composer require delboy1978uk/bone-oauth2
 ```
