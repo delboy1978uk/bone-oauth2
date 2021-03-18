@@ -25,12 +25,6 @@ return [
     // ...
 ];
 ```
-Run database migrations to generate the tables
-```
-vendor/bin/bone migrant:diff
-vendor/bin/bone migrant:migrate
-vendor/bin/bone migrant:generate-proxies
-```
 #### generate a public and private key
 Firstly go into the `data/keys` directory.
 ```
@@ -61,7 +55,13 @@ cd ../..
 Run this command and add to your config.
 ```
 vendor/bin/generate-defuse-key
+``
+Run database migrations to generate the tables
 ```
+vendor/bin/bone migrant:diff
+vendor/bin/bone migrant:migrate
+vendor/bin/bone migrant:generate-proxies
+````
 ### required config values
 Keys can be stored out of the config array and fetched as an environment variable for better security, but these are the config settings you need.
 ```php
