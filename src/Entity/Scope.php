@@ -65,9 +65,9 @@ class Scope implements ScopeEntityInterface
     }
 
     /**
-     * @return string
+     * @return string|mixed
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->getIdentifier();
     }
