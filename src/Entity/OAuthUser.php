@@ -11,7 +11,6 @@ use League\OAuth2\Server\Entities\UserEntityInterface;
  */
 class OAuthUser extends BaseUser implements UserEntityInterface
 {
-
     /**
      * @return self
      */

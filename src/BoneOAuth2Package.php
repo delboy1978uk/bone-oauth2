@@ -58,6 +58,9 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
      */
     public function addToContainer(Container $c)
     {
+        /** @var UserService $userService */
+        $userService = $c->get(UserService::class);
+
         /** @var ViewEngine $viewEngine */
         $viewEngine = $c->get(ViewEngine::class);
         $viewEngine->addFolder('boneoauth2', __DIR__ . '/View/');
@@ -157,14 +160,14 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
                 new DateInterval('PT1H')
             );
 
-            // Enable the authentication code grant on the server with a token TTL of 1 hour
+            // auth code 1 minute, access token 5 minutes
             $server->enableGrantType(
                 new AuthCodeGrant(
                     $authCodeRepository,
                     $refreshTokenRepository,
-                    new DateInterval('PT10M')
+                    new DateInterval('PT1M')
                 ),
-                new DateInterval('PT1H')
+                new DateInterval('PT5M')
             );
 
             // Enable the refresh token grant on the server with a token TTL of 1 month
@@ -230,7 +233,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
     {
         $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
-        $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction'])->middleware(new JsonParse());
+        $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);
         $router->map('GET', '/ping', [ExampleController::class, 'pingAction']);
         $router->map('GET', '/user/api-keys', [ApiKeyController::class, 'myApiKeysAction'])->middleware($c->get(SessionAuth::class));

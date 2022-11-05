@@ -235,13 +235,13 @@ class AuthServerController extends Controller implements SessionAwareInterface
             $response = new JsonResponse([
                 'error' => $e->getMessage(),
                 'trace' => $e->getTrace(),
-            ]);
+            ], 400);
         } catch (Exception $e) {
             $response = new JsonResponse([
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-            ]);
+            ], 500);
         }
 
 
