@@ -55,7 +55,7 @@ cd ../..
 Run this command and add to your config.
 ```
 vendor/bin/generate-defuse-key
-``
+```
 Run database migrations to generate the tables
 ```
 vendor/bin/bone migrant:diff
