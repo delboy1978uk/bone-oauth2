@@ -60,6 +60,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
     {
         /** @var UserService $userService */
         $userService = $c->get(UserService::class);
+        $userService->setUserClass(OAuthUser::class);
 
         /** @var ViewEngine $viewEngine */
         $viewEngine = $c->get(ViewEngine::class);
