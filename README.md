@@ -69,6 +69,10 @@ Keys can be stored out of the config array and fetched as an environment variabl
 
 return [
     'oauth2' => [
+        'clientCredentialsTokenTTL' => 'PT1H', // 1hour
+        'authCodeTTL' => 'PT1M', // 1 minute
+        'accessTokenTTL' => 'PT5M', // 5 minutes
+        'refreshTokenTTL' => 'P1M', // 1 month
         'privateKeyPath' => '/path/to/private.key',
         'publicKeyPath' => '/path/to/private.key',
         'encryptionKey' => 'generatedKeyString',

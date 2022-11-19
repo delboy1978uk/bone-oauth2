@@ -58,6 +58,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
      */
     public function addToContainer(Container $c)
     {
+        $settings = $c->get('oauth2');
+
         /** @var UserService $userService */
         $userService = $c->get(UserService::class);
         $userService->setUserClass(OAuthUser::class);
@@ -143,8 +145,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             $scopeRepository = $c->get(ScopeRepository::class);
             $authCodeRepository = $c->get(AuthCodeRepository::class);
             $refreshTokenRepository = $c->get(RefreshTokenRepository::class);
-            $privateKeyPath = $c->get('oauth2')['privateKeyPath'];
-            $encryptionKey = $c->get('oauth2')['encryptionKey'];
+            $privateKeyPath = $settings['privateKeyPath'];
+            $encryptionKey = $settings['encryptionKey'];
 
             // Setup the authorization server
             $server = new AuthorizationServer(
@@ -155,26 +157,30 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
                 $encryptionKey
             );
 
-            // Enable the client credentials grant on the server with a token TTL of 1 hour
+            $clientCredentialsTokenTTL = $settings['clientCredentialsTokenTTL'] ?: 'PT1H';
+            $authCodeTTL = $settings['authCodeTTL'] ?: 'PT1M';
+            $accessTokenTTL = $settings['accessTokenTTL'] ?: 'PT5M';
+            $refreshTokenTTL = $settings['refreshTokenTTL'] ?: 'P1M';
+
             $server->enableGrantType(
                 new ClientCredentialsGrant(),
-                new DateInterval('PT1H')
+                new DateInterval($clientCredentialsTokenTTL)
             );
 
-            // auth code 1 minute, access token 5 minutes
             $server->enableGrantType(
                 new AuthCodeGrant(
                     $authCodeRepository,
                     $refreshTokenRepository,
-                    new DateInterval('PT1M')
+                    new DateInterval($authCodeTTL)
                 ),
-                new DateInterval('PT5M')
+                new DateInterval($accessTokenTTL)
             );
 
-            // Enable the refresh token grant on the server with a token TTL of 1 month
+            $refreshGrant = new RefreshTokenGrant($refreshTokenRepository);
+            $refreshGrant->setRefreshTokenTTL(new DateInterval($refreshTokenTTL));
             $server->enableGrantType(
-                new RefreshTokenGrant($refreshTokenRepository),
-                new DateInterval('P1M')
+                $refreshGrant,
+                new DateInterval($accessTokenTTL)
             );
 
             return $server;
@@ -183,7 +189,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // Resource Server
         $function = function (Container $c) {
-            $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
+            $publicKeyPath = $settings['publicKeyPath'];
             $accessTokenRepository = $c->get(AccessTokenRepository::class);
 
             $server = new ResourceServer(
