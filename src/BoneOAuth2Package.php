@@ -58,8 +58,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
      */
     public function addToContainer(Container $c)
     {
-        $settings = $c->get('oauth2');
-
         /** @var UserService $userService */
         $userService = $c->get(UserService::class);
         $userService->setUserClass(OAuthUser::class);
@@ -140,6 +138,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // OAuth2 Server
         $function = function (Container $c) {
+            $settings = $c->get('oauth2');
             $clientRepository = $c->get(ClientRepository::class);
             $accessTokenRepository = $c->get(AccessTokenRepository::class);
             $scopeRepository = $c->get(ScopeRepository::class);
@@ -189,7 +188,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // Resource Server
         $function = function (Container $c) {
-            $publicKeyPath = $settings['publicKeyPath'];
+            $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
             $accessTokenRepository = $c->get(AccessTokenRepository::class);
 
             $server = new ResourceServer(
