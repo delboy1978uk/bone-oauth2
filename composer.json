@@ -10,7 +10,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^7.1",
+    "php": ">=7.4",
     "ext-curl": "*",
     "ext-json": "*",
     "delboy1978uk/user": "^4.0",
