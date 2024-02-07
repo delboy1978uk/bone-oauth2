@@ -53,10 +53,7 @@ use Laminas\Diactoros\ResponseFactory;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface
 {
-    /**
-     * @param Container $c
-     */
-    public function addToContainer(Container $c)
+    public function addToContainer(Container $c): void
     {
         /** @var UserService $userService */
         $userService = $c->get(UserService::class);

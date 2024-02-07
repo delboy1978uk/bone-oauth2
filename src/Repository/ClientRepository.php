@@ -2,6 +2,7 @@
 
 namespace Bone\OAuth2\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Bone\OAuth2\Entity\Client;
 use Doctrine\ORM\EntityRepository;
@@ -11,11 +12,7 @@ use Bone\OAuth2\Entity\OAuthUser;
 
 class ClientRepository extends EntityRepository implements ClientRepositoryInterface
 {
-    /**
-     * @param string $clientIdentifier
-     * @return Client|ClientEntityInterface|null
-     */
-    public function getClientEntity($clientIdentifier)
+    public function getClientEntity(string $clientIdentifier): ?Client
     {
         /** @var Client $client */
         $client = $this->findOneBy([
@@ -28,18 +25,14 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
         return $client;
     }
-    public function getEntityManager()
+
+    public function getEntityManager(): EntityManagerInterface
     {
         return parent::getEntityManager();
     }
 
-    /**
-     * @param Client $client
-     * @return Client
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function create(Client $client)
+
+    public function create(Client $client): Client
     {
         $em = $this->getEntityManager();
         $user = $client->getUser();
@@ -56,37 +49,20 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
         return $client;
     }
 
-    /**
-     * @param Client $client
-     * @return Client
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function save(Client $client)
+    public function save(Client $client): Client
     {
         $this->_em->flush($client);
 
         return $client;
     }
 
-    /**
-     * @param Client $client
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function delete(Client $client)
+    public function delete(Client $client): void
     {
         $this->_em->remove($client);
         $this->_em->flush($client);
     }
 
-    /**
-     * @param string $clientIdentifier
-     * @param string|null $clientSecret
-     * @param string|null $grantType
-     * @return bool
-     */
-    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         /** @var Client $client */
         $client = $this->getClientEntity($clientIdentifier);

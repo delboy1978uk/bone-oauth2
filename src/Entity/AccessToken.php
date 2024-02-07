@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Entity;
 
 use DateTimeImmutable;
@@ -22,47 +24,40 @@ class AccessToken implements AccessTokenEntityInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int|null
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var ArrayCollection $scopes
      * @ORM\ManyToMany(targetEntity="Bone\OAuth2\Entity\Scope", cascade={"persist"})
      * @ORM\JoinTable(name="AccessToken_Scope")
      */
-    protected $scopes;
+    protected Collection $scopes;
 
     /**
-     * @var DateTimeImmutable
      * @ORM\Column(type="datetime",nullable=true)
      */
-    protected $expiryDateTime;
+    protected DateTimeImmutable $expiryDateTime;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", length=11, nullable=true)
      */
-    protected $userIdentifier;
+    protected int $userIdentifier;
 
     /**
-     * @var ClientEntityInterface
      * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
      * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $client;
+    protected ClientEntityInterface $client;
 
     /**
-     * @var string
      * @ORM\Column(type="text")
      */
-    protected $identifier;
+    protected string $identifier = '';
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
      */
-    protected $revoked = false;
+    protected bool $revoked = false;
 
     public function __construct()
     {
@@ -75,137 +70,84 @@ class AccessToken implements AccessTokenEntityInterface
      * @param string $token
      * @return AccessToken
      */
-    public function setToken($token)
+    public function setToken(string $token): AccessToken
     {
         $this->token = $token;
+
         return $this;
     }
 
-    /**
-     * Get token
-     *
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
 
-    /**
-     * @param ScopeEntityInterface $scope
-     * @return $this
-     */
-    public function addScope(ScopeEntityInterface $scope)
+    public function addScope(ScopeEntityInterface $scope): AccessToken
     {
         $this->scopes->add($scope);
+
         return $this;
     }
 
     /**
-     * Return an array of scopes associated with the token.
-     *
      * @return ScopeEntityInterface[]
      */
-    public function getScopes()
+    public function getScopes(): array
     {
         return $this->scopes->toArray();
     }
 
-    /**
-     * Get the token's expiry date time.
-     *
-     * @return DateTimeImmutable
-     */
-    public function getExpiryDateTime()
+    public function getExpiryDateTime(): DateTimeImmutable
     {
         return $this->expiryDateTime;
     }
 
-    /**
-     * Set the date time when the token expires.
-     *
-     * @param DateTimeImmutable $dateTime
-     */
-    public function setExpiryDateTime(DateTimeImmutable $dateTime)
+    public function setExpiryDateTime(DateTimeImmutable $dateTime): void
     {
         $this->expiryDateTime = $dateTime;
     }
 
-    /**
-     * @param int $identifier
-     * @return $this
-     */
-    public function setUserIdentifier($identifier)
+    public function setUserIdentifier(int $identifier)
     {
         $this->userIdentifier = $identifier;
         return $this;
     }
 
-    /**
-     * Get the token user's identifier.
-     *
-     * @return int
-     */
-    public function getUserIdentifier()
+    public function getUserIdentifier(): int
     {
         return $this->userIdentifier;
     }
 
-    /**
-     * Get the client that the token was issued to.
-     *
-     * @return ClientEntityInterface
-     */
-    public function getClient()
+    public function getClient(): ClientEntityInterface
     {
         return $this->client;
     }
 
-    /**
-     * Set the client that the token was issued to.
-     *
-     * @param ClientEntityInterface $client
-     */
-    public function setClient(ClientEntityInterface $client)
+    public function setClient(ClientEntityInterface $client): void
     {
         $this->client = $client;
     }
 
-    /**
-     * @return bool
-     */
     public function isRevoked(): bool
     {
         return $this->revoked;
     }
 
-    /**
-     * @param bool $revoked
-     */
     public function setRevoked(bool $revoked): void
     {
         $this->revoked = $revoked;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param ArrayCollection $scopes
-     */
     public function setScopes(ArrayCollection $scopes): void
     {
         $this->scopes = $scopes;

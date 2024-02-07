@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Http\Middleware;
 
 use Del\Service\UserService;
@@ -15,34 +17,13 @@ use Laminas\Diactoros\Response\JsonResponse;
 
 class ResourceServerMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var ResourceServer $leagueMiddleware
-     */
-    private $resourceServer;
-
-    /** @var ResponseFactoryInterface $responseFactory */
-    private $responseFactory;
-
-    /** @var UserService $userService */
-    private $userService;
-
-    /**
-     * ResourceServer constructor.
-     * @param ResourceServer $resourceServer
-     */
-    public function __construct(ResourceServer $resourceServer, UserService $userService, ResponseFactoryInterface $responseFactory)
-    {
-        $this->resourceServer = $resourceServer;
-        $this->responseFactory = $responseFactory;
-        $this->userService = $userService;
+    public function __construct(
+        private ResourceServer $resourceServer,
+        private UserService $userService,
+        private ResponseFactoryInterface $responseFactory
+    ) {
     }
 
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

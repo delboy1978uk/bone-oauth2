@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Command;
 
-use Del\Criteria\UserCriteria;
-use Del\Service\UserService;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
 use Bone\OAuth2\Entity\OAuthUser as User;
+use Del\Criteria\UserCriteria;
+use Del\Service\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,45 +19,20 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-/**
- * Class ClientCommand
- * @package OAuth\Command
- */
 class ClientCommand extends Command
 {
-    /**
-     * @var ClientService $clientService
-     */
-    private $clientService;
+    private ?QuestionHelper $helper = null;
+    private ?User $user = null;
 
-    /**
-     * @var UserService $userService
-     */
-    private $userService;
-
-    /**
-     * @var ScopeRepository $scopeRepository
-     */
-    private $scopeRepository;
-
-    /** @var QuestionHelper $helper */
-    private $helper;
-
-    /** @var User $user */
-    private $user;
-
-    public function __construct(ClientService $clientService, UserService $userService, ScopeRepository $scopeRepository)
-    {
-        $this->clientService = $clientService;
-        $this->userService = $userService;
-        $this->scopeRepository = $scopeRepository;
+    public function __construct(
+        private ClientService $clientService,
+        private UserService $userService,
+        private ScopeRepository $scopeRepository
+    ) {
         parent::__construct('client:create');
     }
 
-    /**
-     * configure options
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Creates a new client.');
         $this->setHelp('Create a new OAuth2 client application');
@@ -80,7 +57,7 @@ class ClientCommand extends Command
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Bone API client creator');
         $this->helper = $this->getHelper('question');
@@ -89,12 +66,11 @@ class ClientCommand extends Command
 
         if (!$this->user) {
             $output->writeln('User not found. Exiting.');
-            return 1;
+            return Command::FAILURE;
         }
 
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
         $isClientCredentials = $this->helper->ask($input, $output, $question);
-        /** @todo web browser and native apps should use auth_code with PKCE */
         $usePKCE = false;
 
         if ($isClientCredentials) {
@@ -175,6 +151,6 @@ class ClientCommand extends Command
 
         $output->writeln('Client created.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

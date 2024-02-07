@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Controller;
 
 use Bone\Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
+use Bone\OAuth2\Exception\OAuthException;
 use Bone\OAuth2\Form\ApiKeyForm;
 use Bone\OAuth2\Service\ClientService;
 use Del\Form\Form;
@@ -15,23 +18,11 @@ use Laminas\Diactoros\Response\HtmlResponse;
 
 class ApiKeyController extends Controller
 {
-    /** @var ClientService $clientService */
-    private $clientService;
-
-    /**
-     * ApiKeyController constructor.
-     * @param ClientService $clientService
-     */
-    public function __construct(ClientService $clientService)
-    {
-        $this->clientService = $clientService;
+    public function __construct(
+        private ClientService $clientService
+    ) {
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
-     */
     public function myApiKeysAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         /** @var OAuthUser $user */
@@ -43,11 +34,6 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
-     */
     public function deleteConfirmAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = $request->getAttribute('id');
@@ -60,9 +46,6 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
      * @throws Exception
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -77,7 +60,7 @@ class ApiKeyController extends Controller
         $clientUser = $client->getUser();
 
         if ($user->getId() !== $clientUser->getId()) {
-            throw new Exception('Unauthorised', 403);
+            throw new OAuthException('Unauthorised', 403);
         }
 
         $this->clientService->getClientRepository()->delete($client);
@@ -90,11 +73,6 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
-     */
     public function addAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $form = new ApiKeyForm('addkey', $this->getTranslator());
@@ -103,12 +81,6 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
-     * @throws \Exception
-     */
     public function addSubmitAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $form = new ApiKeyForm('addkey', $this->getTranslator());

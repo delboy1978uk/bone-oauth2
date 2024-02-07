@@ -1,5 +1,7 @@
 <?php /** @noinspection CurlSslServerSpoofingInspection */
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Controller;
 
 use Bone\OAuth2\Entity\OAuthUser;
@@ -10,21 +12,12 @@ use Laminas\Diactoros\Response\JsonResponse;
 
 class ExampleController
 {
-    /** @var string  */
-    private $clientID = '05c99d2eb8fc4a8019d06a21097f3c46';
-
-    /** @var string  */
-    private $redirectUri = 'https://awesome.scot/oauth2/callback';
-
-    /** @var string  */
-    private $clientSecret = 'JDJ5JDEwJGVkdlMyNW9xOFlTeG1YMGJVdU5jWWU4MFl2VW5mbE8uYlI0LzNWck03U1I2MGZNejZoRmk2';
+    private string $clientID = '05c99d2eb8fc4a8019d06a21097f3c46';
+    private string $redirectUri = 'https://awesome.scot/oauth2/callback';
+    private string $clientSecret = 'JDJ5JDEwJGVkdlMyNW9xOFlTeG1YMGJVdU5jWWU4MFl2VW5mbE8uYlI0LzNWck03U1I2MGZNejZoRmk2';
 
     /**
      *  This is an example callback your web site or phone app calling this server would use
-     *
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
      */
     public function callbackAction(ServerRequestInterface $request, array $args) : ResponseInterface
     {
@@ -63,10 +56,6 @@ class ExampleController
      *     tags={"status"},
      *     @OA\Response(response="200", description="Sends a response with the time")
      * )
-     * @param $request
-     * @param array $args
-     * @return ResponseInterface
-     * @throws \Exception
      */
     public function pingAction(ServerRequestInterface $request, array $args) : ResponseInterface
     {

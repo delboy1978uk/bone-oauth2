@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Repository;
 
 use Doctrine\ORM\EntityRepository;
@@ -9,27 +11,14 @@ use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\RefreshToken;
 
-/**
- * Class RefreshTokenRepository
- * @package OAuth\Repository
- */
 class RefreshTokenRepository extends EntityRepository implements RefreshTokenRepositoryInterface
 {
-    /**
-     * @return RefreshToken
-     */
-    public function getNewRefreshToken()
+    public function getNewRefreshToken(): RefreshToken
     {
         return new RefreshToken();
     }
 
-    /**
-     * @param RefreshTokenEntityInterface $refreshTokenEntity
-     * @return RefreshTokenEntityInterface
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity)
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): RefreshTokenEntityInterface
     {
         $accessToken = $refreshTokenEntity->getAccessToken();
 
@@ -45,14 +34,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         return $refreshTokenEntity;
     }
 
-    /**
-     * @param string $tokenId
-     * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     */
-    public function revokeRefreshToken($tokenId)
+    public function revokeRefreshToken(string $tokenId): bool
     {
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
@@ -66,14 +48,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         return false;
     }
 
-    /**
-     * @param string $tokenId
-     * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     */
-    public function isRefreshTokenRevoked($tokenId)
+    public function isRefreshTokenRevoked(string $tokenId): bool
     {
         $token = $this->findOneBy(['identifier' => $tokenId]);
 

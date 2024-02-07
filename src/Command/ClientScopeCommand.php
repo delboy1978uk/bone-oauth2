@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Command;
 
 use Doctrine\Common\Collections\Collection;
@@ -17,29 +19,14 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-/**
- * Class ClientCommand
- * @package OAuth\Command
- */
 class ClientScopeCommand extends Command
 {
-    /**
-     * @var ClientService $clientService
-     */
-    private $clientService;
+    private QuestionHelper $helper;
 
-    /**
-     * @var ScopeRepository $scopeRepository
-     */
-    private $scopeRepository;
-
-    /** @var QuestionHelper $helper */
-    private $helper;
-
-    public function __construct(ClientService $clientService, ScopeRepository $scopeRepository)
-    {
-        $this->clientService = $clientService;
-        $this->scopeRepository = $scopeRepository;
+    public function __construct(
+        private ClientService $clientService,
+        private ScopeRepository $scopeRepository
+    ) {
         parent::__construct('client:scope');
         $this->addArgument('operation', InputArgument::REQUIRED, 'list, add, or remove.');
         $this->addArgument('client', InputArgument::OPTIONAL, 'The client identifier.');
@@ -49,7 +36,7 @@ class ClientScopeCommand extends Command
     /**
      * configure options
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Add, remove, or list scopes for each client.');
         $this->setHelp('Client scope administration');
@@ -61,7 +48,7 @@ class ClientScopeCommand extends Command
      * @return int|void|null
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(' ');
         $output->writeln('Client scope administration');
@@ -80,7 +67,7 @@ class ClientScopeCommand extends Command
         }
         $output->writeln(' ');
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -89,7 +76,7 @@ class ClientScopeCommand extends Command
      * @return string|string[]|null
      * @throws Exception
      */
-    private function getArgOrGetUpset(InputInterface $input, string $argName)
+    private function getArgOrGetUpset(InputInterface $input, string $argName): string
     {
         $value = $input->getArgument($argName);
 
@@ -104,7 +91,7 @@ class ClientScopeCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    private function listScopes(InputInterface $input, OutputInterface $output)
+    private function listScopes(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');
 
@@ -124,7 +111,7 @@ class ClientScopeCommand extends Command
      * @param OutputInterface $output
      * @param Collection $scopes
      */
-    private function outputScopes(OutputInterface $output, Client $client, Collection $scopes)
+    private function outputScopes(OutputInterface $output, Client $client, Collection $scopes): void
     {
         $output->writeln('Listing scopes for ' . $client->getName() . '.');
 
@@ -142,7 +129,7 @@ class ClientScopeCommand extends Command
      * @param string $id
      * @return Client
      */
-    private function fetchClient(OutputInterface $output, string $id)
+    private function fetchClient(OutputInterface $output, string $id): Client
     {
         $output->writeln('Fetching client ' . $id .'...');
         /** @var Client $client */
@@ -158,7 +145,7 @@ class ClientScopeCommand extends Command
      * @param OutputInterface $output
      * @throws Exception
      */
-    private function addScope(InputInterface $input, OutputInterface $output)
+    private function addScope(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');
         $scopeId = $this->getArgOrGetUpset($input, 'scope');
@@ -179,7 +166,6 @@ class ClientScopeCommand extends Command
         $client->getScopes()->add($scope);
         $this->clientService->getClientRepository()->save($client);
         $output->writeln($scopeId . ' scope added.');
-
     }
 
     /**
@@ -187,7 +173,7 @@ class ClientScopeCommand extends Command
      * @param OutputInterface $output
      * @throws Exception
      */
-    private function removeScope(InputInterface $input, OutputInterface $output)
+    private function removeScope(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');
         $scopeId = $this->getArgOrGetUpset($input, 'scope');

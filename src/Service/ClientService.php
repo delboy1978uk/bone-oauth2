@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Service;
 
 use Bone\OAuth2\Entity\Client;
@@ -12,39 +14,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * Class ClientService
- * @package Entity\OAuth\Service
- */
 class ClientService
 {
-    /**
-     * @var ClientRepository
-     */
-    private $clientRepository;
-
-    /**
-     * ClientService constructor.
-     * @param ClientRepository $clientRepository
-     */
-    public function __construct(ClientRepository $clientRepository)
-    {
-        $this->clientRepository = $clientRepository;
+    public function __construct(
+        private ClientRepository $clientRepository
+    ) {
     }
 
-    /**
-     * @return ClientRepository
-     */
     public function getClientRepository(): ClientRepository
     {
         return $this->clientRepository;
     }
 
-    /**
-     * @param Client $client
-     * @return Client
-     */
-    public function generateSecret(Client $client)
+    public function generateSecret(Client $client): Client
     {
         $time = microtime();
         $name = $client->getName();
@@ -55,22 +37,11 @@ class ClientService
         return $client;
     }
 
-    /**
-     * @param Client $client
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function deleteClient(Client $client)
+    public function deleteClient(Client $client): void
     {
         $this->getClientRepository()->delete($client);
     }
 
-
-    /**
-     * @param array $data
-     * @param OAuthUser $user
-     * @return Client
-     */
     public function createFromArray(array $data, OAuthUser $user): Client
     {
         $client = new Client();
@@ -90,10 +61,6 @@ class ClientService
         return $client;
     }
 
-    /**
-     * @param RegisterClientForm $form
-     * @return ResponseInterface
-     */
     public function registerNewClient(RegisterClientForm $form): ResponseInterface
     {
         if ($form->isValid()) {

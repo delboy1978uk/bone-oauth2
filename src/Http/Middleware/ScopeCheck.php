@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Http\Middleware;
 
 use Bone\OAuth2\Exception\OAuthException;
@@ -10,23 +12,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ScopeCheck implements MiddlewareInterface
 {
-    /** @var array $scopes */
-    private $scopes;
-
-    /**
-     * ScopeCheck constructor.
-     * @param array $scopes
-     */
-    public function __construct(array $scopes)
-    {
-        $this->scopes = $scopes;
+    public function __construct(
+        private array $scopes
+    ) {
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $clientScopes = $request->getAttribute('oauth_scopes');

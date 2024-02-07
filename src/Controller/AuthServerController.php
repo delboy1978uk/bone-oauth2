@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Controller;
 
 use Bone\OAuth2\Entity\Client;
@@ -25,28 +27,12 @@ class AuthServerController extends Controller implements SessionAwareInterface
 {
     use HasSessionTrait;
 
-    /** @var AuthorizationServer $server */
-    private $server;
-
-    /** @var UserService $userService */
-    private $userService;
-
-    /** @var PermissionService $userService */
-    private $permissionService;
-
-    /** @var ClientService $clientService */
-    private $clientService;
-
-    /**
-     * AuthServerController constructor.
-     * @param AuthorizationServer $server
-     */
-    public function __construct(AuthorizationServer $server, UserService $userService, PermissionService $permissionService, ClientService $clientService)
-    {
-        $this->server = $server;
-        $this->userService = $userService;
-        $this->permissionService = $permissionService;
-        $this->clientService = $clientService;
+    public function __construct(
+        private AuthorizationServer $server,
+        private UserService $userService,
+        private PermissionService $permissionService,
+        private ClientService $clientService
+    ) {
     }
 
     /**
@@ -98,9 +84,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *         @OA\Schema(type="string", default="basic")
      *     )
      * )
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
      */
     public function authorizeAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
@@ -218,9 +201,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *     tags={"auth"}
      * )
      *
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
      */
     public function accessTokenAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
@@ -291,9 +271,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
      *         {"oauth2": {"register"}}
      *     }
      * )
-     * @param ServerRequestInterface $request
-     * @param array $args
-     * @return ResponseInterface
      * @todo right now we only create auth_code clients via this endpoint, check token_endpoint_auth_method
      */
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
