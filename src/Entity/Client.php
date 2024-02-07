@@ -9,93 +9,55 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 
-/**
- * @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\ClientRepository")
- * @ORM\Table(name="Client",uniqueConstraints={@ORM\UniqueConstraint(name="indentifier_idx", columns={"identifier"})})
- */
+#[ORM\Table(name: 'Client')]
+#[ORM\Entity(repositoryClass: 'Bone\OAuth2\Repository\ClientRepository')]
+#[ORM\UniqueConstraint(name: 'identifier_idx', columns: ['identifier'])]
 class Client implements ClientEntityInterface
 {
-    /**
-     * @ORM\Id
-     * @var string
-     * @ORM\Column(type="integer", length=11)
-     * @ORM\GeneratedValue
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=40)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 40)]
+    private string $name;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $description;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $description;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=100)
-     */
-    private $icon;
+    #[ORM\Column(type: 'string', length: 100)]
+    private string $icon;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=20)
-     */
-    private $grantType;
+    #[ORM\Column(type: 'string', length: 20)]
+    private string $grantType;
 
-    /**
-     * @var string|string[]
-     * @ORM\Column(type="string", length=255)
-     */
-    private $redirectUri;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $redirectUri;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=40)
-     */
-    private $identifier;
+    #[ORM\Column(type: 'string', length: 40)]
+    private string $identifier;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $secret;
 
-    /**
-     * @var bool $confidential
-     * @ORM\Column(type="boolean")
-     */
-    private $confidential = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $confidential = false;
 
-    /**
-     * @var OAuthUser $user/**
-     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser", cascade={"merge"})
-     */
-    private $user;
+    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser', cascade: ["merge"])]
+    private OAuthUser $user;
 
-    /**
-     * @var Collection $scopes
-     * @ORM\ManyToMany(targetEntity="Scope")
-     * @ORM\JoinTable(name="Client_Scope",
-     *      joinColumns={@ORM\JoinColumn(name="client_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="scope_id", referencedColumnName="id")}
-     *      )
-     */
-    private $scopes;
+    #[ORM\ManyToMany(targetEntity: 'Scope')]
+    #[ORM\JoinTable(name: 'Client_Scope',)]
+    #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'scope_id', referencedColumnName: 'id')]
+    private Collection $scopes;
 
     public function __construct()
     {
         $this->scopes = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier():  string
     {
         return $this->identifier;
     }
@@ -103,186 +65,108 @@ class Client implements ClientEntityInterface
     /**
      * @param string $identifier
      */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier)
     {
         $this->identifier = $identifier;
     }
 
-    /**
-     * Get the client's name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Returns the registered redirect URI (as a string).
-     *
-     * Alternatively return an indexed array of redirect URIs.
-     *
-     * @return string|string[]
-     */
-    public function getRedirectUri()
+    public function getRedirectUri(): string
     {
         return $this->redirectUri;
     }
 
-    /**
-     * @param string $name
-     * @return Client
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
-        return $this;
     }
 
-    /**
-     * @param string|\string[] $redirectUri
-     * @return Client
-     */
-    public function setRedirectUri($redirectUri)
+    public function setRedirectUri(string $redirectUri): void
     {
         $this->redirectUri = $redirectUri;
-        return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSecret(): string
     {
         return $this->secret;
     }
 
-    /**
-     * @param string $secret
-     * @return Client
-     */
-    public function setSecret(string $secret): Client
+    public function setSecret(string $secret): void
     {
         $this->secret = $secret;
-        return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isConfidential(): bool
     {
         return $this->confidential;
     }
 
-    /**
-     * @param bool $confidential
-     * @return Client
-     */
-    public function setConfidential(bool $confidential): Client
+    public function setConfidential(bool $confidential): void
     {
         $this->confidential = $confidential;
-        return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     * @return Client
-     */
-    public function setId(string $id): Client
+    public function setId(string $id): void
     {
         $this->id = $id;
-        return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
     public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return string
-     */
     public function getIcon(): string
     {
         return $this->icon;
     }
 
-    /**
-     * @param string $icon
-     */
     public function setIcon(string $icon): void
     {
         $this->icon = $icon;
     }
 
-    /**
-     * @return string
-     */
     public function getGrantType(): string
     {
         return $this->grantType;
     }
 
-    /**
-     * @param string $grantType
-     */
     public function setGrantType(string $grantType): void
     {
         $this->grantType = $grantType;
     }
 
-    /**
-     * @return OAuthUser
-     */
     public function getUser(): OAuthUser
     {
         return $this->user;
     }
 
-    /**
-     * @param OAuthUser $user
-     */
     public function setUser(OAuthUser $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return Collection
-     */
     public function getScopes(): Collection
     {
         return $this->scopes;
     }
 
-    /**
-     * @param Collection $scopes
-     * @return Client
-     */
-    public function setScopes(Collection $scopes): Client
+    public function setScopes(Collection $scopes): void
     {
         $this->scopes = $scopes;
-        return $this;
     }
 }

@@ -4,220 +4,126 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeInterfaceImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
-/**
- * @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\AuthCodeRepository")
- * @ORM\Table(name="AuthCode")
- */
+#[ORM\Entity(repositoryClass: 'Bone\OAuth2\Repository\AuthCodeRepository')]
+#[ORM\Table(name: 'AuthCode')]
 class AuthCode implements AuthCodeEntityInterface
 {
+    protected ArrayCollection $scopes;
 
-    /**
-     * @var null|string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $redirectUri;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    protected ?string $redirectUri = null;
 
-    /**
-     * @var ArrayCollection $scopes
-     */
-    protected $scopes;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    protected DateTimeInterface $expiryDateTimeInterface;
 
-    /**
-     * @var DateTime
-     * @ORM\Column(type="datetime",nullable=true)
-     */
-    protected $expiryDateTime;
+    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
+    #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected OAuthUser $userIdentifier;
 
-    /**
-     * @var OAuthUser
-     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\OAuthUser")
-     * @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE")
-     */
-    protected $userIdentifier;
+    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\Client')]
+    #[ORM\JoinColumn(name: 'client', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ClientEntityInterface $client;
 
-    /**
-     * @var ClientEntityInterface
-     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
-     * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
-     */
-    protected $client;
+    #[ORM\Column(type: 'text', nullable: false)]
+    protected string $identifier;
 
-    /**
-     * @var string
-     * @ORM\Column(type="text", nullable=false)
-     */
-    protected $identifier;
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    protected int $id;
 
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\GeneratedValue
-     */
-    protected $id;
-
-    /**
-     * @var bool
-     * @ORM\Column(type="boolean")
-     */
-    protected $revoked = false;
+    #[ORM\Column(type: 'boolean')]
+    protected bool $revoked = false;
 
     public function __construct()
     {
         $this->scopes = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
 
-    /**
-     * @param ScopeEntityInterface $scope
-     * @return $this
-     */
-    public function addScope(ScopeEntityInterface $scope)
+    public function addScope(ScopeEntityInterface $scope): void
     {
         $this->scopes->add($scope);
-        return $this;
     }
 
-    /**
-     * Return an array of scopes associated with the token.
-     *
-     * @return ScopeEntityInterface[]
-     */
-    public function getScopes()
+    /** @return ScopeEntityInterface[] */
+    public function getScopes(): array
     {
         return $this->scopes->toArray();
     }
 
-    /**
-     * Get the token's expiry date time.
-     *
-     * @return DateTime
-     */
-    public function getExpiryDateTime()
+    public function getExpiryDateTimeInterface(): DateTimeInterface
     {
-        return $this->expiryDateTime;
+        return $this->expiryDateTimeInterface;
     }
 
-    /**
-     * Set the date time when the token expires.
-     *
-     * @param DateTimeImmutable $dateTime
-     */
-    public function setExpiryDateTime(DateTimeImmutable $dateTime)
+    public function setExpiryDateTimeInterface(DateTimeInterfaceImmutable $dateTime): void
     {
-        $this->expiryDateTime = $dateTime;
+        $this->expiryDateTimeInterface = $dateTime;
     }
 
-    /**
-     * Set the identifier of the user associated with the token.
-     *
-     * @param OAuthUser $identifier The identifier of the user
-     */
-    public function setUserIdentifier($identifier)
+    public function setUserIdentifier(OAuthUser $identifier): void
     {
         $this->userIdentifier = $identifier;
     }
 
-    /**
-     * Get the token user's identifier.
-     *
-     * @return int
-     */
     public function getUserIdentifier(): int
     {
         return $this->userIdentifier->getId();
     }
 
-    /**
-     * Set the identifier of the user associated with the token.
-     *
-     * @param OAuthUser $identifier The identifier of the user
-     */
     public function setUser(OAuthUser $user): void
     {
         $this->userIdentifier = $user;
     }
 
-    /**
-     * Get the token user's identifier.
-     *
-     * @return OAuthUser
-     */
-    public function getUser()
+    public function getUser(): OAuthUser
     {
         return $this->userIdentifier;
     }
 
-    /**
-     * Get the client that the token was issued to.
-     *
-     * @return ClientEntityInterface
-     */
-    public function getClient()
+    public function getClient(): ClientEntityInterface
     {
         return $this->client;
     }
 
-    /**
-     * Set the client that the token was issued to.
-     *
-     * @param ClientEntityInterface $client
-     */
-    public function setClient(ClientEntityInterface $client)
+    public function setClient(ClientEntityInterface $client): void
     {
         $this->client = $client;
     }
 
-    /**
-     * @return string
-     */
-    public function getRedirectUri()
+    public function getRedirectUri(): string
     {
         return $this->redirectUri;
     }
 
-    /**
-     * @param string $uri
-     */
-    public function setRedirectUri($uri)
+    public function setRedirectUri(string $uri): void
     {
         $this->redirectUri = $uri;
     }
 
-    /**
-     * @return bool
-     */
     public function isRevoked(): bool
     {
         return $this->revoked;
     }
 
-    /**
-     * @param bool $revoked
-     */
     public function setRevoked(bool $revoked): void
     {
         $this->revoked = $revoked;
