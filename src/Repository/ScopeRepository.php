@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Repository;
 
+use Bone\OAuth2\Exception\OAuthException;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
@@ -12,26 +15,18 @@ use Bone\OAuth2\Entity\Scope;
 
 class ScopeRepository extends EntityRepository implements ScopeRepositoryInterface
 {
-    /**
-     * @param string $identifier
-     * @return null|Scope
-     */
-    public function getScopeEntityByIdentifier($identifier)
+    public function getScopeEntityByIdentifier(string $identifier): ?Scope
     {
         /** @var Scope $scope */
         $scope = $this->findOneBy(['identifier' => $identifier]);
+
         return $scope;
     }
 
     /**
-     * @param array $scopes
-     * @param string $grantType
-     * @param ClientEntityInterface $clientEntity
-     * @param null|string $userIdentifier
      * @return ScopeEntityInterface[]
-     * @throws Exception
      */
-    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null)
+    public function finalizeScopes(array $scopes, string $grantType, ClientEntityInterface $clientEntity, string $userIdentifier = null): array
     {
         /** @var Client $clientEntity */
         $clientScopes = $clientEntity->getScopes()->getValues();
@@ -41,19 +36,13 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
         });
 
         if (count($finalScopes) < count($scopes)) {
-            throw new Exception('Scopes not authorised.', 403);
+            throw new OAuthException('Scopes not authorised.', 403);
         }
 
         return $finalScopes;
     }
 
-    /**
-     * @param Scope $scope
-     * @return Scope
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function create(Scope $scope)
+    public function create(Scope $scope): Scope
     {
         $this->_em->persist($scope);
         $this->_em->flush($scope);
@@ -61,13 +50,7 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
         return $scope;
     }
 
-    /**
-     * @param Scope $scope
-     * @return Scope
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function save(Scope $scope)
+    public function save(Scope $scope): Scope
     {
         $this->_em->flush($scope);
 

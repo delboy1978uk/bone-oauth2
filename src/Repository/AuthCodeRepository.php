@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Repository;
 
+use Bone\OAuth2\Exception\OAuthException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityRepository;
 use Exception;
@@ -12,21 +15,12 @@ use Bone\OAuth2\Entity\Client;
 
 class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryInterface
 {
-    /**
-     * @return AuthCode
-     */
-    public function getNewAuthCode()
+    public function getNewAuthCode(): AuthCode
     {
         return new AuthCode();
     }
 
-    /**
-     * @param AuthCodeEntityInterface $authCodeEntity
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     */
-    public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity)
+    public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity): void
     {
         $date = new DateTimeImmutable('+24 hours');
         $authCodeEntity->setExpiryDateTime($date);
@@ -40,29 +34,20 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         $this->_em->flush();
     }
 
-    /**
-     * @param string $codeId
-     * @throws Exception
-     */
-    public function revokeAuthCode($codeId)
+    public function revokeAuthCode(string $codeId): void
     {
         /** @var AuthCode $token */
         $code = $this->findOneBy(['identifier' => $codeId]);
 
         if(!$code) {
-            throw new Exception('Token not found', 404);
+            throw new OAuthException('Token not found', 404);
         }
 
         $code->setRevoked(true);
         $this->_em->flush($code);
     }
 
-    /**
-     * @param string $codeId
-     * @return bool
-     * @throws Exception
-     */
-    public function isAuthCodeRevoked($codeId)
+    public function isAuthCodeRevoked($codeId): bool
     {
         /** @var AuthCode $code */
         $code = $this->findOneBy(['identifier' => $codeId]);

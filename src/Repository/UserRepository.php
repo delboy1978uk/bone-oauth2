@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Repository;
 
 use Del\Repository\UserRepository as UserRepo;
@@ -15,43 +17,37 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
         $password,
         $grantType,
         ClientEntityInterface $client
-    )
+    ): ?ClientEntityInterface
     {
         $user = $this->findOneBy(['email' => $email]);
+
         if ($user) {
-            /** @var Client $client */
-//            $client->ge
             return $user;
             /** @todo check password client and granttype */
         }
+
         return false;
     }
 
-
-    /**
-     * @param $email
-     * @param $password
-     * @return mixed
-     */
-    public function checkUserCredentials($email, $password)
+    public function checkUserCredentials(string $email, string $password): mixed
     {
         $user = $this->findOneBy(['email' => $email]);
+
         if ($user) {
             return $user->verifyPassword($password);
         }
+
         return false;
     }
 
-    /**
-     * @param $email
-     * @return mixed
-     */
-    public function getUserDetails($email)
+    public function getUserDetails($email): ?array
     {
         $user = $this->findOneBy(['email' => $email]);
+
         if ($user) {
             $user = $user->toArray();
         }
+
         return $user;
     }
 }
