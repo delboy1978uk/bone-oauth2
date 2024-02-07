@@ -6,7 +6,7 @@ use Laminas\Crypt\Password\Bcrypt;
 
 trait EncryptableFieldEntity
 {
-    private $bcrypt;
+    private Bcrypt $bcrypt;
 
     /**
      * @param $value

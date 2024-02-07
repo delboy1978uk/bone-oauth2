@@ -15,27 +15,19 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-/**
- * Class ScopeListCommand
- * @package OAuth\Command
- */
 class ScopeListCommand extends Command
 {
-    /**
-     * @var ScopeRepository $scopeRepository
-     */
-    private $scopeRepository;
-
-    public function __construct(ScopeRepository $scopeRepository, ?string $name = null)
-    {
-        $this->scopeRepository = $scopeRepository;
+    public function __construct(
+        private ScopeRepository $scopeRepository,
+        ?string $name = null
+    ) {
         parent::__construct($name);
     }
 
     /**
      * configure options
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('scope:list');
         $this->setDescription('Lists all scopes.');
@@ -47,7 +39,7 @@ class ScopeListCommand extends Command
      * @param OutputInterface $output
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Listing scopes...');
         $scopes = $this->scopeRepository->findAll();
@@ -61,6 +53,6 @@ class ScopeListCommand extends Command
             $output->writeln(' - ' . $scope->getIdentifier());
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

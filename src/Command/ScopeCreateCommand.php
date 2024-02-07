@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Command;
 
 use Del\Service\UserService;
@@ -15,32 +17,20 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-/**
- * Class ClientCommand
- * @package OAuth\Command
- */
+
 class ScopeCreateCommand extends Command
 {
-    /**
-     * @var ScopeRepository $scopeRepository
-     */
-    private $scopeRepository;
-
-    /**
-     * ScopeCreateCommand constructor.
-     * @param ScopeRepository $scopeRepository
-     * @param string|null $name
-     */
-    public function __construct(ScopeRepository $scopeRepository, ?string $name = null)
-    {
-        $this->scopeRepository = $scopeRepository;
+    public function __construct(
+        private ScopeRepository $scopeRepository,
+        ?string $name = null
+    ) {
         parent::__construct($name);
     }
 
     /**
      * configure options
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('scope:create');
         $this->setDescription('Creates a new scope.');
@@ -54,7 +44,7 @@ class ScopeCreateCommand extends Command
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Bone API scope creator');
         $helper = $this->getHelper('question');
@@ -73,6 +63,6 @@ class ScopeCreateCommand extends Command
 
         $output->writeln('Scope created.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
