@@ -189,6 +189,11 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         // Resource Server
         $function = function (Container $c) {
             $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
+
+            if (!\file_exists($publicKeyPath)) {
+                throw new \Exception("Key not found. Create one! In `data/keys`, run:\nopenssl genrsa -out private.key 2048\nopenssl rsa -in private.key -pubout -out public.key\nchmod 660 public.key\nchmod 660 private.key\n");
+            }
+
             $accessTokenRepository = $c->get(AccessTokenRepository::class);
 
             $server = new ResourceServer(
