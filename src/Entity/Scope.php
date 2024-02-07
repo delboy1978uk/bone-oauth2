@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bone\OAuth2\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;

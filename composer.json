@@ -1,6 +1,6 @@
 {
   "name": "delboy1978uk/bone-oauth2",
-  "description": "OAuth2 functionality for Bone Mvc Framework",
+  "description": "OAuth2 functionality for Bone Framework",
   "license": "MIT",
   "authors": [
     {
@@ -10,7 +10,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=7.4",
+    "php": "^8.1",
     "ext-curl": "*",
     "ext-json": "*",
     "delboy1978uk/user": "^4.0",
