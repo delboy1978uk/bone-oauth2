@@ -12,7 +12,7 @@ use Bone\OAuth2\Entity\OAuthUser;
 
 class ClientRepository extends EntityRepository implements ClientRepositoryInterface
 {
-    public function getClientEntity(string $clientIdentifier): ?Client
+    public function getClientEntity($clientIdentifier): ?Client
     {
         /** @var Client $client */
         $client = $this->findOneBy([

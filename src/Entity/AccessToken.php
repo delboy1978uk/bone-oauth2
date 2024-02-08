@@ -58,7 +58,7 @@ class AccessToken implements AccessTokenEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier(string $identifier): void
+    public function setIdentifier($identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -86,7 +86,7 @@ class AccessToken implements AccessTokenEntityInterface
         $this->expiryDateTime = $dateTime;
     }
 
-    public function setUserIdentifier(int $identifier): void
+    public function setUserIdentifier($identifier): void
     {
         $this->userIdentifier = $identifier;
     }
