@@ -15,7 +15,7 @@ use Bone\OAuth2\Entity\Scope;
 
 class ScopeRepository extends EntityRepository implements ScopeRepositoryInterface
 {
-    public function getScopeEntityByIdentifier(string $identifier): ?Scope
+    public function getScopeEntityByIdentifier($identifier): ?Scope
     {
         /** @var Scope $scope */
         $scope = $this->findOneBy(['identifier' => $identifier]);
@@ -26,7 +26,7 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
     /**
      * @return ScopeEntityInterface[]
      */
-    public function finalizeScopes(array $scopes, string $grantType, ClientEntityInterface $clientEntity, string $userIdentifier = null): array
+    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null): array
     {
         /** @var Client $clientEntity */
         $clientScopes = $clientEntity->getScopes()->getValues();

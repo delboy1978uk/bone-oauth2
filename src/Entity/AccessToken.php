@@ -12,51 +12,35 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\AccessTokenTrait;
 
-/**
-* @ORM\Entity(repositoryClass="Bone\OAuth2\Repository\AccessTokenRepository")
-* @ORM\Table(name="AccessToken")
-*/
+#[ORM\Entity(repositoryClass: 'Bone\OAuth2\Repository\AccessTokenRepository')]
+#[ORM\Table(name: 'AccessToken')]
 class AccessToken implements AccessTokenEntityInterface
 {
     use AccessTokenTrait;
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Bone\OAuth2\Entity\Scope", cascade={"persist"})
-     * @ORM\JoinTable(name="AccessToken_Scope")
-     */
+    #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'AccessToken_Scope')]
     protected Collection $scopes;
 
-    /**
-     * @ORM\Column(type="datetime",nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected DateTimeImmutable $expiryDateTime;
 
-    /**
-     * @ORM\Column(type="integer", length=11, nullable=true)
-     */
+    #[ORM\Column(type: 'integer', length: 11, nullable: true)]
     protected int $userIdentifier;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Bone\OAuth2\Entity\Client")
-     * @ORM\JoinColumn(name="client", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\Client')]
+    #[ORM\JoinColumn(name: 'client', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ClientEntityInterface $client;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     protected string $identifier = '';
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     protected bool $revoked = false;
 
     public function __construct()
@@ -64,17 +48,9 @@ class AccessToken implements AccessTokenEntityInterface
         $this->scopes = new ArrayCollection();
     }
 
-    /**
-     * Set token
-     *
-     * @param string $token
-     * @return AccessToken
-     */
     public function setToken(string $token): AccessToken
     {
         $this->token = $token;
-
-        return $this;
     }
 
     public function getIdentifier(): string
@@ -82,7 +58,7 @@ class AccessToken implements AccessTokenEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier(string $identifier): void
+    public function setIdentifier($identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -94,9 +70,7 @@ class AccessToken implements AccessTokenEntityInterface
         return $this;
     }
 
-    /**
-     * @return ScopeEntityInterface[]
-     */
+    /** @return ScopeEntityInterface[]  */
     public function getScopes(): array
     {
         return $this->scopes->toArray();
@@ -112,10 +86,9 @@ class AccessToken implements AccessTokenEntityInterface
         $this->expiryDateTime = $dateTime;
     }
 
-    public function setUserIdentifier(int $identifier)
+    public function setUserIdentifier($identifier): void
     {
         $this->userIdentifier = $identifier;
-        return $this;
     }
 
     public function getUserIdentifier(): int

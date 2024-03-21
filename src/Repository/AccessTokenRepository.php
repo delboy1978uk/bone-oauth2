@@ -23,7 +23,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         return $accessTokenEntity;
     }
 
-    public function revokeAccessToken(string $tokenId): void
+    public function revokeAccessToken($tokenId): void
     {
         /** @var AccessToken $token */
         $token = $this->findOneBy(['identifier' => $tokenId]);
@@ -36,7 +36,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         $this->_em->flush($token);
     }
 
-    public function isAccessTokenRevoked(string $tokenId): bool
+    public function isAccessTokenRevoked($tokenId): bool
     {
         /** @var null|AccessToken $token */
         $token = $this->findOneBy(['identifier' => $tokenId]);
