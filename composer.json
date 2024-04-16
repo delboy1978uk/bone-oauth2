@@ -12,16 +12,17 @@
     "php": "^8.2",
     "ext-curl": "*",
     "ext-json": "*",
-    "delboy1978uk/user": "^4.0",
+    "delboy1978uk/bone-user": "^v2.4",
     "laminas/laminas-diactoros": "^3.3",
-    "league/oauth2-server": "^8.0",
-    "delboy1978uk/bone": "^3.9",
-    "delboy1978uk/bone-doctrine": "^2.0",
+    "league/oauth2-server": "^8.5",
+    "delboy1978uk/bone": "^v3.10",
+    "delboy1978uk/bone-doctrine": "^v2.0",
     "laminas/laminas-uri": "^2.11"
   }
   ,
   "require-dev": {
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "delboy1978uk/dev-tools": "^1.0"
   },
   "bin": [
     "bin/apictl"
@@ -33,5 +34,10 @@
   },
   "suggest": {
     "delboy1978uk/bone-open-api": "Open API documentation"
+  },
+  "config": {
+    "allow-plugins": {
+      "phpro/grumphp": true
+    }
   }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
+use DateTimeImmutable;
 use DateTimeInterface;
-use DateTimeInterfaceImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
@@ -22,7 +22,7 @@ class AuthCode implements AuthCodeEntityInterface
     protected ?string $redirectUri = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected DateTimeInterface $expiryDateTimeInterface;
+    protected DateTimeInterface $expiryDateTime;
 
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
     #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -53,7 +53,7 @@ class AuthCode implements AuthCodeEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier(string $identifier): void
+    public function setIdentifier($identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -69,14 +69,14 @@ class AuthCode implements AuthCodeEntityInterface
         return $this->scopes->toArray();
     }
 
-    public function getExpiryDateTimeInterface(): DateTimeInterface
+    public function getExpiryDateTime(): DateTimeInterface
     {
-        return $this->expiryDateTimeInterface;
+        return $this->expiryDateTime;
     }
 
-    public function setExpiryDateTimeInterface(DateTimeInterfaceImmutable $dateTime): void
+    public function setExpiryDateTime(DateTimeImmutable $dateTime): void
     {
-        $this->expiryDateTimeInterface = $dateTime;
+        $this->expiryDateTime = $dateTime;
     }
 
     public function setUserIdentifier(OAuthUser $identifier): void

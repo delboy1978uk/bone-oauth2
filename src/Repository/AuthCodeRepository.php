@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Repository;
 
+use Bone\OAuth2\Entity\AuthCode;
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Exception\OAuthException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityRepository;
-use Exception;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
-use Bone\OAuth2\Entity\AuthCode;
-use Bone\OAuth2\Entity\Client;
 
 class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryInterface
 {
@@ -25,16 +24,16 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         $date = new DateTimeImmutable('+24 hours');
         $authCodeEntity->setExpiryDateTime($date);
         /** @var Client $client */
-        $client = $this->_em->getRepository(Client::class)
+        $client = $this->getEntityManager()->getRepository(Client::class)
             ->findOneBy([
                 'identifier' => $authCodeEntity->getClient()->getIdentifier()
             ]);
         $authCodeEntity->setClient($client);
-        $this->_em->persist($authCodeEntity);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($authCodeEntity);
+        $this->getEntityManager()->flush();
     }
 
-    public function revokeAuthCode(string $codeId): void
+    public function revokeAuthCode($codeId): void
     {
         /** @var AuthCode $token */
         $code = $this->findOneBy(['identifier' => $codeId]);
@@ -44,7 +43,7 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         }
 
         $code->setRevoked(true);
-        $this->_em->flush($code);
+        $this->getEntityManager()->flush($code);
     }
 
     public function isAuthCodeRevoked($codeId): bool

@@ -44,15 +44,15 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
 
     public function create(Scope $scope): Scope
     {
-        $this->_em->persist($scope);
-        $this->_em->flush($scope);
+        $this->getEntityManager()->persist($scope);
+        $this->getEntityManager()->flush($scope);
 
         return $scope;
     }
 
     public function save(Scope $scope): Scope
     {
-        $this->_em->flush($scope);
+        $this->getEntityManager()->flush($scope);
 
         return $scope;
     }

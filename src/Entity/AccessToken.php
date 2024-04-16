@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Entity;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -46,11 +47,6 @@ class AccessToken implements AccessTokenEntityInterface
     public function __construct()
     {
         $this->scopes = new ArrayCollection();
-    }
-
-    public function setToken(string $token): AccessToken
-    {
-        $this->token = $token;
     }
 
     public function getIdentifier(): string

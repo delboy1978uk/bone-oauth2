@@ -22,14 +22,14 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
     {
         $accessToken = $refreshTokenEntity->getAccessToken();
 
-        if ($this->_em->getUnitOfWork()->getEntityState($accessToken) !== UnitOfWork::STATE_MANAGED) {
+        if ($this->getEntityManager()->getUnitOfWork()->getEntityState($accessToken) !== UnitOfWork::STATE_MANAGED) {
             /** @var AccessToken $accessToken */
-            $accessToken = $this->_em->merge($accessToken);
+            $accessToken = $this->getEntityManager()->merge($accessToken);
             $refreshTokenEntity->setAccessToken($accessToken);
         }
 
-        $this->_em->persist($refreshTokenEntity);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($refreshTokenEntity);
+        $this->getEntityManager()->flush();
 
         return $refreshTokenEntity;
     }
@@ -39,8 +39,8 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
         if ($token instanceof RefreshTokenEntityInterface) {
-            $this->_em->remove($token);
-            $this->_em->flush();
+            $this->getEntityManager()->remove($token);
+            $this->getEntityManager()->flush();
 
             return true;
         }

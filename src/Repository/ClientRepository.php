@@ -51,15 +51,15 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
     public function save(Client $client): Client
     {
-        $this->_em->flush($client);
+        $this->getEntityManager()->flush($client);
 
         return $client;
     }
 
     public function delete(Client $client): void
     {
-        $this->_em->remove($client);
-        $this->_em->flush($client);
+        $this->getEntityManager()->remove($client);
+        $this->getEntityManager()->flush($client);
     }
 
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool

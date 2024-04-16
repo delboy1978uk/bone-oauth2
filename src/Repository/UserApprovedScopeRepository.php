@@ -11,7 +11,7 @@ class UserApprovedScopeRepository extends EntityRepository
 {
     public function save(UserApprovedScope $scope): void
     {
-        $this->_em->persist($scope);
-        $this->_em->flush();;
+        $this->getEntityManager()->persist($scope);
+        $this->getEntityManager()->flush();;
     }
 }

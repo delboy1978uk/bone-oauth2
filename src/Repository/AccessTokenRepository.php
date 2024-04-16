@@ -17,8 +17,8 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
 {
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): AccessTokenEntityInterface
     {
-        $this->_em->persist($accessTokenEntity);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($accessTokenEntity);
+        $this->getEntityManager()->flush();
 
         return $accessTokenEntity;
     }
@@ -33,7 +33,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         }
 
         $token->setRevoked(true);
-        $this->_em->flush($token);
+        $this->getEntityManager()->flush($token);
     }
 
     public function isAccessTokenRevoked($tokenId): bool

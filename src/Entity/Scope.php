@@ -28,7 +28,7 @@ class Scope implements ScopeEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier($identifier): string
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
