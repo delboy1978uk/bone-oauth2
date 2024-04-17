@@ -29,7 +29,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Bone\\OAuth2\\": "src/"
+      "Bone\\OAuth2\\": "src/",
+      "Tests\\": "tests/"
     }
   },
   "suggest": {

@@ -43,7 +43,7 @@ use Bone\Router\Router;
 use DateInterval;
 use Del\Console\UserCommand;
 use Del\Service\UserService;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
@@ -65,8 +65,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // AccessToken
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(AccessToken::class);
         };
@@ -74,8 +74,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // AuthCode
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(AuthCode::class);
         };
@@ -83,8 +83,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // Client
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(Client::class);
         };
@@ -99,8 +99,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // RefreshToken
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(RefreshToken::class);
         };
@@ -108,8 +108,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // Scope
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(Scope::class);
         };
@@ -117,8 +117,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // User
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(OAuthUser::class);
         };
@@ -126,8 +126,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // User Approved Scopes
         $function = function (Container $c) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $c->get(EntityManager::class);
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $c->get(EntityManagerInterface::class);
 
             return $entityManager->getRepository(UserApprovedScope::class);
         };
@@ -188,7 +188,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
 
             if (!\file_exists($publicKeyPath)) {
-                throw new \Exception("Key not found. Create one! In `data/keys`, run:\nopenssl genrsa -out private.key 2048\nopenssl rsa -in private.key -pubout -out public.key\nchmod 660 public.key\nchmod 660 private.key\n");
+                throw new \Exception("Key not found. Create one! In `$publicKeyPath`, run:\nopenssl genrsa -out private.key 2048\nopenssl rsa -in private.key -pubout -out public.key\nchmod 660 public.key\nchmod 660 private.key\n");
             }
 
             $accessTokenRepository = $c->get(AccessTokenRepository::class);

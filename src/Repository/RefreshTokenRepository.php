@@ -34,7 +34,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         return $refreshTokenEntity;
     }
 
-    public function revokeRefreshToken(string $tokenId): bool
+    public function revokeRefreshToken($tokenId): bool
     {
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
@@ -48,7 +48,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         return false;
     }
 
-    public function isRefreshTokenRevoked(string $tokenId): bool
+    public function isRefreshTokenRevoked($tokenId): bool
     {
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
