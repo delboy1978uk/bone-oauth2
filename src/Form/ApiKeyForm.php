@@ -13,7 +13,7 @@ use Del\Form\Renderer\HorizontalFormRenderer;
 
 class ApiKeyForm extends Form
 {
-    public function init()
+    public function init(): void
     {
         $name = new Text('name');
         $name->setRequired(true);

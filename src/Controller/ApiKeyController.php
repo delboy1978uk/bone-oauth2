@@ -45,11 +45,6 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    /**
-     * @throws Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function deleteAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $clientId = $request->getAttribute('id');

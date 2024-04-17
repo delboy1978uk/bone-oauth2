@@ -11,6 +11,7 @@ use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\RefreshToken;
 
+/** @extends EntityRepository<RefreshToken> */
 class RefreshTokenRepository extends EntityRepository implements RefreshTokenRepositoryInterface
 {
     public function getNewRefreshToken(): RefreshToken
@@ -24,7 +25,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
 
         if ($this->getEntityManager()->getUnitOfWork()->getEntityState($accessToken) !== UnitOfWork::STATE_MANAGED) {
             /** @var AccessToken $accessToken */
-            $accessToken = $this->getEntityManager()->merge($accessToken);
+            $accessToken = $this->getEntityManager()->getReference(AccessToken::class, $accessToken->getIdentifier());
             $refreshTokenEntity->setAccessToken($accessToken);
         }
 

@@ -13,6 +13,7 @@ use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\Scope;
 
+/** @extends EntityRepository<Scope> */
 class ScopeRepository extends EntityRepository implements ScopeRepositoryInterface
 {
     public function getScopeEntityByIdentifier($identifier): ?Scope
@@ -45,14 +46,14 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
     public function create(Scope $scope): Scope
     {
         $this->getEntityManager()->persist($scope);
-        $this->getEntityManager()->flush($scope);
+        $this->getEntityManager()->flush();
 
         return $scope;
     }
 
     public function save(Scope $scope): Scope
     {
-        $this->getEntityManager()->flush($scope);
+        $this->getEntityManager()->flush();
 
         return $scope;
     }

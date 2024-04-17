@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Entity;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
@@ -22,11 +21,10 @@ class AuthCode implements AuthCodeEntityInterface
     protected ?string $redirectUri = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected DateTimeInterface $expiryDateTime;
+    protected DateTimeImmutable $expiryDateTime;
 
-    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
-    #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected OAuthUser $userIdentifier;
+    #[ORM\Column(type: 'integer', length: 11)]
+    protected int $userIdentifier;
 
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\Client')]
     #[ORM\JoinColumn(name: 'client', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -69,7 +67,7 @@ class AuthCode implements AuthCodeEntityInterface
         return $this->scopes->toArray();
     }
 
-    public function getExpiryDateTime(): DateTimeInterface
+    public function getExpiryDateTime(): DateTimeImmutable
     {
         return $this->expiryDateTime;
     }
@@ -79,22 +77,12 @@ class AuthCode implements AuthCodeEntityInterface
         $this->expiryDateTime = $dateTime;
     }
 
-    public function setUserIdentifier(OAuthUser $identifier): void
+    public function setUserIdentifier($identifier): void
     {
         $this->userIdentifier = $identifier;
     }
 
     public function getUserIdentifier(): int
-    {
-        return $this->userIdentifier->getId();
-    }
-
-    public function setUser(OAuthUser $user): void
-    {
-        $this->userIdentifier = $user;
-    }
-
-    public function getUser(): OAuthUser
     {
         return $this->userIdentifier;
     }
@@ -114,7 +102,7 @@ class AuthCode implements AuthCodeEntityInterface
         return $this->redirectUri;
     }
 
-    public function setRedirectUri(string $uri): void
+    public function setRedirectUri($uri): void
     {
         $this->redirectUri = $uri;
     }

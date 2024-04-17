@@ -22,7 +22,7 @@ class AccessToken implements AccessTokenEntityInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'AccessToken_Scope')]
@@ -117,7 +117,15 @@ class AccessToken implements AccessTokenEntityInterface
         return $this->id;
     }
 
-    public function setScopes(ArrayCollection $scopes): void
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param Collection<string> $scopes
+     */
+    public function setScopes(Collection $scopes): void
     {
         $this->scopes = $scopes;
     }

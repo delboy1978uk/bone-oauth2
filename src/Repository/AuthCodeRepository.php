@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityRepository;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 
+/** @extends EntityRepository<AuthCode> */
 class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryInterface
 {
     public function getNewAuthCode(): AuthCode
@@ -35,7 +36,6 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
 
     public function revokeAuthCode($codeId): void
     {
-        /** @var AuthCode $token */
         $code = $this->findOneBy(['identifier' => $codeId]);
 
         if(!$code) {
@@ -43,12 +43,12 @@ class AuthCodeRepository extends EntityRepository implements AuthCodeRepositoryI
         }
 
         $code->setRevoked(true);
-        $this->getEntityManager()->flush($code);
+        $this->getEntityManager()->flush();
     }
 
     public function isAuthCodeRevoked($codeId): bool
     {
-        /** @var AuthCode $code */
+        /** @var ?AuthCode $code */
         $code = $this->findOneBy(['identifier' => $codeId]);
 
         return !$code || $code->getExpiryDateTime() < new DateTimeImmutable() || $code->isRevoked();

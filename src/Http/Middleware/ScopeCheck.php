@@ -12,6 +12,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ScopeCheck implements MiddlewareInterface
 {
+    /**
+     * @param array<string> $scopes
+     */
     public function __construct(
         private array $scopes
     ) {

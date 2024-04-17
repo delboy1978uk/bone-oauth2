@@ -42,6 +42,9 @@ class ClientService
         $this->getClientRepository()->delete($client);
     }
 
+    /**
+     * @param array<string,string|bool> $data
+     */
     public function createFromArray(array $data, OAuthUser $user): Client
     {
         $client = new Client();
@@ -88,6 +91,7 @@ class ClientService
             ];
             $code = 200;
         } else {
+            $body = [];
             $errors = $form->getErrorMessages();
 
             foreach ($errors as $field => $fieldErrors) {

@@ -27,9 +27,6 @@ class ScopeCreateCommand extends Command
         parent::__construct($name);
     }
 
-    /**
-     * configure options
-     */
     protected function configure(): void
     {
         $this->setName('scope:create');
@@ -37,13 +34,6 @@ class ScopeCreateCommand extends Command
         $this->setHelp('Create a new OAuth2 client application');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Bone API scope creator');

@@ -49,7 +49,7 @@ use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
-use Laminas\Diactoros\ResponseFactory;
+use Symfony\Component\Console\Command\Command;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface
 {
@@ -224,7 +224,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
         // AuthServerController::
         $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
-            return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class), new ResponseFactory());
+            return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class));
         });
 
         // AuthServerController::
@@ -233,11 +233,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         });
     }
 
-    /**
-     * @param Container $c
-     * @param Router $router
-     */
-    public function addRoutes(Container $c, Router $router)
+    public function addRoutes(Container $c, Router $router): void
     {
         $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
@@ -253,18 +249,13 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             ->middlewares([$c->get(ResourceServerMiddleware::class), new ScopeCheck(['register']), new JsonParse()]);
     }
 
-
-    /**
-     * @return string
-     */
     public function getEntityPath(): string
     {
         return __DIR__ . '/Entity';
     }
 
     /**
-     * @param Container $container
-     * @return array
+     * @return array<Command>
      */
     public function registerConsoleCommands(Container $container): array
     {

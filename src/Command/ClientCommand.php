@@ -12,6 +12,7 @@ use Bone\OAuth2\Entity\OAuthUser as User;
 use Del\Criteria\UserCriteria;
 use Del\Service\UserService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,31 +39,23 @@ class ClientCommand extends Command
         $this->setHelp('Create a new OAuth2 client application');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     private function userQuestion(InputInterface $input, OutputInterface $output): void
     {
         $question = new Question('Enter the email of the account: ', false);
         $email = $this->helper->ask($input, $output, $question);
         /** @var User $user */
-        $this->user = $this->userService->findUserByEmail($email);
+        $user = $this->userService->findUserByEmail($email);
+        $this->user = $user;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Bone API client creator');
-        $this->helper = $this->getHelper('question');
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+        $this->helper = $helper;
 
-        $this->userQuestion($input, $output);
+            $this->userQuestion($input, $output);
 
         if (!$this->user) {
             $output->writeln('User not found. Exiting.');

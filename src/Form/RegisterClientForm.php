@@ -15,7 +15,7 @@ use Laminas\Validator\Uri;
 
 class RegisterClientForm extends Form
 {
-    public function init()
+    public function init(): void
     {
         $redirect = new Text('redirect_uris');
         $redirect->setRequired(true);

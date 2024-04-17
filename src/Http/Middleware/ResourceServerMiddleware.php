@@ -19,8 +19,7 @@ class ResourceServerMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private ResourceServer $resourceServer,
-        private UserService $userService,
-        private ResponseFactoryInterface $responseFactory
+        private UserService $userService
     ) {
     }
 

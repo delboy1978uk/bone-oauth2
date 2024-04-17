@@ -38,7 +38,7 @@ class Client implements ClientEntityInterface
     private string $identifier;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $secret;
+    private ?string $secret = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $confidential = false;
@@ -46,7 +46,7 @@ class Client implements ClientEntityInterface
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser', cascade: ["merge"])]
     private OAuthUser $user;
 
-    #[ORM\ManyToMany(targetEntity: 'Scope')]
+    #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope')]
     #[ORM\JoinTable(name: 'Client_Scope',)]
     #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'scope_id', referencedColumnName: 'id')]
@@ -90,7 +90,7 @@ class Client implements ClientEntityInterface
         $this->redirectUri = $redirectUri;
     }
 
-    public function getSecret(): string
+    public function getSecret(): ?string
     {
         return $this->secret;
     }
@@ -110,12 +110,12 @@ class Client implements ClientEntityInterface
         $this->confidential = $confidential;
     }
 
-    public function getId(): string
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }

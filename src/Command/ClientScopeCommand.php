@@ -11,7 +11,6 @@ use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,8 +20,6 @@ use Symfony\Component\Console\Question\Question;
 
 class ClientScopeCommand extends Command
 {
-    private QuestionHelper $helper;
-
     public function __construct(
         private ClientService $clientService,
         private ScopeRepository $scopeRepository
@@ -33,21 +30,12 @@ class ClientScopeCommand extends Command
         $this->addArgument('scope', InputArgument::OPTIONAL, 'The scope name when adding or removing.');
     }
 
-    /**
-     * configure options
-     */
     protected function configure(): void
     {
         $this->setDescription('Add, remove, or list scopes for each client.');
         $this->setHelp('Client scope administration');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|void|null
-     * @throws Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(' ');
@@ -70,12 +58,6 @@ class ClientScopeCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param string $argName
-     * @return string|string[]|null
-     * @throws Exception
-     */
     private function getArgOrGetUpset(InputInterface $input, string $argName): string
     {
         $value = $input->getArgument($argName);
@@ -87,10 +69,6 @@ class ClientScopeCommand extends Command
         return $value;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     private function listScopes(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');
@@ -108,8 +86,7 @@ class ClientScopeCommand extends Command
     }
 
     /**
-     * @param OutputInterface $output
-     * @param Collection $scopes
+     * @param Collection<int, Scope> $scopes
      */
     private function outputScopes(OutputInterface $output, Client $client, Collection $scopes): void
     {
@@ -125,38 +102,26 @@ class ClientScopeCommand extends Command
         }
     }
 
-    /**
-     * @param string $id
-     * @return Client
-     */
     private function fetchClient(OutputInterface $output, string $id): Client
     {
         $output->writeln('Fetching client ' . $id .'...');
-        /** @var Client $client */
-        $client = $this->clientService
-                    ->getClientRepository()
-                    ->getClientEntity( $id, null, null, false);
 
-        return $client;
+        return $this->clientService->getClientRepository()->getClientEntity($id);;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws Exception
-     */
     private function addScope(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');
         $scopeId = $this->getArgOrGetUpset($input, 'scope');
-
         $client = $this->fetchClient($output, $clientId);
+
         if (!$client instanceof Client) {
             $output->writeln('No client found');
             return;
         }
 
         $scope = $this->scopeRepository->getScopeEntityByIdentifier($scopeId);
+
         if (!$scope instanceof Scope) {
             $output->writeln('No scope found.');
             return;
@@ -168,11 +133,6 @@ class ClientScopeCommand extends Command
         $output->writeln($scopeId . ' scope added.');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws Exception
-     */
     private function removeScope(InputInterface $input, OutputInterface $output): void
     {
         $clientId = $input->getArgument('client');

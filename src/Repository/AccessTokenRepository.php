@@ -13,6 +13,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 use Bone\OAuth2\Entity\AccessToken;
 
+/** @extends EntityRepository<AccessToken> */
 class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): AccessTokenEntityInterface
@@ -25,7 +26,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
 
     public function revokeAccessToken($tokenId): void
     {
-        /** @var AccessToken $token */
+        /** @var ?AccessToken $token */
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
         if(!$token) {
@@ -33,7 +34,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         }
 
         $token->setRevoked(true);
-        $this->getEntityManager()->flush($token);
+        $this->getEntityManager()->flush();
     }
 
     public function isAccessTokenRevoked($tokenId): bool

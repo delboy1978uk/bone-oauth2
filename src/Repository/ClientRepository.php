@@ -10,11 +10,11 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use Bone\OAuth2\Entity\OAuthUser;
 
+/** @extends EntityRepository<Client> */
 class ClientRepository extends EntityRepository implements ClientRepositoryInterface
 {
     public function getClientEntity($clientIdentifier): ?Client
     {
-        /** @var Client $client */
         $client = $this->findOneBy([
             'identifier' => $clientIdentifier
         ]);
@@ -39,7 +39,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
         if ($em->getUnitOfWork()->getEntityState($user) !== UnitOfWork::STATE_MANAGED) {
             /** @var OAuthUser $user */
-            $user = $em->merge($user);
+            $user = $em->getReference(OAuthUser::class, $user->getId());
             $client->setUser($user);
         }
 
@@ -51,7 +51,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
     public function save(Client $client): Client
     {
-        $this->getEntityManager()->flush($client);
+        $this->getEntityManager()->flush();
 
         return $client;
     }
@@ -59,7 +59,7 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
     public function delete(Client $client): void
     {
         $this->getEntityManager()->remove($client);
-        $this->getEntityManager()->flush($client);
+        $this->getEntityManager()->flush();
     }
 
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool

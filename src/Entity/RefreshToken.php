@@ -26,10 +26,10 @@ class RefreshToken implements RefreshTokenEntityInterface
     protected AccessTokenEntityInterface $accessToken;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected $expiryDateTime;
+    protected DateTimeImmutable $expiryDateTime;
 
     #[ORM\Column(type: 'boolean')]
-    protected $revoked = false;
+    protected bool $revoked = false;
 
     public function setAccessToken(AccessTokenEntityInterface $accessToken):  void
     {
@@ -56,7 +56,7 @@ class RefreshToken implements RefreshTokenEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier(string $identifier): void
+    public function setIdentifier($identifier): void
     {
         $this->identifier = $identifier;
     }
