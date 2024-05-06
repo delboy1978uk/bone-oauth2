@@ -43,7 +43,7 @@ class Client implements ClientEntityInterface
     #[ORM\Column(type: 'boolean')]
     private bool $confidential = false;
 
-    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser', cascade: ["merge"])]
+    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
     private OAuthUser $user;
 
     #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope')]
