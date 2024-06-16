@@ -20,7 +20,7 @@ class AuthCode implements AuthCodeEntityInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $redirectUri = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     protected DateTimeImmutable $expiryDateTime;
 
     #[ORM\Column(type: 'integer', length: 11)]

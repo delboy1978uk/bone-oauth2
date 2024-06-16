@@ -11,8 +11,8 @@ use League\OAuth2\Server\Entities\UserEntityInterface;
 #[ORM\Entity(repositoryClass: 'Bone\OAuth2\Repository\UserRepository')]
 class OAuthUser extends BaseUser implements UserEntityInterface
 {
-    public function getIdentifier(): self
+    public function getIdentifier(): int
     {
-        return $this;
+        return $this->getId();
     }
 }

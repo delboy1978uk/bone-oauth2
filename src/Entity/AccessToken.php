@@ -28,7 +28,7 @@ class AccessToken implements AccessTokenEntityInterface
     #[ORM\JoinTable(name: 'AccessToken_Scope')]
     protected Collection $scopes;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     protected DateTimeImmutable $expiryDateTime;
 
     #[ORM\Column(type: 'integer', length: 11, nullable: true)]

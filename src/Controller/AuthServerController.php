@@ -120,7 +120,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
             if (count($missingScopes) && $request->getMethod() === 'POST') {
                 $this->permissionService->addScopes($user, $client, $missingScopes);
             }
-
             // Once the user has approved or denied the client update the status
             // (true = approved, false = denied)
             // Return the HTTP redirect response

@@ -25,7 +25,7 @@ class RefreshToken implements RefreshTokenEntityInterface
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\AccessToken')]
     protected AccessTokenEntityInterface $accessToken;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     protected DateTimeImmutable $expiryDateTime;
 
     #[ORM\Column(type: 'boolean')]
