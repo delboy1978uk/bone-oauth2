@@ -27,7 +27,7 @@ class ResourceServerMiddleware implements MiddlewareInterface
     {
         try {
             $request = $this->resourceServer->validateAuthenticatedRequest($request);
-            $userId = $request->getAttribute('oauth_user_id');
+            $userId = (int) $request->getAttribute('oauth_user_id');
 
             if ($userId) {
                 $user = $this->userService->findUserById($userId);
