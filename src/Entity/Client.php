@@ -43,6 +43,9 @@ class Client implements ClientEntityInterface
     #[ORM\Column(type: 'boolean')]
     private bool $confidential = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $proprietary = false;
+
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
     private OAuthUser $user;
 
@@ -168,5 +171,15 @@ class Client implements ClientEntityInterface
     public function setScopes(Collection $scopes): void
     {
         $this->scopes = $scopes;
+    }
+
+    public function isProprietary(): bool
+    {
+        return $this->proprietary;
+    }
+
+    public function setProprietary(bool $proprietary): void
+    {
+        $this->proprietary = $proprietary;
     }
 }
