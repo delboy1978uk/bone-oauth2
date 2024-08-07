@@ -9,10 +9,8 @@ use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
 use Bone\OAuth2\Entity\OAuthUser as User;
-use Del\Criteria\UserCriteria;
 use Del\Service\UserService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,11 +39,9 @@ class ClientCommand extends Command
 
     private function userQuestion(InputInterface $input, OutputInterface $output): void
     {
-        $question = new Question('Enter the email of the account: ', false);
-        $email = $this->helper->ask($input, $output, $question);
-        /** @var User $user */
-        $user = $this->userService->findUserByEmail($email);
-        $this->user = $user;
+        $question = new Question('If this API key will belong to a user, enter the email or ID of the account: ', false);
+        $emailOrId = $this->helper->ask($input, $output, $question);
+        $this->user = \is_numeric($emailOrId) ? $this->userService->findUserById($emailOrId) : $this->userService->findUserByEmail($email);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -57,14 +53,8 @@ class ClientCommand extends Command
 
             $this->userQuestion($input, $output);
 
-        if (!$this->user) {
-            $output->writeln('User not found. Exiting.');
-            return Command::FAILURE;
-        }
-
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
         $isClientCredentials = $this->helper->ask($input, $output, $question);
-        $usePKCE = false;
 
         if ($isClientCredentials) {
             $authGrant = 'client_credentials';
@@ -77,7 +67,7 @@ class ClientCommand extends Command
             $clientType = $this->helper->ask($input, $output, $question);
 
             $question = new ConfirmationQuestion('Is this a trusted first party app? ', true);
-            $confidential = (int) $this->helper->ask($input, $output, $question);
+            $confidential = $this->helper->ask($input, $output, $question);
             $authGrant = 'auth_code';
 
             switch ($clientType) {
@@ -86,7 +76,6 @@ class ClientCommand extends Command
                 case 'native':
                 case 'browser':
                     $authGrant = 'auth_code';
-                    $usePKCE = true;
                     break;
             }
         }
@@ -127,7 +116,11 @@ class ClientCommand extends Command
         $client->setIdentifier(md5($name));
         $client->setRedirectUri($uri);
         $client->setConfidential($confidential);
-        $client->setUser($this->user);
+
+        if ($this->user !== null) {
+            $client->setUser($this->user);
+            $client->setProprietary(true);
+        }
 
         foreach ($scopeChoices as $name) {
             $output->writeln('Registering ' . $name . ' scope with client..');
@@ -141,7 +134,6 @@ class ClientCommand extends Command
         }
 
         $this->clientService->getClientRepository()->create($client);
-
         $output->writeln('Client created.');
 
         return Command::SUCCESS;
