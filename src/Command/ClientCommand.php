@@ -41,7 +41,9 @@ class ClientCommand extends Command
     {
         $question = new Question('If this API key will belong to a user, enter the email or ID of the account: ', false);
         $emailOrId = $this->helper->ask($input, $output, $question);
-        $this->user = $emailOrId && \is_numeric($emailOrId) ? $this->userService->findUserById($emailOrId) : $this->userService->findUserByEmail($email);
+        $this->user = $emailOrId !== null && \is_numeric($emailOrId)
+            ? $this->userService->findUserById($emailOrId)
+            : $this->userService->findUserByEmail($emailOrId);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
