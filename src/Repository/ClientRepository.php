@@ -35,14 +35,6 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
     public function create(Client $client): Client
     {
         $em = $this->getEntityManager();
-        $user = $client->getUser();
-
-        if ($em->getUnitOfWork()->getEntityState($user) !== UnitOfWork::STATE_MANAGED) {
-            /** @var OAuthUser $user */
-            $user = $em->getReference(OAuthUser::class, $user->getId());
-            $client->setUser($user);
-        }
-
         $em->persist($client);
         $em->flush();
 
@@ -69,6 +61,4 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
 
         return !($client->isConfidential() && $clientSecret !== $client->getSecret());
     }
-
-
 }
