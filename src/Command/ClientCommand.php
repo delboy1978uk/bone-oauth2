@@ -60,31 +60,8 @@ class ClientCommand extends Command
 
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
         $isClientCredentials = $this->helper->ask($input, $output, $question);
-
-        if ($isClientCredentials) {
-            $authGrant = 'client_credentials';
-            $confidential = true;
-        } else {
-
-            $question = new ChoiceQuestion('What type of app is this? ', [
-                'browser', 'server', 'native'
-            ]);
-            $clientType = $this->helper->ask($input, $output, $question);
-
-            $question = new ConfirmationQuestion('Is this a trusted first party app? ', true);
-            $confidential = $this->helper->ask($input, $output, $question);
-            $authGrant = 'auth_code';
-
-            switch ($clientType) {
-                case 'server':
-                    break;
-                case 'native':
-                case 'browser':
-                    $authGrant = 'auth_code';
-                    break;
-            }
-        }
-
+        $authGrant = $isClientCredentials ? 'client_credentials' : 'auth_code';
+        $confidential = $isClientCredentials ? true : false;
         $output->writeln('Setting GrantType to ' . $authGrant . '..');
         $output->writeln('Setting confidential to ' . ($confidential ? 'true' : 'false') . '..');
 
