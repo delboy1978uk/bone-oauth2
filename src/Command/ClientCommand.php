@@ -42,7 +42,7 @@ class ClientCommand extends Command
         $question = new Question('If this API key will belong to a user, enter the email or ID of the account: ', false);
         $emailOrId = $this->helper->ask($input, $output, $question);
 
-        if ($emailOrId !== null) {
+        if ($emailOrId !== false) {
             $this->user = \is_numeric($emailOrId)
                 ? $this->userService->findUserById($emailOrId)
                 : $this->userService->findUserByEmail($emailOrId);
