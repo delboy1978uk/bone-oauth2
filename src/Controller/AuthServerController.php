@@ -301,7 +301,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
         $this->getSession()->unset('user');
         \setcookie('resu', '', 1, '/');
         /** @var ServerRequestInterface $authRequest */
-        $authRequest = \unserialize($this->getSession()->get('authRequest'), ['allowed_classes' => ServerRequestInterface::class]);
+        $authRequest = \unserialize($this->getSession()->get('authRequest'), ['allowed_classes' => [ServerRequestInterface::class]]);
 
         return new RedirectResponse($authRequest->getUri());
     }
