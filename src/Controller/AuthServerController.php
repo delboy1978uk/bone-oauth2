@@ -15,6 +15,7 @@ use Bone\Server\SessionAwareInterface;
 use Bone\Server\Traits\HasSessionTrait;
 use Del\Service\UserService;
 use Laminas\Diactoros\Response\RedirectResponse;
+use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
@@ -300,8 +301,8 @@ class AuthServerController extends Controller implements SessionAwareInterface
     {
         $this->getSession()->unset('user');
         \setcookie('resu', '', 1, '/');
-        /** @var ServerRequestInterface $authRequest */
-        $authRequest = \unserialize($this->getSession()->get('authRequest'), ['allowed_classes' => [ServerRequestInterface::class]]);
+        /** @var ServerRequest $authRequest */
+        $authRequest = \unserialize($this->getSession()->get('authRequest'));
 
         return new RedirectResponse($authRequest->getUri());
     }
