@@ -7,7 +7,6 @@ namespace Bone\OAuth2\Controller;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Service\ClientService;
-use DateTime;
 use Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\OAuthUser;
@@ -90,14 +89,26 @@ class AuthServerController extends Controller implements SessionAwareInterface
         /* @var AuthorizationServer $server */
         $server = $this->server;
         $response = new Response();
+        $session = $this->getSession();
 
         try {
-            // Validate the HTTP request and return an AuthorizationRequest object.
-            // The auth request object can be serialized into a user's session
-            $authRequest = $server->validateAuthorizationRequest($request);
-            $userId = $this->getSession()->get('user');
+            $userId = $session->get('user');
             /** @var OAuthUser $user */
             $user = $this->userService->findUserById($userId);
+            $cotinueAsUser = $request->getQueryParams()['continue'] ?? false;
+
+            if ($session->has('authRequest') === false && $cotinueAsUser === false) {
+                $session->set('authRequest', \serialize($request));
+                $body = $this->getView()->render('boneoauth2::continue', [
+                    'user' => $user,
+                ]);
+
+                return new HtmlResponse($body);
+            }
+
+            $request = \unserialize($session->get('authRequest'));
+            $session->unset('authRequest');
+            $authRequest = $server->validateAuthorizationRequest($request);
             $authRequest->setUser($user);
             $client = $authRequest->getClient();
 
@@ -134,6 +145,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
         } catch (Exception $e) {
             $code = $e->getCode();
             $status = ($code > 399 && $code < 600) ? $code : 500;
+
             return new JsonResponse([
                 'error' => $e->getMessage(),
             ], $status);
@@ -281,5 +293,15 @@ class AuthServerController extends Controller implements SessionAwareInterface
         $form->populate($post);
 
         return $this->clientService->registerNewClient($form);
+    }
+
+    public function loginAsSomeoneElse(ServerRequestInterface $request, array $args): ResponseInterface
+    {
+        $this->getSession()->unset('user');
+        \setcookie('resu', '', 1, '/');
+        /** @var ServerRequestInterface $authRequest */
+        $authRequest = \unserialize($this->getSession()->get('authRequest'));
+
+        return new RedirectResponse($authRequest->getUri());
     }
 }

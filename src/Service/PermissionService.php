@@ -29,7 +29,7 @@ class PermissionService
     {
         return $this->approvedScopeRepository->findBy([
             'user' => $user->getId(),
-            'client' => $client->getIdentifier(),
+            'client' => $client->getId(),
         ]);
     }
 
