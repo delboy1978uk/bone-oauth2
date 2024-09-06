@@ -13,7 +13,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 class ExampleController
 {
     private string $clientID = '05c99d2eb8fc4a8019d06a21097f3c46';
-    private string $redirectUri = 'https://awesome.scot/oauth2/callback';
+    private string $redirectUri = 'https://boneframework.docker/oauth2/callback';
     private string $clientSecret = 'JDJ5JDEwJGVkdlMyNW9xOFlTeG1YMGJVdU5jWWU4MFl2VW5mbE8uYlI0LzNWck03U1I2MGZNejZoRmk2';
 
     /**

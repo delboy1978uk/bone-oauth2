@@ -99,21 +99,24 @@ class AuthServerController extends Controller implements SessionAwareInterface
             $user = $this->userService->findUserById($userId);
             $cotinueAsUser = $request->getQueryParams()['continue'] ?? false;
 
-            if ($request->hasHeader('Referer') === false && $session->has('authRequest') === false && $cotinueAsUser === false) {
-                $session->set('authRequest', \serialize($request));
-                $body = $this->getView()->render('boneoauth2::continue', [
-                    'user' => $user,
-                ]);
+            if (!$request->hasHeader('X_BONE_USER_ACTIVATE')) {
+                if ($request->hasHeader('Referer') === false && $session->has('authRequest') === false && $cotinueAsUser === false) {
+                    $session->set('authRequest', \serialize($request));
+                    $body = $this->getView()->render('boneoauth2::continue', [
+                        'user' => $user,
+                    ]);
 
-                return new HtmlResponse($body);
+                    return new HtmlResponse($body);
+                }
+
+                if ($request->hasHeader('Referer') && \str_contains($request->getHeader('Referer')[0], 'user/login')) {
+                    $session->set('authRequest', \serialize($request));
+                }
+
+                $request = \unserialize($session->get('authRequest'));
+                $session->unset('authRequest');
             }
 
-            if ($request->hasHeader('Referer') && \str_contains($request->getHeader('Referer')[0], 'user/login')) {
-                $session->set('authRequest', \serialize($request));
-            }
-
-            $request = \unserialize($session->get('authRequest'));
-            $session->unset('authRequest');
             $authRequest = $server->validateAuthorizationRequest($request);
             $authRequest->setUser($user);
             $client = $authRequest->getClient();
