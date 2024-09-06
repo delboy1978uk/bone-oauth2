@@ -32,7 +32,7 @@ class ExampleController
         // Now, make a call to the access token endpoint, sending the code sent by the server
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, 'https://awesome.scot/oauth2/token');
+        curl_setopt($ch, CURLOPT_URL, 'https://boneframework.docker/oauth2/token');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // set this true on your production server!
         curl_setopt($ch, CURLOPT_POSTFIELDS, array(
