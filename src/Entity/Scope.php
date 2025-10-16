@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
+use Bone\BoneDoctrine\Traits\HasId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
@@ -12,10 +13,7 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 #[ORM\Table(name: 'Scope')]
 class Scope implements ScopeEntityInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    use HasId;
 
     #[ORM\Column(type: 'string', length: 40)]
     protected string $identifier;

@@ -8,12 +8,15 @@ use Barnacle\Container;
 use Barnacle\EntityRegistrationInterface;
 use Barnacle\RegistrationInterface;
 use Bone\Console\CommandRegistrationInterface;
+use Bone\Contracts\Container\FixtureProviderInterface;
 use Bone\Controller\Init;
 use Bone\Http\Middleware\JsonParse;
 use Bone\OAuth2\Command\ClientCommand;
 use Bone\OAuth2\Command\ClientScopeCommand;
 use Bone\OAuth2\Command\ScopeCreateCommand;
 use Bone\OAuth2\Command\ScopeListCommand;
+use Bone\OAuth2\Fixtures\LoadClients;
+use Bone\OAuth2\Fixtures\LoadScopes;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
 use Bone\View\ViewEngine;
@@ -23,7 +26,6 @@ use Bone\OAuth2\Controller\ExampleController;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\AuthCode;
 use Bone\OAuth2\Entity\Client;
-use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Entity\RefreshToken;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Entity\UserApprovedScope;
@@ -51,15 +53,12 @@ use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use Symfony\Component\Console\Command\Command;
 
-class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface
+class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface, FixtureProviderInterface
 {
     public function addToContainer(Container $c): void
     {
-        /** @var UserService $userService */
         $userService = $c->get(UserService::class);
-        $userService->setUserClass(OAuthUser::class);
 
-        /** @var ViewEngine $viewEngine */
         $viewEngine = $c->get(ViewEngine::class);
         $viewEngine->addFolder('boneoauth2', __DIR__ . '/View/');
 
@@ -115,15 +114,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         };
         $c[ScopeRepository::class] = $c->factory($function);
 
-        // User
-        $function = function (Container $c) {
-            /** @var EntityManagerInterface $entityManager */
-            $entityManager = $c->get(EntityManagerInterface::class);
-
-            return $entityManager->getRepository(OAuthUser::class);
-        };
-        $c[UserRepository::class] = $c->factory($function);
-
         // User Approved Scopes
         $function = function (Container $c) {
             /** @var EntityManagerInterface $entityManager */
@@ -144,7 +134,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             $privateKeyPath = $settings['privateKeyPath'];
             $encryptionKey = $settings['encryptionKey'];
 
-            // Setup the authorization server
             $server = new AuthorizationServer(
                 $clientRepository,
                 $accessTokenRepository,
@@ -252,17 +241,10 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         return __DIR__ . '/Entity';
     }
 
-    /**
-     * @return array<Command>
-     */
+
     public function registerConsoleCommands(Container $container): array
     {
-        // Override the Del\Entity\User with our OAuth user class
-        /** @var UserService $userService */
         $userService = $container[UserService::class];
-        $userService->setUserClass(OAuthUser::class);
-        $userCommand = new UserCommand($userService);
-        $userCommand->setName('user:reset-pass');
         $clientService = $container->get(ClientService::class);
         $scopeRepository = $container->get(ScopeRepository::class);
         $clientCommand = new ClientCommand($clientService, $userService, $scopeRepository);
@@ -271,9 +253,15 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $clientScopeCommand = new ClientScopeCommand($clientService, $scopeRepository);
 
         return [
-            $userCommand, $clientCommand, $scopeCreateCommand, $scopeListCommand, $clientScopeCommand,
+            $clientCommand, $scopeCreateCommand, $scopeListCommand, $clientScopeCommand,
         ];
     }
 
-
+    public function getFixtures(): array
+    {
+        return [
+            LoadScopes::class,
+            LoadClients::class
+        ];
+    }
 }

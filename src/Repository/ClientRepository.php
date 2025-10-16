@@ -8,7 +8,7 @@ use Bone\OAuth2\Entity\Client;
 use Doctrine\ORM\EntityRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\User;
 
 /** @extends EntityRepository<Client> */
 class ClientRepository extends EntityRepository implements ClientRepositoryInterface

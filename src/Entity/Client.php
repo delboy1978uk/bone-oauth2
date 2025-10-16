@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
+use Bone\BoneDoctrine\Attributes\Visibility;
+use Bone\BoneDoctrine\Traits\HasId;
+use Bone\BoneDoctrine\Traits\HasName;
+use Del\Form\Field\Attributes\Field;
+use Del\Form\Traits\HasFormFields;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,18 +19,13 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 #[ORM\UniqueConstraint(name: 'identifier_idx', columns: ['identifier'])]
 class Client implements ClientEntityInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private int $id;
-
-    #[ORM\Column(type: 'string', length: 40)]
-    private string $name;
+    use HasId;
+    use HasName;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $description;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $icon;
 
     #[ORM\Column(type: 'string', length: 20)]
@@ -46,8 +46,8 @@ class Client implements ClientEntityInterface
     #[ORM\Column(type: 'boolean')]
     private bool $proprietary = false;
 
-    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
-    private OAuthUser $user;
+    #[ORM\ManyToOne(targetEntity: 'Del\Entity\User')]
+    private User $user;
 
     #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope')]
     #[ORM\JoinTable(name: 'Client_Scope',)]

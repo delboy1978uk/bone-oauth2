@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Repository;
 
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\User;
 use Del\Repository\UserRepository as UserRepo;
 use Laminas\Crypt\Password\Bcrypt;
 use League\OAuth2\Server\Entities\ClientEntityInterface;

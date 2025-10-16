@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Service;
 
 use Bone\OAuth2\Entity\Client;
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\User;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Repository\ClientRepository;
@@ -45,7 +45,7 @@ class ClientService
     /**
      * @param array<string,string|bool> $data
      */
-    public function createFromArray(array $data, OAuthUser $user): Client
+    public function createFromArray(array $data, User $user): Client
     {
         $client = new Client();
         $client->setName($data['name']);

@@ -7,10 +7,10 @@ namespace Bone\OAuth2\Controller;
 use Bone\Exception;
 use Bone\Controller\Controller;
 use Bone\OAuth2\Entity\Client;
-use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Exception\OAuthException;
 use Bone\OAuth2\Form\ApiKeyForm;
 use Bone\OAuth2\Service\ClientService;
+use Del\Entity\User;
 use Del\Form\Form;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,10 +25,8 @@ class ApiKeyController extends Controller
 
     public function myApiKeysAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        /** @var OAuthUser $user */
         $user = $request->getAttribute('user');
         $clients = $this->clientService->getClientRepository()->findBy(['user' => $user->getId()]);
-
         $body = $this->getView()->render('boneoauth2::my-api-keys', ['clients' => $clients]);
 
         return new HtmlResponse($body);
@@ -37,7 +35,6 @@ class ApiKeyController extends Controller
     public function deleteConfirmAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = $request->getAttribute('id');
-        /** @var Client $client */
         $client = $this->clientService->getClientRepository()->find($id);
         $clientId = $client->getIdentifier();
         $body = $this->getView()->render('boneoauth2::delete-api-key-confirm', ['clientId' => $clientId]);
@@ -48,9 +45,7 @@ class ApiKeyController extends Controller
     public function deleteAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $clientId = $request->getAttribute('id');
-        /** @var Client $client */
         $client = $this->clientService->getClientRepository()->find($clientId);
-        /** @var OAuthUser $user */
         $user = $request->getAttribute('user');
         $clientUser = $client->getUser();
 
@@ -83,7 +78,6 @@ class ApiKeyController extends Controller
         $form->populate($post);
 
         if ($form->isValid()) {
-            /** @var OAuthUser $user */
             $user = $request->getAttribute('user');
             $data = $form->getValues();
             $client = $this->clientService->createFromArray($data, $user);

@@ -9,7 +9,7 @@ use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Service\ClientService;
 use Exception;
 use Bone\Controller\Controller;
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\User;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\Server\SessionAwareInterface;
 use Bone\Server\Traits\HasSessionTrait;
@@ -35,57 +35,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
         private ClientService $clientService
     ) {
     }
-
-    /**
-     * Authorize a client via OAuth2
-     * @OA\Get(
-     *     path="/oauth2/authorize",
-     *     @OA\Response(response="200", description="An access token"),
-     *     tags={"auth"},
-     *     @OA\Parameter(
-     *         name="response_type",
-     *         in="query",
-     *         description="the type of response",
-     *         required=true,
-     *         @OA\Schema(type="string", default="code")
-     *     ),
-     *     @OA\Parameter(
-     *         name="client_id",
-     *         in="query",
-     *         description="the client identifier",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="client_secret",
-     *         in="query",
-     *         description="the client identifier",
-     *         required=false,
-     *         @OA\Schema(type="string", default="testclient")
-     *     ),
-     *     @OA\Parameter(
-     *         name="redirect_uri",
-     *         in="query",
-     *         description="where to send the response",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="state",
-     *         in="query",
-     *         description="with a CSRF token. This parameter is optional but highly recommended.",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="scope",
-     *         in="query",
-     *         description="allowed scopes, space separated",
-     *         required=false,
-     *         @OA\Schema(type="string", default="basic")
-     *     )
-     * )
-     */
+    
     public function authorizeAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         /* @var AuthorizationServer $server */
@@ -176,55 +126,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
         return $response;
     }
 
-    /**
-     * Fetch an OAuth2 access token
-     * @OA\Post(
-     *     path="/oauth2/token",
-     *     operationId="accessToken",
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 required={"grant_type", "client_id"},
-     *                 @OA\Property(
-     *                     property="grant_type",
-     *                     type="string",
-     *                     default="client_credentials",
-     *                     description="the type of grant"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="client_id",
-     *                     type="string",
-     *                     description="the client id"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="client_secret",
-     *                     type="string",
-     *                     description="the client secret"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="scope",
-     *                     type="string",
-     *                     description="the scopes you wish to use"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="redirect_uri",
-     *                     type="string",
-     *                     description="the redirect url for post authorization"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="code",
-     *                     type="string",
-     *                     description="with the authorization code from the query string"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response="200", description="An access token"),
-     *     tags={"auth"}
-     * )
-     *
-     */
     public function accessTokenAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         /* @var AuthorizationServer $server */
@@ -251,51 +152,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
         return $response;
     }
 
-    /**
-     * Register an OAuth2 Client
-     * @OA\Post(
-     *     path="/oauth2/register",
-     *     operationId="registerClient",
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 required={"redirect_uris", "client_id", "token_endpoint_auth_method", "logo_uri"},
-     *                 @OA\Property(
-     *                     property="redirect_uris",
-     *                     type="array",
-     *                     description="an array of redirect uri's (only one supported at present)",
-     *                     @OA\Items(type="string", example="http://fake/callback")
-     *                 ),
-     *                 @OA\Property(
-     *                     property="client_name",
-     *                     description="the client name",
-     *                     type="string",
-     *                     example="Test Client"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="token_endpoint_auth_method",
-     *                     description="none, client_secret_post, or client_secret_basic",
-     *                     type="string",
-     *                     example="client_secret_basic"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="logo_uri",
-     *                     description="the application's logo",
-     *                     type="string",
-     *                     example="https://fake/image.jpg"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response="200", description="An access token"),
-     *     tags={"auth"},
-     *     security={
-     *         {"oauth2": {"register"}}
-     *     }
-     * )
-     * @todo right now we only create auth_code clients via this endpoint, check token_endpoint_auth_method
-     */
+
     public function registerAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $post = $request->getParsedBody();

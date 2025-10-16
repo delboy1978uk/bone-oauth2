@@ -17,7 +17,7 @@ class UserApprovedScope
     #[ORM\Column(type: 'integer', length: 11)]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\OAuthUser')]
+    #[ORM\ManyToOne(targetEntity: 'Del\Entity\User')]
     #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private OAuthUser $user;
 

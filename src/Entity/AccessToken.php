@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
+use Bone\BoneDoctrine\Traits\HasId;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,12 +18,8 @@ use League\OAuth2\Server\Entities\Traits\AccessTokenTrait;
 #[ORM\Table(name: 'AccessToken')]
 class AccessToken implements AccessTokenEntityInterface
 {
+    use HasId;
     use AccessTokenTrait;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: 'Bone\OAuth2\Entity\Scope', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'AccessToken_Scope')]

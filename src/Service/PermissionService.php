@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Service;
 
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\hUser;
 use Bone\OAuth2\Entity\UserApprovedScope;
 use Bone\OAuth2\Repository\UserApprovedScopeRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;

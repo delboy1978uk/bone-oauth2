@@ -8,7 +8,7 @@ use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
-use Bone\OAuth2\Entity\OAuthUser as User;
+use Del\Entity\User;
 use Del\Service\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;

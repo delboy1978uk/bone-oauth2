@@ -1,5 +1,5 @@
 <?php
-/** @var \Bone\OAuth2\Entity\OAuthUser $user; */
+/** @var \Del\Entity\User $user; */
 $person = $user->getPerson();
 ?>
 <section class="intro">

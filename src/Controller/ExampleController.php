@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Controller;
 
-use Bone\OAuth2\Entity\OAuthUser;
+use Del\Entity\User;
 use DateTime;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
