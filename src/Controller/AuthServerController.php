@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Controller;
 
 use Bone\OAuth2\Entity\Client;
+use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Service\ClientService;
 use Exception;
@@ -35,7 +36,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
         private ClientService $clientService
     ) {
     }
-    
+
     public function authorizeAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         /* @var AuthorizationServer $server */
@@ -70,7 +71,8 @@ class AuthServerController extends Controller implements SessionAwareInterface
             }
 
             $authRequest = $server->validateAuthorizationRequest($request);
-            $authRequest->setUser($user);
+            $oauthUser = OAuthUser::createFromBaseUser($user);
+            $authRequest->setUser($oauthUser);
             $client = $authRequest->getClient();
 
             if (!$client->isProprietary()) {
@@ -128,7 +130,6 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
     public function accessTokenAction(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        /* @var AuthorizationServer $server */
         $server = $this->server;
         $response = new JsonResponse([]);
 
