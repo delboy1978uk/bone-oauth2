@@ -17,6 +17,7 @@ use Bone\OAuth2\Command\ScopeCreateCommand;
 use Bone\OAuth2\Command\ScopeListCommand;
 use Bone\OAuth2\Fixtures\LoadClients;
 use Bone\OAuth2\Fixtures\LoadScopes;
+use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
 use Bone\View\ViewEngine;
@@ -42,9 +43,11 @@ use Bone\OAuth2\Service\PermissionService;
 use Bone\User\Http\Middleware\SessionAuth;
 use Bone\User\Http\Middleware\SessionAuthRedirect;
 use Bone\Router\Router;
+use Bone\View\ViewEngineInterface;
 use DateInterval;
 use Del\Console\UserCommand;
 use Del\Service\UserService;
+use Del\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
@@ -210,6 +213,13 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             return Init::controller($controller, $c);
         });
 
+        $c[AuthServerMiddleware::class] = $c->factory(function (Container $c) {
+            $userService = $c->get(UserService::class);
+            $view = $c->get(ViewEngineInterface::class);
+
+            return new AuthServerMiddleware($userService, $view, SessionManager::getInstance());
+        });
+
         $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
             return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class));
         });
@@ -221,7 +231,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 
     public function addRoutes(Container $c, Router $router): void
     {
-        $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
+        $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middlewares([$c->get(SessionAuthRedirect::class), $c->get(AuthServerMiddleware::class)]);
         $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/login', [AuthServerController::class, 'loginAsSomeoneElse']);

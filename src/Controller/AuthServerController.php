@@ -46,30 +46,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
         try {
             $userId = $session->get('user');
-            /** @var OAuthUser $user */
             $user = $this->userService->findUserById($userId);
-            $cotinueAsUser = $request->getQueryParams()['continue'] ?? false;
-
-            if (!$request->hasHeader('X_BONE_USER_ACTIVATE')) {
-                if ($request->hasHeader('Referer') === false && $session->has('authRequest') === false && $cotinueAsUser === false) {
-                    $request = $request->withAttribute('user', null);
-                    $session->set('authRequest', \serialize($request));
-                    $body = $this->getView()->render('boneoauth2::continue', [
-                        'user' => $user,
-                    ]);
-
-                    return new HtmlResponse($body);
-                }
-
-                if ($request->hasHeader('Referer') && \str_contains($request->getHeader('Referer')[0], 'user/login')) {
-                    $request = $request->withAttribute('user', null);
-                    $session->set('authRequest', \serialize($request));
-                }
-
-                $request = \unserialize($session->get('authRequest'));
-                $session->unset('authRequest');
-            }
-
             $authRequest = $server->validateAuthorizationRequest($request);
             $oauthUser = OAuthUser::createFromBaseUser($user);
             $authRequest->setUser($oauthUser);
