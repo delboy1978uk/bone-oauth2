@@ -79,7 +79,7 @@ class ClientCommand extends Command
 
         $scopes = $this->scopeRepository->findAll();
         $choices = [];
-        /** @var Scope $scope */
+
         foreach($scopes as $scope) {
             $scopeName = $scope->getIdentifier();
             $choices[] = $scopeName;

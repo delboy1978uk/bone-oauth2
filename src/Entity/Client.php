@@ -7,6 +7,7 @@ namespace Bone\OAuth2\Entity;
 use Bone\BoneDoctrine\Attributes\Visibility;
 use Bone\BoneDoctrine\Traits\HasId;
 use Bone\BoneDoctrine\Traits\HasName;
+use Del\Entity\User;
 use Del\Form\Field\Attributes\Field;
 use Del\Form\Traits\HasFormFields;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -153,12 +154,12 @@ class Client implements ClientEntityInterface
         $this->grantType = $grantType;
     }
 
-    public function getUser(): OAuthUser
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(OAuthUser $user): void
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
