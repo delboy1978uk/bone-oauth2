@@ -32,5 +32,23 @@ class LoadClients implements FixtureInterface
         $entity->setScopes(new ArrayCollection([$basicScope]));
         $manager->persist($entity);
         $manager->flush();
+
+        $entity = new Client();
+        $entity->setName('API Docs');
+        $entity->setDescription('Swagger API Docs client');
+        $entity->setIcon('https://boneframework.docker/img/skull_and_crossbones.png');
+        $entity->setGrantType('client_credentials');
+        $entity->setRedirectUri('https://boneframework.docker/api/docs');
+        $entity->setIdentifier(\md5($entity->getName()));
+        $time = \microtime();
+        $name = $entity->getName();
+        $secret = \password_hash($name . $time  . 'bone', PASSWORD_BCRYPT);
+        $base64 = \base64_encode($secret);
+        $entity->setSecret($base64);
+        $entity->setConfidential(true);
+        $entity->setProprietary(true);
+        $entity->setScopes(new ArrayCollection([$basicScope]));
+        $manager->persist($entity);
+        $manager->flush();
     }
 }
