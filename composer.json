@@ -24,9 +24,6 @@
     "roave/security-advisories": "dev-master",
     "delboy1978uk/dev-tools": "^1.0"
   },
-  "bin": [
-    "bin/apictl"
-  ],
   "autoload": {
     "psr-4": {
       "Bone\\OAuth2\\": "src/",
