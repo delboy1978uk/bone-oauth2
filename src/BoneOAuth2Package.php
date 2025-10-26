@@ -246,17 +246,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $router->map('POST', '/user/api-keys/delete/{id:number}', [ApiKeyController::class, 'deleteAction'])->middleware($c->get(SessionAuth::class));
         $router->map('POST', '/oauth2/register', [AuthServerController::class, 'registerAction'])
             ->middlewares([$c->get(ResourceServerMiddleware::class), new ScopeCheck(['register']), new JsonParse()]);
-
-        // bone-user api endpoints (if enabled)
-        if ($c->has('bone-user')) {
-            $config = $c->get('bone-user');
-            $api = $config['api'] ?? false;
-
-            if ($api === true) {
-                $router->apiResource('people', PersonApiController::class, $c);
-                $router->apiResource('users', UserApiController::class, $c);
-            }
-        }
     }
 
     public function getEntityPath(): string

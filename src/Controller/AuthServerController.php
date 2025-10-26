@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Controller;
 
+use Bone\Http\Response\Json\Error\BadRequestResponse;
+use Bone\Http\Response\Json\Error\ServerErrorResponse;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Form\RegisterClientForm;
@@ -114,19 +116,15 @@ class AuthServerController extends Controller implements SessionAwareInterface
             $response = $server->respondToAccessTokenRequest($request, $response);
             $response->getBody()->rewind(); // Insane that we have to do this haha!
         } catch (OAuthServerException $e) {
-            $response = new JsonResponse([
-                'error' => $e->getMessage(),
-                'trace' => $e->getTrace(),
-            ], 400);
+            $response = new BadRequestResponse($e->getMessage());
         } catch (Exception $e) {
-            $response = new JsonResponse([
+            $response = new ServerErrorResponse([
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-            ], 500);
+            ]);
         }
-
-
+        
         return $response;
     }
 

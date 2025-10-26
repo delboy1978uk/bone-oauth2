@@ -29,7 +29,7 @@ class AccessToken implements AccessTokenEntityInterface
     protected DateTimeImmutable $expiryDateTime;
 
     #[ORM\Column(type: 'integer', length: 11, nullable: true)]
-    protected int $userIdentifier;
+    protected ?int $userIdentifier = null;
 
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\Client')]
     #[ORM\JoinColumn(name: 'client', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -84,7 +84,7 @@ class AccessToken implements AccessTokenEntityInterface
         $this->userIdentifier = $identifier;
     }
 
-    public function getUserIdentifier(): int
+    public function getUserIdentifier(): ?int
     {
         return $this->userIdentifier;
     }
