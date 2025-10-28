@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
+use Del\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
@@ -19,7 +20,7 @@ class UserApprovedScope
 
     #[ORM\ManyToOne(targetEntity: 'Del\Entity\User')]
     #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private OAuthUser $user;
+    private User $user;
 
     #[ORM\ManyToOne(targetEntity: 'Bone\OAuth2\Entity\Client')]
     #[ORM\JoinColumn(name: 'client', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -39,12 +40,12 @@ class UserApprovedScope
         $this->id = (int) $id;
     }
 
-    public function getUser(): OAuthUser
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(OAuthUser $user): void
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }

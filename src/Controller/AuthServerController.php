@@ -54,28 +54,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
             $authRequest->setUser($oauthUser);
             $client = $authRequest->getClient();
 
-            if (!$client->isProprietary()) {
-                $scopes = $authRequest->getScopes();
-                $userScopes = $this->permissionService->getScopes($user, $client);
-                $missingScopes = array_diff_key($scopes, $userScopes);
-                $approvedCount = count($scopes) - count($missingScopes);
 
-                if (count($missingScopes) && $request->getMethod() === 'GET') {
-                    $body = $this->getView()->render('boneoauth2::authorize', [
-                        'scopes' => $scopes,
-                        'approvedCount' => $approvedCount,
-                        'missingScopes' => $missingScopes,
-                        'client' => $client,
-                        'user' => $user,
-                    ]);
-
-                    return new HtmlResponse($body);
-                }
-
-                if (count($missingScopes) && $request->getMethod() === 'POST') {
-                    $this->permissionService->addScopes($user, $client, $missingScopes);
-                }
-            }
 
             $authRequest->setAuthorizationApproved(true);
             $response = $server->completeAuthorizationRequest($authRequest, $response);
@@ -124,7 +103,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
                 'line' => $e->getLine(),
             ]);
         }
-        
+
         return $response;
     }
 

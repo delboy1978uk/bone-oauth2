@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Http\Middleware;
 
+use Bone\Http\Response\Json\Error\ErrorResponse;
 use Del\Service\UserService;
 use Exception;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -43,8 +44,6 @@ class ResourceServerMiddleware implements MiddlewareInterface
             $status = ($code > 399 && $code < 600) ? $e->getCode() : 500;
         }
 
-        return new JsonResponse([
-            'error' => $e->getMessage(),
-        ], $status);
+        return new ErrorResponse($e->getMessage(), $status);
     }
 }

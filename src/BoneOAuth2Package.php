@@ -218,8 +218,10 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $c[AuthServerMiddleware::class] = $c->factory(function (Container $c) {
             $userService = $c->get(UserService::class);
             $view = $c->get(ViewEngineInterface::class);
+            $authServer = $c->get(AuthorizationServer::class);
+            $permissionService = $c->get(PermissionService::class);
 
-            return new AuthServerMiddleware($userService, $view, SessionManager::getInstance());
+            return new AuthServerMiddleware($userService, $view, SessionManager::getInstance(), $authServer, $permissionService);
         });
 
         $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
@@ -234,7 +236,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
     public function addRoutes(Container $c, Router $router): void
     {
         $router->map('GET', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middlewares([$c->get(SessionAuthRedirect::class), $c->get(AuthServerMiddleware::class)]);
-        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middleware($c->get(SessionAuthRedirect::class));
+        $router->map('POST', '/oauth2/authorize', [AuthServerController::class, 'authorizeAction'])->middlewares([$c->get(SessionAuthRedirect::class), $c->get(AuthServerMiddleware::class)]);
         $router->map('POST', '/oauth2/token', [AuthServerController::class, 'accessTokenAction']);
         $router->map('GET', '/oauth2/login', [AuthServerController::class, 'loginAsSomeoneElse']);
         $router->map('GET', '/oauth2/callback', [ExampleController::class, 'callbackAction']);

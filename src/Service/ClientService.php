@@ -77,7 +77,7 @@ class ClientService
                 'confidential' => false,
             ];
 
-            $user = $this->getClientRepository()->getEntityManager()->getRepository(OAuthUser::class)->find(1);
+            $user = $this->getClientRepository()->getEntityManager()->getRepository(User::class)->find(1);
             $scope = $this->getClientRepository()->getEntityManager()->getRepository(Scope::class)->findOneBy(['identifier' => 'basic']);
             $client = $this->createFromArray($data, $user);
             $client->setScopes(new ArrayCollection([$scope]));

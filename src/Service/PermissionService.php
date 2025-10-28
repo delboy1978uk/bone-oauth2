@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Service;
 
-use Del\Entity\hUser;
+use Del\Entity\User;
 use Bone\OAuth2\Entity\UserApprovedScope;
 use Bone\OAuth2\Repository\UserApprovedScopeRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
@@ -25,7 +25,7 @@ class PermissionService
     /**
      * @return array<int, UserApprovedScope>
      */
-    public function getScopes(OAuthUser $user, ClientEntityInterface $client): array
+    public function getScopes(User $user, ClientEntityInterface $client): array
     {
         return $this->approvedScopeRepository->findBy([
             'user' => $user->getId(),
@@ -36,7 +36,7 @@ class PermissionService
     /**
      * @param array<ScopeEntityInterface> $scopes
      */
-    public function addScopes(OAuthUser $user, ClientEntityInterface $client, array $scopes): void
+    public function addScopes(User $user, ClientEntityInterface $client, array $scopes): void
     {
         foreach ($scopes as $scope) {
             $approvedScope = new UserApprovedScope();
