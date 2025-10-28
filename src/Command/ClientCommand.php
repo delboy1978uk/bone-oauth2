@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Command;
 
+use Bone\Console\Command;
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\ClientService;
 use Del\Entity\User;
 use Del\Service\UserService;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class ClientCommand extends Command
+class  ClientCommand extends Command
 {
     private ?QuestionHelper $helper = null;
     private ?User $user = null;
@@ -39,13 +39,19 @@ class ClientCommand extends Command
 
     private function userQuestion(InputInterface $input, OutputInterface $output): void
     {
-        $question = new Question('If this API key will belong to a user, enter the email or ID of the account: ', false);
+        $question = new Question('Which user will this API key belong to? Enter the email or ID of the account: ');
         $emailOrId = $this->helper->ask($input, $output, $question);
 
-        if ($emailOrId !== false) {
+        if ($emailOrId !== '') {
             $this->user = \is_numeric($emailOrId)
-                ? $this->userService->findUserById($emailOrId)
+                ? $this->userService->findUserById((int) $emailOrId)
                 : $this->userService->findUserByEmail($emailOrId);
+        }
+
+        if ($this->user === null) {
+            $io = $this->getIo($input, $output);
+            $io->warning('Please enter a valid user ID or email address.');
+            $this->userQuestion($input, $output);
         }
     }
 
@@ -55,15 +61,19 @@ class ClientCommand extends Command
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $this->helper = $helper;
-
-            $this->userQuestion($input, $output);
-
         $question = new ConfirmationQuestion('Is this a machine only (client_credentials) API key? ', false);
         $isClientCredentials = $this->helper->ask($input, $output, $question);
         $authGrant = $isClientCredentials ? 'client_credentials' : 'auth_code';
         $confidential = $isClientCredentials ? true : false;
+        $question = new ConfirmationQuestion('Is this a third party client? ', false);
+        $isThirdParty = $this->helper->ask($input, $output, $question);
         $output->writeln('Setting GrantType to ' . $authGrant . '..');
         $output->writeln('Setting confidential to ' . ($confidential ? 'true' : 'false') . '..');
+        $output->writeln('Setting third party to ' . ($isThirdParty ? 'true' : 'false') . '..');
+
+        if ($isClientCredentials || $isThirdParty) {
+            $this->userQuestion($input, $output);
+        }
 
         $question = new Question('Give a name for this application: ', false);
         $name = $this->helper->ask($input, $output, $question);
@@ -98,10 +108,10 @@ class ClientCommand extends Command
         $client->setIdentifier(md5($name));
         $client->setRedirectUri($uri);
         $client->setConfidential($confidential);
+        $client->setProprietary(!$isThirdParty);
 
         if ($this->user !== null) {
             $client->setUser($this->user);
-            $client->setProprietary(true);
         }
 
         foreach ($scopeChoices as $name) {
