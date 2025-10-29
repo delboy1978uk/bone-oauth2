@@ -225,7 +225,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         });
 
         $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
-            return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class));
+            return new ResourceServerMiddleware($c->get(ResourceServer::class), $c->get(UserService::class), $c->get(ClientService::class));
         });
 
         $c[ApiKeyController::class] = $c->factory(function (Container $c) {

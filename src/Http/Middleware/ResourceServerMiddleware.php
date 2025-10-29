@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Http\Middleware;
 
 use Bone\Http\Response\Json\Error\ErrorResponse;
+use Bone\OAuth2\Service\ClientService;
 use Del\Service\UserService;
 use Exception;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -20,7 +21,8 @@ class ResourceServerMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private ResourceServer $resourceServer,
-        private UserService $userService
+        private UserService $userService,
+        private ClientService $clientService
     ) {
     }
 
@@ -32,6 +34,12 @@ class ResourceServerMiddleware implements MiddlewareInterface
 
             if ($userId) {
                 $user = $this->userService->findUserById($userId);
+                $request = $request->withAttribute('user', $user);
+            } else {
+                // client credentials token, get user from client
+                $clientId = $request->getAttribute('oauth_client_id');
+                $client = $this->clientService->getClientRepository()->findOneBy(['identifier' => $clientId]);
+                $user = $client->getUser();
                 $request = $request->withAttribute('user', $user);
             }
 
