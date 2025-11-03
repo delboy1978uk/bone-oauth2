@@ -1,6 +1,6 @@
 # bone-oauth2
 [![Latest Stable Version](https://poser.pugx.org/delboy1978uk/bone-oauth2/v/stable)](https://packagist.org/packages/delboy1978uk/bone-oauth2) [![Total Downloads](https://poser.pugx.org/delboy1978uk/bone-oauth2/downloads)](https://packagist.org/packages/delboy1978uk/bone-oauth2) [![License](https://poser.pugx.org/delboy1978uk/bone-oauth2/license)](https://packagist.org/packages/delboy1978uk/bone-oauth2)<br />
-OAuth2 Authorization and Resource Server functionality for Bone MVC Framework
+OAuth2 Authorization and Resource Server functionality for Bone Framework
 
 ## installation
 Install via composer from the root of your Bone Framework project

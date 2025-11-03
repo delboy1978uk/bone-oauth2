@@ -6,11 +6,13 @@ namespace Bone\OAuth2;
 
 use Barnacle\Container;
 use Barnacle\RegistrationInterface;
+use Bone\Console\Command;
 use Bone\Console\CommandRegistrationInterface;
 use Bone\Contracts\Container\DefaultSettingsProviderInterface;
 use Bone\Contracts\Container\DependentPackagesProviderInterface;
 use Bone\Contracts\Container\EntityRegistrationInterface;
 use Bone\Contracts\Container\FixtureProviderInterface;
+use Bone\Contracts\Container\PostInstallProviderInterface;
 use Bone\Controller\Init;
 use Bone\Http\Middleware\JsonParse;
 use Bone\OAuth2\Command\ClientCommand;
@@ -22,7 +24,6 @@ use Bone\OAuth2\Fixtures\LoadScopes;
 use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
-use Bone\User\BoneUserPackage;
 use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
@@ -55,10 +56,13 @@ use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function file_exists;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface,
                                    EntityRegistrationInterface, FixtureProviderInterface, DefaultSettingsProviderInterface,
-                                   DependentPackagesProviderInterface
+                                   DependentPackagesProviderInterface, PostInstallProviderInterface
 {
     public function addToContainer(Container $c): void
     {
@@ -179,7 +183,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $function = function (Container $c) {
             $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
 
-            if (!\file_exists($publicKeyPath)) {
+            if (!file_exists($publicKeyPath)) {
                 throw new \Exception("Key not found. Create one! In `$publicKeyPath`, run:\nopenssl genrsa -out private.key 2048\nopenssl rsa -in private.key -pubout -out public.key\nchmod 660 public.key\nchmod 660 private.key\n");
             }
 
@@ -293,5 +297,33 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             'Bone\User\BoneUserPackage',
             self::class,
         ];
+    }
+
+    public function postInstall(Command $command, SymfonyStyle $io): void
+    {
+        $io->writeln('Checking for existing SSL keys..');
+
+        if (file_exists('data/keys/private.key') && file_exists('data/keys/public.key')) {
+            $io->warning('SSL keys already exist. Skipping.');
+        } else {
+            $io->writeln('No existing SSL keys found. Creating keys...');
+            $command->runProcess($io, ['openssl', 'genrsa', '-out', 'private.key', '2048']);
+            $command->runProcess($io, ['openssl', 'rsa', '-in', 'private.key', '-pubout', '-out', 'public.key']);
+            chmod('data/keys/private.key', 0660);
+            chmod('data/keys/public.key', 0660);
+        }
+
+        $io->writeln('Generating encryption key');
+        $process = $command->runProcess($io, ['vendor/bin/generate-defuse-key']);
+        $key = $process->getOutput();
+        $filePath = $this->getSettingsFileName();
+        $array = explode('/', $filePath);
+        $fileName = end($array);
+        $config = file_get_contents($filePath);
+        $regex = '#\'encryptionKey\'\s=>\s\'[a-f|\d]+\'#';
+        $replacement = "'encryptionKey' => '$key'";
+        $config = \preg_replace($regex, $replacement, $config);
+        file_put_contents('config/' . $fileName, $config);
+
     }
 }
