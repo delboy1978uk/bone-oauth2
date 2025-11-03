@@ -309,6 +309,8 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             $io->writeln('No existing SSL keys found. Creating keys...');
             $command->runProcess($io, ['openssl', 'genrsa', '-out', 'private.key', '2048']);
             $command->runProcess($io, ['openssl', 'rsa', '-in', 'private.key', '-pubout', '-out', 'public.key']);
+            $command->runProcess($io, ['mv', 'private.key', 'data/keys']);
+            $command->runProcess($io, ['mv', 'public.key', 'data/keys']);
             chmod('data/keys/private.key', 0660);
             chmod('data/keys/public.key', 0660);
         }
