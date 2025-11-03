@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Bone\OAuth2;
 
 use Barnacle\Container;
-use Barnacle\EntityRegistrationInterface;
 use Barnacle\RegistrationInterface;
 use Bone\Console\CommandRegistrationInterface;
+use Bone\Contracts\Container\DefaultSettingsProviderInterface;
+use Bone\Contracts\Container\EntityRegistrationInterface;
 use Bone\Contracts\Container\FixtureProviderInterface;
 use Bone\Controller\Init;
 use Bone\Http\Middleware\JsonParse;
@@ -20,8 +21,6 @@ use Bone\OAuth2\Fixtures\LoadScopes;
 use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
-use Bone\User\Http\Controller\Api\PersonApiController;
-use Bone\User\Http\Controller\Api\UserApiController;
 use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
@@ -39,7 +38,6 @@ use Bone\OAuth2\Repository\ClientRepository;
 use Bone\OAuth2\Repository\RefreshTokenRepository;
 use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Repository\UserApprovedScopeRepository;
-use Bone\OAuth2\Repository\UserRepository;
 use Bone\OAuth2\Service\ClientService;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\User\Http\Middleware\SessionAuth;
@@ -47,7 +45,6 @@ use Bone\User\Http\Middleware\SessionAuthRedirect;
 use Bone\Router\Router;
 use Bone\View\ViewEngineInterface;
 use DateInterval;
-use Del\Console\UserCommand;
 use Del\Service\UserService;
 use Del\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,14 +53,12 @@ use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
-use Symfony\Component\Console\Command\Command;
 
-class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface, EntityRegistrationInterface, FixtureProviderInterface
+class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface,
+                                   EntityRegistrationInterface, FixtureProviderInterface, DefaultSettingsProviderInterface
 {
     public function addToContainer(Container $c): void
     {
-        $userService = $c->get(UserService::class);
-
         $viewEngine = $c->get(ViewEngine::class);
         $viewEngine->addFolder('boneoauth2', __DIR__ . '/View/');
 
@@ -277,5 +272,10 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
             LoadScopes::class,
             LoadClients::class
         ];
+    }
+
+    public function getSettingsFileName(): string
+    {
+        return __DIR__ . '/../data/config/bone-oauth2.php';
     }
 }
