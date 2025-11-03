@@ -8,6 +8,7 @@ use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Console\CommandRegistrationInterface;
 use Bone\Contracts\Container\DefaultSettingsProviderInterface;
+use Bone\Contracts\Container\DependentPackagesProviderInterface;
 use Bone\Contracts\Container\EntityRegistrationInterface;
 use Bone\Contracts\Container\FixtureProviderInterface;
 use Bone\Controller\Init;
@@ -21,6 +22,7 @@ use Bone\OAuth2\Fixtures\LoadScopes;
 use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
+use Bone\User\BoneUserPackage;
 use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
@@ -55,7 +57,8 @@ use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface,
-                                   EntityRegistrationInterface, FixtureProviderInterface, DefaultSettingsProviderInterface
+                                   EntityRegistrationInterface, FixtureProviderInterface, DefaultSettingsProviderInterface,
+                                   DependentPackagesProviderInterface
 {
     public function addToContainer(Container $c): void
     {
@@ -277,5 +280,18 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
     public function getSettingsFileName(): string
     {
         return __DIR__ . '/../data/config/bone-oauth2.php';
+    }
+
+    public function getRequiredPackages(): array
+    {
+        return [
+            'Bone\Mail\MailPackage',
+            'Bone\BoneDoctrine\BoneDoctrinePackage',
+            'Bone\Paseto\PasetoPackage',
+            'Del\Person\PersonPackage',
+            'Del\UserPackage',
+            'Bone\User\BoneUserPackage',
+            self::class,
+        ];
     }
 }
