@@ -316,6 +316,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $io->writeln('Generating encryption key');
         $process = $command->runProcess($io, ['vendor/bin/generate-defuse-key']);
         $key = $process->getOutput();
+        $key = str_replace("\n", "", $key);
         $filePath = $this->getSettingsFileName();
         $array = explode('/', $filePath);
         $fileName = end($array);
@@ -324,6 +325,5 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $replacement = "'encryptionKey' => '$key'";
         $config = \preg_replace($regex, $replacement, $config);
         file_put_contents('config/' . $fileName, $config);
-
     }
 }
