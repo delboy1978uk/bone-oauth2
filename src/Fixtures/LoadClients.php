@@ -6,6 +6,7 @@ namespace Bone\OAuth2\Fixtures;
 
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\Scope;
+use Del\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -15,6 +16,8 @@ class LoadClients implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $basicScope = $manager->getRepository(Scope::class)->findOneBy(['identifier' => 'basic']);
+        $superuser = $manager->getRepository(User::class)->findOneBy(['email' => 'man@work.com']);
+
         $entity = new Client();
         $entity->setName('Bone Native Client');
         $entity->setDescription('Client used in Bone React Native Project');
@@ -48,6 +51,7 @@ class LoadClients implements FixtureInterface
         $entity->setConfidential(true);
         $entity->setProprietary(true);
         $entity->setScopes(new ArrayCollection([$basicScope]));
+        $entity->setUser($superuser);
         $manager->persist($entity);
         $manager->flush();
 
