@@ -125,6 +125,21 @@ class PackageTest extends Unit
         self::assertStringContainsString('bone-oauth2/src/Entity', $this->package->getEntityPath());
     }
 
+    public function testFixtures()
+    {
+        self::assertIsArray($this->package->getFixtures());
+    }
+
+    public function testSettings()
+    {
+        self::assertIsString($this->package->getSettingsFileName());
+    }
+
+    public function testGetRequiredPackages()
+    {
+        self::assertIsArray($this->package->getRequiredPackages());
+    }
+
     public function testMissingKeys()
     {
         $settings = [

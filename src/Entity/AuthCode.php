@@ -51,7 +51,7 @@ class AuthCode implements AuthCodeEntityInterface
         return $this->identifier;
     }
 
-    public function setIdentifier($identifier): void
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -77,9 +77,9 @@ class AuthCode implements AuthCodeEntityInterface
         $this->expiryDateTime = $dateTime;
     }
 
-    public function setUserIdentifier($identifier): void
+    public function setUserIdentifier(string $identifier): void
     {
-        $this->userIdentifier = $identifier;
+        $this->userIdentifier = (int) $identifier;
     }
 
     public function getUserIdentifier(): ?string
