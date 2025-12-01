@@ -4,28 +4,19 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Http\Middleware;
 
-use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\View\ViewEngineInterface;
-use Del\Service\UserService;
 use Del\SessionManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\ResourceServer;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Laminas\Diactoros\Response\JsonResponse;
 
 class AuthServerMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private UserService $userService,
         private ViewEngineInterface $view,
         private SessionManager $session,
         private AuthorizationServer $authServer,

@@ -19,7 +19,7 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
         return new RefreshToken();
     }
 
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): RefreshTokenEntityInterface
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void
     {
         $accessToken = $refreshTokenEntity->getAccessToken();
 
@@ -31,22 +31,16 @@ class RefreshTokenRepository extends EntityRepository implements RefreshTokenRep
 
         $this->getEntityManager()->persist($refreshTokenEntity);
         $this->getEntityManager()->flush();
-
-        return $refreshTokenEntity;
     }
 
-    public function revokeRefreshToken($tokenId): bool
+    public function revokeRefreshToken($tokenId): void
     {
         $token = $this->findOneBy(['identifier' => $tokenId]);
 
         if ($token instanceof RefreshTokenEntityInterface) {
             $this->getEntityManager()->remove($token);
             $this->getEntityManager()->flush();
-
-            return true;
         }
-
-        return false;
     }
 
     public function isRefreshTokenRevoked($tokenId): bool

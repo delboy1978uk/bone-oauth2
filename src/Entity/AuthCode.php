@@ -82,9 +82,9 @@ class AuthCode implements AuthCodeEntityInterface
         $this->userIdentifier = $identifier;
     }
 
-    public function getUserIdentifier(): int
+    public function getUserIdentifier(): ?string
     {
-        return $this->userIdentifier;
+        return (string) $this->userIdentifier;
     }
 
     public function getClient(): ClientEntityInterface

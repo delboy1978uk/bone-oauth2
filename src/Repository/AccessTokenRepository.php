@@ -16,12 +16,10 @@ use Bone\OAuth2\Entity\AccessToken;
 /** @extends EntityRepository<AccessToken> */
 class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
-    public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): AccessTokenEntityInterface
+    public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): void
     {
         $this->getEntityManager()->persist($accessTokenEntity);
         $this->getEntityManager()->flush();
-
-        return $accessTokenEntity;
     }
 
     public function revokeAccessToken($tokenId): void
