@@ -80,6 +80,17 @@ class ApiKeyController extends Controller
         if ($form->isValid()) {
             $user = $request->getAttribute('user');
             $data = $form->getValues();
+            
+            // Parse callback URLs from textarea (support newlines and commas)
+            if (isset($data['callbackUrls'])) {
+                $callbackUrlsString = $data['callbackUrls'];
+                // Split by newlines first, then by commas
+                $urls = preg_split('/[\r\n,]+/', $callbackUrlsString);
+                // Trim and filter empty values
+                $urls = array_filter(array_map('trim', $urls));
+                $data['callbackUrls'] = array_values($urls);
+            }
+            
             $client = $this->clientService->createFromArray($data, $user);
             $this->clientService->getClientRepository()->create($client);
             $body = $this->getView()->render('boneoauth2::add-key-success', [
