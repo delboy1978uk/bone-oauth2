@@ -6,13 +6,13 @@ namespace Tests\Unit;
 
 use Barnacle\Container;
 use Barnacle\Exception\ContainerException;
+use Bone\Contracts\Service\TranslatorInterface;
 use Bone\OAuth2\BoneOAuth2Package;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Entity\AccessToken;
 use Bone\OAuth2\Entity\AuthCode;
 use Bone\OAuth2\Entity\Client;
-use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Entity\RefreshToken;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Entity\UserApprovedScope;
@@ -27,13 +27,12 @@ use Bone\Router\Router;
 use Bone\Server\SiteConfig;
 use Bone\User\Http\Middleware\SessionAuth;
 use Bone\User\Http\Middleware\SessionAuthRedirect;
-use Bone\View\ViewEngine;
+use Bone\View\ViewEngineInterface;
 use Codeception\Test\Unit;
+use Del\Entity\User;
 use Del\Service\UserService;
 use Del\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Laminas\I18n\Translator\Translator;
-use Laminas\I18n\Translator\TranslatorInterface;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\ResourceServer;
 use Tests\Support\UnitTester;
@@ -48,10 +47,10 @@ class PackageTest extends Unit
     {
         $this->container = new Container();
         $userService = $this->createMock(UserService::class);
-        $view = $this->createMock(ViewEngine::class);
+        $view = $this->createMock(ViewEngineInterface::class);
         $authMiddleware = $this->createMock(SessionAuth::class);
         $redirectMiddleware = $this->createMock(SessionAuthRedirect::class);
-        $translator = $this->createMock(Translator::class);
+        $translator = $this->createMock(TranslatorInterface::class);
         $sessionManager = SessionManager::getInstance();
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $accessTokenRepository = $this->createMock(AccessTokenRepository::class);
@@ -68,7 +67,7 @@ class PackageTest extends Unit
             [AuthCode::class, $authCodeRepository],
             [RefreshToken::class, $refreshTokenRepository],
             [UserApprovedScope::class, $userScopeRepository],
-            [OAuthUser::class, $userRepository],
+            [User::class, $userRepository],
         ];
         $entityManager->method('getRepository')->with()->willReturnMap($map);
         $settings = [
@@ -83,13 +82,14 @@ class PackageTest extends Unit
         $siteConfig = $this->createMock(SiteConfig::class);
         $this->container['oauth2'] = $settings;
         $this->container[SiteConfig::class] = $siteConfig;
+        $this->container[UserRepository::class] = $userRepository;
         $this->container[UserService::class] = $userService;
-        $this->container[ViewEngine::class] = $view;
+        $this->container[ViewEngineInterface::class] = $view;
         $this->container[SessionAuth::class] = $authMiddleware;
         $this->container[SessionAuthRedirect::class] = $redirectMiddleware;
         $this->container[SessionManager::class] = $sessionManager;
         $this->container[EntityManagerInterface::class] = $entityManager;
-        $this->container[Translator::class] = $translator;
+        $this->container[TranslatorInterface::class] = $translator;
         $this->package = new BoneOAuth2Package();
     }
 

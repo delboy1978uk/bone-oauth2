@@ -66,7 +66,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
 {
     public function addToContainer(Container $c): void
     {
-        $viewEngine = $c->get(ViewEngine::class);
+        $viewEngine = $c->get(ViewEngineInterface::class);
         $viewEngine->addFolder('boneoauth2', __DIR__ . '/View/');
 
         // AccessToken
