@@ -6,11 +6,11 @@ namespace Tests\Unit\Service;
 
 use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\Scope;
+use Bone\OAuth2\Form\RegisterClientForm;
 use Bone\OAuth2\Repository\ClientRepository;
 use Bone\OAuth2\Service\ClientService;
 use Codeception\Test\Unit;
 use Del\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class ClientServiceRegisterTest extends Unit
 {
@@ -59,7 +59,9 @@ class ClientServiceRegisterTest extends Unit
                     && $client->getSecret() !== null;
             }));
 
-        $result = $this->service->registerNewClient($data);
+        $form = new RegisterClientForm('reg');
+        $form->populate($data);
+        $result = $this->service->registerNewClient($form);
 
         $this->assertInstanceOf(Client::class, $result);
         $this->assertEquals('Test Client', $result->getName());
@@ -82,7 +84,9 @@ class ClientServiceRegisterTest extends Unit
                     && $client->getGrantType() === 'client_credentials';
             }));
 
-        $result = $this->service->registerNewClient($data);
+        $form = new RegisterClientForm('reg');
+        $form->populate($data);
+        $result = $this->service->registerNewClient($form);
 
         $this->assertInstanceOf(Client::class, $result);
     }
@@ -103,9 +107,11 @@ class ClientServiceRegisterTest extends Unit
                     && strlen($client->getIdentifier()) === 32;
             }));
 
-        $result = $this->service->registerNewClient($data);
+        $form = new RegisterClientForm('reg');
+        $form->populate($data);
+        $result = $this->service->registerNewClient($form);
 
-        $this->assertNotNull($result->getIdentifier());
+        $this->assertNotNull($result->getBody());
     }
 
     public function testRegisterNewClientWithConfidentialGeneratesSecret()
@@ -125,9 +131,11 @@ class ClientServiceRegisterTest extends Unit
                     && $client->getSecret() !== null;
             }));
 
-        $result = $this->service->registerNewClient($data);
+        $form = new RegisterClientForm('reg');
+        $form->populate($data);
+        $result = $this->service->registerNewClient($form);
 
-        $this->assertNotNull($result->getSecret());
+        $this->assertNotNull($result->getBody());
     }
 
     public function testRegisterNewClientWithNonConfidentialNoSecret()
@@ -147,8 +155,10 @@ class ClientServiceRegisterTest extends Unit
                     && $client->getSecret() === null;
             }));
 
-        $result = $this->service->registerNewClient($data);
+        $form = new RegisterClientForm('reg');
+        $form->populate($data);
+        $result = $this->service->registerNewClient($form);
 
-        $this->assertNull($result->getSecret());
+        $this->assertNull($result->getBody());
     }
 }

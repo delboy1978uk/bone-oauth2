@@ -8,14 +8,13 @@ use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Entity\OAuthUser;
 use Bone\OAuth2\Service\ClientService;
 use Bone\OAuth2\Service\PermissionService;
-use Bone\Server\Session;
+use Del\SessionManager;
 use Codeception\Test\Unit;
 use Del\Entity\User;
 use Del\Service\UserService;
 use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Psr\Http\Message\ResponseInterface;
 
 class AuthServerControllerTest extends Unit
@@ -25,7 +24,7 @@ class AuthServerControllerTest extends Unit
     private UserService $userService;
     private PermissionService $permissionService;
     private ClientService $clientService;
-    private Session $session;
+    private SessionManager $session;
 
     protected function _before()
     {
@@ -33,7 +32,7 @@ class AuthServerControllerTest extends Unit
         $this->userService = $this->createMock(UserService::class);
         $this->permissionService = $this->createMock(PermissionService::class);
         $this->clientService = $this->createMock(ClientService::class);
-        $this->session = $this->createMock(Session::class);
+        $this->session = SessionManager::getInstance();
 
         $this->controller = new AuthServerController(
             $this->server,
@@ -48,7 +47,7 @@ class AuthServerControllerTest extends Unit
     {
         $request = new ServerRequest();
         $response = $this->createMock(ResponseInterface::class);
-        
+
         $this->server->expects($this->once())
             ->method('respondToAccessTokenRequest')
             ->willReturn($response);
@@ -62,7 +61,7 @@ class AuthServerControllerTest extends Unit
     {
         $request = new ServerRequest();
         $exception = OAuthServerException::invalidRequest('test');
-        
+
         $this->server->expects($this->once())
             ->method('respondToAccessTokenRequest')
             ->willThrowException($exception);

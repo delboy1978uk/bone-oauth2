@@ -102,11 +102,11 @@ class ClientScopeCommand extends Command
         }
     }
 
-    private function fetchClient(OutputInterface $output, string $id): Client
+    private function fetchClient(OutputInterface $output, string $id): ?Client
     {
         $output->writeln('Fetching client ' . $id .'...');
 
-        return $this->clientService->getClientRepository()->getClientEntity($id);;
+        return $this->clientService->getClientRepository()->getClientEntity($id);
     }
 
     private function addScope(InputInterface $input, OutputInterface $output): void

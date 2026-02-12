@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Middleware;
 
+use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Http\Middleware\ResourceServerMiddleware;
+use Bone\OAuth2\Repository\ClientRepository;
+use Bone\OAuth2\Service\ClientService;
 use Codeception\Test\Unit;
+use Del\Entity\User;
+use Del\Service\UserService;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -17,11 +22,21 @@ class ResourceServerMiddlewareTest extends Unit
 {
     private ResourceServerMiddleware $middleware;
     private ResourceServer $server;
+    private UserService $userService;
+    private ClientService $clientService;
 
     protected function _before()
     {
+        $user = $this->createMock(User::class);
+        $client = $this->createMock(Client::class);
+        $client->method('getUser')->willReturn($user);
+        $clientRepo = $this->createMock(ClientRepository::class);
+        $clientRepo->method('findOneBy')->willReturn($client);
         $this->server = $this->createMock(ResourceServer::class);
-        $this->middleware = new ResourceServerMiddleware($this->server);
+        $this->userService = $this->createMock(UserService::class);
+        $this->clientService = $this->createMock(ClientService::class);
+        $this->clientService->method('getClientRepository')->willReturn($clientRepo);
+        $this->middleware = new ResourceServerMiddleware($this->server, $this->userService, $this->clientService);
     }
 
     public function testProcessWithValidToken()
