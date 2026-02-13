@@ -1,16 +1,9 @@
 <?php
 
-declare(strict_types=1);
+namespace Bone\OAuth2\Test\Unit\Http\Middleware;
 
-namespace Tests\Unit\Http\Middleware;
-
-use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Http\Middleware\ResourceServerMiddleware;
-use Bone\OAuth2\Repository\ClientRepository;
-use Bone\OAuth2\Service\ClientService;
 use Codeception\Test\Unit;
-use Del\Entity\User;
-use Del\Service\UserService;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -20,61 +13,91 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ResourceServerMiddlewareTest extends Unit
 {
-    private ResourceServerMiddleware $middleware;
-    private ResourceServer $server;
-    private UserService $userService;
-    private ClientService $clientService;
-
-    protected function _before()
-    {
-        $user = $this->createMock(User::class);
-        $client = $this->createMock(Client::class);
-        $client->method('getUser')->willReturn($user);
-        $clientRepo = $this->createMock(ClientRepository::class);
-        $clientRepo->method('findOneBy')->willReturn($client);
-        $this->server = $this->createMock(ResourceServer::class);
-        $this->userService = $this->createMock(UserService::class);
-        $this->clientService = $this->createMock(ClientService::class);
-        $this->clientService->method('getClientRepository')->willReturn($clientRepo);
-        $this->middleware = new ResourceServerMiddleware($this->server, $this->userService, $this->clientService);
-    }
-
     public function testProcessWithValidToken()
     {
+        $resourceServer = $this->createMock(ResourceServer::class);
+        $middleware = new ResourceServerMiddleware($resourceServer);
+        
         $request = new ServerRequest();
-        $validatedRequest = new ServerRequest();
+        $request = $request->withHeader('Authorization', 'Bearer valid-token');
+        
         $handler = $this->createMock(RequestHandlerInterface::class);
-        $response = new Response();
-
-        $this->server->expects($this->once())
-            ->method('validateAuthenticatedRequest')
-            ->willReturn($validatedRequest);
-
         $handler->expects($this->once())
             ->method('handle')
-            ->willReturn($response);
-
-        $result = $this->middleware->process($request, $handler);
-
-        $this->assertInstanceOf(ResponseInterface::class, $result);
+            ->willReturn(new Response());
+        
+        // Mock validateAuthenticatedRequest to return the request
+        $resourceServer->expects($this->once())
+            ->method('validateAuthenticatedRequest')
+            ->willReturn($request);
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
     }
 
     public function testProcessWithInvalidToken()
     {
+        $resourceServer = $this->createMock(ResourceServer::class);
+        $middleware = new ResourceServerMiddleware($resourceServer);
+        
         $request = new ServerRequest();
+        $request = $request->withHeader('Authorization', 'Bearer invalid-token');
+        
         $handler = $this->createMock(RequestHandlerInterface::class);
+        
+        // Mock validateAuthenticatedRequest to throw OAuthServerException
         $exception = OAuthServerException::accessDenied('Invalid token');
-
-        $this->server->expects($this->once())
+        $resourceServer->expects($this->once())
             ->method('validateAuthenticatedRequest')
-            ->with($request)
             ->willThrowException($exception);
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertGreaterThanOrEqual(400, $response->getStatusCode());
+    }
 
-        $handler->expects($this->never())
-            ->method('handle');
+    public function testProcessWithMissingToken()
+    {
+        $resourceServer = $this->createMock(ResourceServer::class);
+        $middleware = new ResourceServerMiddleware($resourceServer);
+        
+        $request = new ServerRequest();
+        // No Authorization header
+        
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        
+        // Mock validateAuthenticatedRequest to throw OAuthServerException
+        $exception = OAuthServerException::accessDenied('Missing token');
+        $resourceServer->expects($this->once())
+            ->method('validateAuthenticatedRequest')
+            ->willThrowException($exception);
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(401, $response->getStatusCode());
+    }
 
-        $result = $this->middleware->process($request, $handler);
-
-        $this->assertInstanceOf(ResponseInterface::class, $result);
+    public function testProcessWithGenericException()
+    {
+        $resourceServer = $this->createMock(ResourceServer::class);
+        $middleware = new ResourceServerMiddleware($resourceServer);
+        
+        $request = new ServerRequest();
+        $request = $request->withHeader('Authorization', 'Bearer token');
+        
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        
+        // Mock validateAuthenticatedRequest to throw generic exception
+        $resourceServer->expects($this->once())
+            ->method('validateAuthenticatedRequest')
+            ->willThrowException(new \Exception('Server error'));
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
     }
 }

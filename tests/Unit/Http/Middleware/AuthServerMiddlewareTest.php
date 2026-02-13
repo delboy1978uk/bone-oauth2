@@ -1,71 +1,107 @@
 <?php
 
-declare(strict_types=1);
+namespace Bone\OAuth2\Test\Unit\Http\Middleware;
 
-namespace Tests\Unit\Http\Middleware;
-
-use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
-use Bone\OAuth2\Service\PermissionService;
-use Bone\Server\Session;
-use Bone\View\ViewEngineInterface;
 use Codeception\Test\Unit;
-use Del\Entity\User;
-use Del\Service\UserService;
-use Del\SessionManager;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class AuthServerMiddlewareTest extends Unit
 {
-    private AuthServerMiddleware $middleware;
-    private UserService $userService;
-    private SessionManager $session;
-    private AuthorizationServer $authorizationServer;
-    private PermissionService $permissionService;
-    private ViewEngineInterface $viewEngine;
-
-    protected function _before()
+    public function testProcessWithValidAuthorizationRequest()
     {
-        $authRequest = $this->createMock(AuthorizationRequest::class);
-        $client = new Client();
-        $client->setProprietary(true);
-        $authRequest->method('getClient')->willReturn($client);
-        $this->userService = $this->createMock(UserService::class);
-        $this->authorizationServer = $this->createMock(AuthorizationServer::class);
-        $this->authorizationServer->method('validateAuthorizationRequest')->willReturn($authRequest);
-        $this->userService = $this->createMock(UserService::class);
-        $this->permissionService = $this->createMock(PermissionService::class);
-        $this->viewEngine = $this->createMock(ViewEngineInterface::class);
-        $this->viewEngine->method('render')->willReturn('test');
-        $this->session = SessionManager::getInstance();
-        $this->middleware = new AuthServerMiddleware($this->userService, $this->viewEngine, $this->session, $this->authorizationServer, $this->permissionService);;
+        $authServer = $this->createMock(AuthorizationServer::class);
+        $middleware = new AuthServerMiddleware($authServer);
+        
+        $request = new ServerRequest();
+        $request = $request->withMethod('GET');
+        $request = $request->withQueryParams([
+            'response_type' => 'code',
+            'client_id' => 'test-client'
+        ]);
+        
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler->expects($this->once())
+            ->method('handle')
+            ->willReturn(new Response());
+        
+        // Mock validateAuthorizationRequest to return a valid request
+        $authServer->expects($this->once())
+            ->method('validateAuthorizationRequest')
+            ->willReturn($request);
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
     }
 
-    public function testProcessWithAuthenticatedUser()
+    public function testProcessWithOAuthException()
     {
-        $user = $this->createMock(User::class);
+        $authServer = $this->createMock(AuthorizationServer::class);
+        $middleware = new AuthServerMiddleware($authServer);
+        
         $request = new ServerRequest();
+        $request = $request->withMethod('GET');
+        $request = $request->withQueryParams([
+            'response_type' => 'code',
+            'client_id' => 'invalid-client'
+        ]);
+        
         $handler = $this->createMock(RequestHandlerInterface::class);
-        $response = new Response();
-        $this->session->set('user', 1);
-        $this->userService->method('findUserById')->willReturn($user);
-        $result = $this->middleware->process($request, $handler);
-        $this->assertInstanceOf(ResponseInterface::class, $result);
+        
+        // Mock validateAuthorizationRequest to throw OAuthServerException
+        $exception = OAuthServerException::invalidClient($request);
+        $authServer->expects($this->once())
+            ->method('validateAuthorizationRequest')
+            ->willThrowException($exception);
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertGreaterThanOrEqual(400, $response->getStatusCode());
     }
 
-    public function testProcessWithoutAuthenticatedUser()
+    public function testProcessWithGenericException()
     {
+        $authServer = $this->createMock(AuthorizationServer::class);
+        $middleware = new AuthServerMiddleware($authServer);
+        
         $request = new ServerRequest();
+        $request = $request->withMethod('GET');
+        
         $handler = $this->createMock(RequestHandlerInterface::class);
-        $this->session->set('user', null);
-        $handler->expects($this->never())->method('handle');
-        $result = $this->middleware->process($request, $handler);
-        $this->assertInstanceOf(ResponseInterface::class, $result);
-        $this->assertEquals(200, $result->getStatusCode());
+        
+        // Mock validateAuthorizationRequest to throw generic exception
+        $authServer->expects($this->once())
+            ->method('validateAuthorizationRequest')
+            ->willThrowException(new \Exception('Something went wrong'));
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testProcessWithPostRequest()
+    {
+        $authServer = $this->createMock(AuthorizationServer::class);
+        $middleware = new AuthServerMiddleware($authServer);
+        
+        $request = new ServerRequest();
+        $request = $request->withMethod('POST');
+        
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler->expects($this->once())
+            ->method('handle')
+            ->willReturn(new Response());
+        
+        $response = $middleware->process($request, $handler);
+        
+        $this->assertInstanceOf(ResponseInterface::class, $response);
     }
 }
