@@ -103,8 +103,6 @@ class ClientService
             $code = 400;
         }
 
-        $response = new JsonResponse($body);
-
-        return $response->withStatus($code);
+        return (new JsonResponse($body))->withStatus($code);
     }
 }

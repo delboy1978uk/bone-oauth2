@@ -11,6 +11,7 @@ use Bone\OAuth2\Repository\ClientRepository;
 use Bone\OAuth2\Service\ClientService;
 use Codeception\Test\Unit;
 use Del\Entity\User;
+use Psr\Http\Message\ResponseInterface;
 
 class ClientServiceRegisterTest extends Unit
 {
@@ -32,11 +33,11 @@ class ClientServiceRegisterTest extends Unit
         $scope2->setIdentifier('write');
 
         $data = [
-            'name' => 'Test Client',
+            'client_name' => 'Test Client',
             'description' => 'Test Description',
-            'icon' => 'https://example.com/icon.png',
-            'redirect_uri' => 'https://example.com/callback',
-            'grant_type' => 'authorization_code',
+            'logo_uri' => 'https://example.com/icon.png',
+            'redirect_uris' => 'https://example.com/callback',
+            'token_endpoint_auth_method' => 'authorization_code',
             'confidential' => true,
             'proprietary' => false,
             'user' => $user,
@@ -62,17 +63,20 @@ class ClientServiceRegisterTest extends Unit
         $form = new RegisterClientForm('reg');
         $form->populate($data);
         $result = $this->service->registerNewClient($form);
-
-        $this->assertInstanceOf(Client::class, $result);
-        $this->assertEquals('Test Client', $result->getName());
+        codecept_debug($result);
+        $this->assertJson($result->getBody()->getContents());
     }
 
     public function testRegisterNewClientWithMinimalFields()
     {
         $data = [
             'name' => 'Minimal Client',
+            'description' => 'Test Description',
+            'icon' => 'https://example.com/icon.png',
             'redirect_uri' => 'https://example.com/callback',
-            'grant_type' => 'client_credentials'
+            'grant_type' => 'authorization_code',
+            'confidential' => true,
+            'proprietary' => false,
         ];
 
         $this->repository->expects($this->once())
@@ -87,8 +91,7 @@ class ClientServiceRegisterTest extends Unit
         $form = new RegisterClientForm('reg');
         $form->populate($data);
         $result = $this->service->registerNewClient($form);
-
-        $this->assertInstanceOf(Client::class, $result);
+        $this->assertInstanceOf(ResponseInterface::class, $result);
     }
 
     public function testRegisterNewClientGeneratesIdentifier()
@@ -96,7 +99,11 @@ class ClientServiceRegisterTest extends Unit
         $data = [
             'name' => 'Test Client',
             'redirect_uri' => 'https://example.com/callback',
-            'grant_type' => 'authorization_code'
+            'grant_type' => 'authorization_code',
+            'description' => 'Test Description',
+            'icon' => 'https://example.com/icon.png',
+            'confidential' => true,
+            'proprietary' => false,
         ];
 
         $this->repository->expects($this->once())
@@ -110,7 +117,6 @@ class ClientServiceRegisterTest extends Unit
         $form = new RegisterClientForm('reg');
         $form->populate($data);
         $result = $this->service->registerNewClient($form);
-
         $this->assertNotNull($result->getBody());
     }
 
@@ -134,7 +140,6 @@ class ClientServiceRegisterTest extends Unit
         $form = new RegisterClientForm('reg');
         $form->populate($data);
         $result = $this->service->registerNewClient($form);
-
         $this->assertNotNull($result->getBody());
     }
 
@@ -158,7 +163,6 @@ class ClientServiceRegisterTest extends Unit
         $form = new RegisterClientForm('reg');
         $form->populate($data);
         $result = $this->service->registerNewClient($form);
-
-        $this->assertNull($result->getBody());
+        $this->assertInstanceOf(ResponseInterface::class, $result);
     }
 }

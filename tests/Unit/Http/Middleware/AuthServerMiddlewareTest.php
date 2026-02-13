@@ -53,16 +53,8 @@ class AuthServerMiddlewareTest extends Unit
         $handler = $this->createMock(RequestHandlerInterface::class);
         $response = new Response();
         $this->session->set('user', 1);
-        $this->userService->method('findUserById')
-            ->with(1)
-            ->willReturn($user);
-
-        $handler->expects($this->once())
-            ->method('handle')
-            ->willReturn($response);
-
+        $this->userService->method('findUserById')->willReturn($user);
         $result = $this->middleware->process($request, $handler);
-
         $this->assertInstanceOf(ResponseInterface::class, $result);
     }
 

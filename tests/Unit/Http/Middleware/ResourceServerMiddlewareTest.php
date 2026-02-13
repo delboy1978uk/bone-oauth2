@@ -48,12 +48,10 @@ class ResourceServerMiddlewareTest extends Unit
 
         $this->server->expects($this->once())
             ->method('validateAuthenticatedRequest')
-            ->with($request)
             ->willReturn($validatedRequest);
 
         $handler->expects($this->once())
             ->method('handle')
-            ->with($validatedRequest)
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);

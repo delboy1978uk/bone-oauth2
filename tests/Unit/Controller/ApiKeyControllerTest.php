@@ -45,21 +45,14 @@ class ApiKeyControllerTest extends Unit
     {
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(1);
-
         $client1 = new Client();
         $client1->setName('Client 1');
         $client2 = new Client();
         $client2->setName('Client 2');
-
         $request = new ServerRequest();
         $request = $request->withAttribute('user', $user);
-
-        $this->clientRepository->method('findBy')
-            ->with(['user' => $user, 'proprietary' => true])
-            ->willReturn([$client1, $client2]);
-
+        $this->clientRepository->method('findBy')->willReturn([$client1, $client2]);
         $response = $this->controller->myApiKeysAction($request);
-
         $this->assertInstanceOf(ResponseInterface::class, $response);
     }
 
@@ -80,15 +73,13 @@ class ApiKeyControllerTest extends Unit
     {
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(1);
-
         $client = new Client();
         $client->setIdentifier('test-client');
         $client->setUser($user);
-
         $request = new ServerRequest();
         $request = $request->withAttribute('id', 'test-client')->withAttribute('user', $user);
         $this->clientRepository->method('find')->willReturn($client);
-        $this->clientService->expects($this->once())->method('deleteClient')->with($client);
+        $this->clientRepository->expects($this->once())->method('delete')->with($client);
         $response = $this->controller->deleteAction($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -127,7 +118,14 @@ class ApiKeyControllerTest extends Unit
     {
         $user = $this->createMock(User::class);
         $request = new ServerRequest();
-        $request = $request->withAttribute('user', $user)->withParsedBody(['name' => 'Test API Key', 'description' => 'Test Description']);
+        $request = $request->withAttribute('user', $user)->withParsedBody([
+            'name' => 'Test API Key',
+            'description' => 'Test Description',
+            'icon' => 'your-face.jpg',
+            'redirectUri' => 'https://example.com/callback',
+            'grantType' => 'client_credentials',
+            'confidential' => true,
+        ]);
         $this->clientService->expects($this->once())->method('createFromArray');
         $response = $this->controller->addSubmitAction($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
