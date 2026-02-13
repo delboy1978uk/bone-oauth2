@@ -24,7 +24,7 @@ class AuthServerControllerUncoveredTest extends Unit
         $clientRepo = $this->createMock(ClientRepository::class);
         $scopeRepo = $this->createMock(ScopeRepository::class);
         
-        $controller = new AuthServerController($authServer);
+        $controller = new AuthServerController($authServer, $this->createMock(UserService::class), $this->createMock(PermissionService::class), $this->createMock(ClientService::class));
         
         // Create a request with query parameters
         $request = new ServerRequest();
@@ -79,7 +79,7 @@ class AuthServerControllerUncoveredTest extends Unit
     public function testAuthorizeActionWithMissingUser()
     {
         $authServer = $this->createMock(AuthorizationServer::class);
-        $controller = new AuthServerController($authServer);
+        $controller = new AuthServerController($authServer, $this->createMock(UserService::class), $this->createMock(PermissionService::class), $this->createMock(ClientService::class));
         
         $request = new ServerRequest();
         $request = $request->withQueryParams([
@@ -98,7 +98,7 @@ class AuthServerControllerUncoveredTest extends Unit
         $authServer = $this->createMock(AuthorizationServer::class);
         $clientRepo = $this->createMock(ClientRepository::class);
         
-        $controller = new AuthServerController($authServer);
+        $controller = new AuthServerController($authServer, $this->createMock(UserService::class), $this->createMock(PermissionService::class), $this->createMock(ClientService::class));
         
         $request = new ServerRequest();
         $request = $request->withQueryParams([
@@ -124,7 +124,7 @@ class AuthServerControllerUncoveredTest extends Unit
     public function testLoginAsSomeoneElse()
     {
         $authServer = $this->createMock(AuthorizationServer::class);
-        $controller = new AuthServerController($authServer);
+        $controller = new AuthServerController($authServer, $this->createMock(UserService::class), $this->createMock(PermissionService::class), $this->createMock(ClientService::class));
         
         $request = new ServerRequest();
         $request = $request->withQueryParams([
@@ -144,7 +144,7 @@ class AuthServerControllerUncoveredTest extends Unit
     public function testAccessTokenActionWithException()
     {
         $authServer = $this->createMock(AuthorizationServer::class);
-        $controller = new AuthServerController($authServer);
+        $controller = new AuthServerController($authServer, $this->createMock(UserService::class), $this->createMock(PermissionService::class), $this->createMock(ClientService::class));
         
         $request = new ServerRequest();
         $response = new Response();
