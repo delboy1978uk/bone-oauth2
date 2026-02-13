@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use Barnacle\Container;
 use Barnacle\Exception\ContainerException;
+use Bone\Console\Command;
 use Bone\Contracts\Service\TranslatorInterface;
 use Bone\OAuth2\BoneOAuth2Package;
 use Bone\OAuth2\Controller\ApiKeyController;
@@ -35,6 +36,8 @@ use Del\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\ResourceServer;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 use Tests\Support\UnitTester;
 
 class PackageTest extends Unit
@@ -151,5 +154,65 @@ class PackageTest extends Unit
         self::assertInstanceOf(AuthServerController::class, $this->container->get(AuthServerController::class));
         self::assertTrue($this->container->has(UserRepository::class));
         self::assertInstanceOf(UserRepository::class, $this->container->get(UserRepository::class));
+    }
+
+    public function testPostInstallWithKeys()
+    {
+        $cwd = getcwd();
+        chdir('tests');
+        $command = $this->createMock(Command::class);
+        $this->createKeys();
+        $io = $this->createMock(SymfonyStyle::class);
+        $command->expects($this->once())->method('runProcess');
+        $this->package->postInstall($command, $io);
+        $this->fileAssertions();
+        $this->removeFiles();
+        chdir($cwd);
+    }
+
+    public function testPostInstallWithoutKeys()
+    {
+        $cwd = getcwd();
+        chdir('tests');
+        $command = $this->createMock(Command::class);
+        $io = $this->createMock(SymfonyStyle::class);
+        $command->expects($this->any())->method('runProcess')->willReturnMap([
+            [$io, ['openssl', 'genrsa', '-out', 'private.key', '2048'], $this->createKeys()],
+            [$io, ['vendor/bin/generate-defuse-key'], $this->createProcess()]
+        ]);
+
+
+        $this->package->postInstall($command, $io);
+        $this->fileAssertions();
+        $this->removeFiles();
+        chdir($cwd);
+    }
+
+    private function fileAssertions(): void
+    {
+        $this->assertFileExists('data/keys/private.key');
+        $this->assertFileExists('data/keys/public.key');
+        $this->assertFileExists('config/bone-oauth2.php');
+    }
+
+
+    private function createKeys(): Process
+    {
+        file_put_contents('data/keys/private.key', 'fake');
+        file_put_contents('data/keys/public.key', 'fake');
+
+        return $this->createProcess();
+    }
+
+    public function createProcess(): Process
+    {
+        return $this->make(Process::class, ['getOutput' => 'xxx']);
+    }
+
+    private function removeFiles(): void
+    {
+        unlink('data/keys/private.key');
+        unlink('data/keys/public.key');
+        unlink('config/bone-oauth2.php');
     }
 }
