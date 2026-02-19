@@ -6,7 +6,7 @@ use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Exception\OAuthException;
 use Bone\OAuth2\Repository\ClientRepository;
 use Bone\OAuth2\Service\ClientService;
-use Bone\User\Entity\User;
+use Del\Entity\User;
 use Codeception\Test\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 

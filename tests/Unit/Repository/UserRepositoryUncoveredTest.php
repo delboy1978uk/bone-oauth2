@@ -3,7 +3,7 @@
 namespace Bone\OAuth2\Test\Unit\Repository;
 
 use Bone\OAuth2\Repository\UserRepository;
-use Bone\User\Entity\User;
+use Del\Entity\User;
 use Codeception\Test\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
