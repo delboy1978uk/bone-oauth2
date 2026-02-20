@@ -85,10 +85,8 @@ class AuthServerMiddlewareTest extends Unit
             ->method('validateAuthorizationRequest')
             ->willThrowException($exception);
 
-        $response = $middleware->process($request, $handler);
-
-        $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertGreaterThanOrEqual(400, $response->getStatusCode());
+        $this->expectException(OAuthServerException::class);
+        $middleware->process($request, $handler);
     }
 
     public function testProcessWithGenericException()
@@ -105,23 +103,22 @@ class AuthServerMiddlewareTest extends Unit
             ->method('validateAuthorizationRequest')
             ->willThrowException(new \Exception('Something went wrong'));
 
-        $response = $middleware->process($request, $handler);
-
-        $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->expectException(\Exception::class);
+        $middleware->process($request, $handler);
     }
 
     public function testProcessWithPostRequest()
     {
         $authServer = $this->createMock(AuthorizationServer::class);
-        $middleware = $this->getMiddleware($authServer);
+        $view = $this->createMock(ViewEngineInterface::class);
+        $view->method('render')->willReturn('<html></html>');
+        $middleware = $this->getMiddleware($authServer, $view);
 
         $request = new ServerRequest();
         $request = $request->withMethod('POST');
         $request = $request->withAttribute('user', new User());
 
         $handler = $this->createMock(RequestHandlerInterface::class);
-        // In this case, the middleware returns a response and doesn't call the handler
         $handler->expects($this->never())
             ->method('handle');
 
