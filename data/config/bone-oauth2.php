@@ -1,0 +1,1 @@
+<?php return ["oauth2" => ["encryptionKey" => ""]];

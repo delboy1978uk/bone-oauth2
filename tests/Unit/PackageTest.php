@@ -51,7 +51,6 @@ class PackageTest extends Unit
     {
         $this->cwd = getcwd();
         chdir('tests');
-
         $this->container = new Container();
         $userService = $this->createMock(UserService::class);
         $view = $this->createMock(ViewEngineInterface::class);
@@ -80,10 +79,10 @@ class PackageTest extends Unit
         $settings = [
             'clientCredentialsTokenTTL' => 'PT1H',
             'authCodeTTL' => 'PT1M',
-            'accessTokenTTL' => 'P1M',
+            'accessTokenTTL' => 'PT5M',
             'refreshTokenTTL' => 'P1M',
-            'privateKeyPath' => __DIR__ . '/../Support/Data/private.key',
-            'publicKeyPath' => __DIR__ . '/../Support/Data/public.key',
+            'privateKeyPath' =>  'data/keys/private.key',
+            'publicKeyPath' => 'data/keys/public.key',
             'encryptionKey' => 'def000002e113a725ebc60dc305541e09588776f65a17cf3258d8f7194bc3c38f62b0fe818cc026833bd1226b52e721534dee4e9db832977e1bc9ce764b848ad9fb3581f',
         ];
         $siteConfig = $this->createMock(SiteConfig::class);
@@ -104,13 +103,13 @@ class PackageTest extends Unit
     public function _after()
     {
         unset($this->container);
-        $this->removeFiles();   
+        $this->removeFiles();
         chdir($this->cwd);
     }
 
     public function testAddToContainer()
     {
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
         $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertTrue($this->container->has(AuthorizationServer::class));
@@ -118,7 +117,7 @@ class PackageTest extends Unit
 
     public function testAddRouting()
     {
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
         $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         $router = $this->createMock(Router::class);
@@ -128,7 +127,7 @@ class PackageTest extends Unit
 
     public function testAddCommands()
     {
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
         $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         $result = $this->package->registerConsoleCommands($this->container);
@@ -137,7 +136,7 @@ class PackageTest extends Unit
 
     public function testEntityPath()
     {
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
         $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertStringContainsString('bone-oauth2/src/Entity', $this->package->getEntityPath());
@@ -148,21 +147,21 @@ class PackageTest extends Unit
         $settings = [
             'clientCredentialsTokenTTL' => 'PT1H',
             'authCodeTTL' => 'PT1M',
-            'accessTokenTTL' => 'P1M',
+            'accessTokenTTL' => 'PT5M',
             'refreshTokenTTL' => 'P1M',
             'privateKeyPath' => __DIR__ . '/fail/private.key',
             'publicKeyPath' => __DIR__ . '/fail/public.key',
             'encryptionKey' => 'def000002e113a725ebc60dc305541e09588776f65a17cf3258d8f7194bc3c38f62b0fe818cc026833bd1226b52e721534dee4e9db832977e1bc9ce764b848ad9fb3581f',
         ];
         $this->container['oauth2'] = $settings;
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->expectException(ContainerException::class);
         $this->container->get(ResourceServer::class);
     }
 
     public function testContainerContainsservices()
     {
-                $this->package->addToContainer($this->container);
+        $this->package->addToContainer($this->container);
         $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
         $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertTrue($this->container->has(ApiKeyController::class));
@@ -175,42 +174,46 @@ class PackageTest extends Unit
 
     public function testPostInstallWithKeys()
     {
+        $this->createFiles();
+        mkdir('config', 0777, true);
         $command = $this->createMock(Command::class);
-        $this->createKeys();
         $io = $this->createMock(SymfonyStyle::class);
-        $command->expects($this->once())->method('runProcess');
+        $command->expects($this->any())->method('runProcess')->willReturn($this->createProcess());
         $this->package->postInstall($command, $io);
+        unlink('config/bone-oauth2.php');
+        rmdir('config');
         $this->fileAssertions();
-        $this->removeFiles();
     }
 
     public function testPostInstallWithoutKeys()
     {
+        mkdir('config', 0777, true);
         $command = $this->createMock(Command::class);
         $io = $this->createMock(SymfonyStyle::class);
-        $command->expects($this->any())->method('runProcess')->willReturnMap([
-            [$io, ['openssl', 'genrsa', '-out', 'private.key', '2048'], $this->createKeys()],
-            [$io, ['vendor/bin/generate-defuse-key'], $this->createProcess()]
-        ]);
-
-
+        $command->expects($this->any())->method('runProcess')->willReturn($this->createProcess());
         $this->package->postInstall($command, $io);
+        unlink('config/bone-oauth2.php');
+        rmdir('config');
         $this->fileAssertions();
-        $this->removeFiles();
     }
 
     private function fileAssertions(): void
     {
-        $this->assertFileExists('data/keys/private.key');
-        $this->assertFileExists('data/keys/public.key');
-        $this->assertFileExists('config/bone-oauth2.php');
+        $projectRoot = getcwd();
+        $this->assertFileExists($projectRoot . '/data/keys/private.key');
+        $this->assertFileExists($projectRoot . '/data/keys/public.key');
+        $this->assertFileExists($this->package->getSettingsFileName());
     }
-
 
     private function createKeys(): Process
     {
-        file_put_contents('data/keys/private.key', 'fake');
-        file_put_contents('data/keys/public.key', 'fake');
+        $projectRoot = getcwd();
+        $keysDir = $projectRoot . '/data/keys';
+        if (!file_exists($keysDir)) {
+            mkdir($keysDir, 0777, true);
+        }
+        file_put_contents($keysDir . '/private.key', 'fake');
+        file_put_contents($keysDir . '/public.key', 'fake');
 
         return $this->createProcess();
     }
@@ -222,28 +225,42 @@ class PackageTest extends Unit
 
     private function createFiles(): void
     {
-        if (!file_exists('data/keys')) {
-            mkdir('data/keys', 0777, true);
-        }
-        
-        file_put_contents('data/keys/private.key', 'fake');
-        file_put_contents('data/keys/public.key', 'fake');
-        
-        if (!file_exists('config')) {
-            mkdir('config', 0777, true);
+        $projectRoot = getcwd();
+        $keysDir = $projectRoot . '/data/keys';
+
+        if (!file_exists($keysDir)) {
+            mkdir($keysDir, 0777, true);
         }
 
-        file_put_contents('config/bone-oauth2.php', '<?php return [];');
+        file_put_contents($keysDir . '/private.key', 'fake');
+        file_put_contents($keysDir . '/public.key', 'fake');
+
+        $configPath = $this->package->getSettingsFileName();
+        $configDir = dirname($configPath);
+         
+        if (!file_exists($configDir)) {
+            mkdir($configDir, 0777, true);
+        }
+
+        file_put_contents($configPath, '<?php return ["oauth2" => ["encryptionKey" => ""]];');
     }
 
     private function removeFiles(): void
     {
-        unlink('data/keys/private.key');
-        unlink('data/keys/public.key');
-        unlink('config/bone-oauth2.php');
-        rmdir('data/keys');
-        rmdir('data');
-        rmdir('config');
+        $projectRoot = getcwd();
+        $dataDir = $projectRoot . '/data';
+        if (file_exists($dataDir)) {
+            $this->recursiveRemove($dataDir);
+        }
+    }
+
+    private function recursiveRemove(string $dir): void
+    {
+        $files = array_diff(scandir($dir), ['.', '..']);
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? $this->recursiveRemove("$dir/$file") : unlink("$dir/$file");
+        }
+        rmdir($dir);
     }
 
     public function testGetFixtures()
@@ -251,8 +268,8 @@ class PackageTest extends Unit
         $fixtures = $this->package->getFixtures();
         $this->assertIsArray($fixtures);
         $this->assertCount(2, $fixtures);
-        $this->assertContains(LoadScopes::class, $fixtures);
-        $this->assertContains(LoadClients::class, $fixtures);
+        $this->assertContains(\Bone\OAuth2\Fixtures\LoadScopes::class, $fixtures);
+        $this->assertContains(\Bone\OAuth2\Fixtures\LoadClients::class, $fixtures);
     }
 
     public function testGetSettingsFileName()

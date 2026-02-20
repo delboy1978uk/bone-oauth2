@@ -326,6 +326,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $regex = '#\'encryptionKey\'\s=>\s\'[a-f|\d]+\'#';
         $replacement = "'encryptionKey' => '$key'";
         $config = \preg_replace($regex, $replacement, $config);
+        codecept_debug($fileName);
         file_put_contents('config/' . $fileName, $config);
     }
 }
