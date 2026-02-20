@@ -48,16 +48,16 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
         try {
             $userId = $session->get('user');
-            if (!$userId) { return new RedirectResponse('/login'); }
-            if (!$userId) { return new RedirectResponse('/login'); }
+
+            if (!$userId) { 
+                return new RedirectResponse('/login'); 
+            }
+
             $user = $this->userService->findUserById($userId);
             $authRequest = $server->validateAuthorizationRequest($request);
             $oauthUser = OAuthUser::createFromBaseUser($user);
             $authRequest->setUser($oauthUser);
             $client = $authRequest->getClient();
-
-
-
             $authRequest->setAuthorizationApproved(true);
             $response = $server->completeAuthorizationRequest($authRequest, $response);
 
@@ -95,7 +95,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
         try {
             $response = $server->respondToAccessTokenRequest($request, $response);
-            $response->getBody()->rewind(); // Insane that we have to do this haha!
+            $response->getBody()->rewind();
         } catch (OAuthServerException $e) {
             $response = new BadRequestResponse($e->getMessage());
         } catch (Exception $e) {
