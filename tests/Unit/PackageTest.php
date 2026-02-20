@@ -103,13 +103,17 @@ class PackageTest extends Unit
 
     public function testAddToContainer()
     {
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertTrue($this->container->has(AuthorizationServer::class));
     }
 
     public function testAddRouting()
     {
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         $router = $this->createMock(Router::class);
         $router->expects(self::atLeast(11))->method('map');
         $this->package->addRoutes($this->container, $router);
@@ -117,14 +121,18 @@ class PackageTest extends Unit
 
     public function testAddCommands()
     {
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         $result = $this->package->registerConsoleCommands($this->container);
         self::assertIsArray($result);
     }
 
     public function testEntityPath()
     {
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertStringContainsString('bone-oauth2/src/Entity', $this->package->getEntityPath());
     }
 
@@ -140,14 +148,16 @@ class PackageTest extends Unit
             'encryptionKey' => 'def000002e113a725ebc60dc305541e09588776f65a17cf3258d8f7194bc3c38f62b0fe818cc026833bd1226b52e721534dee4e9db832977e1bc9ce764b848ad9fb3581f',
         ];
         $this->container['oauth2'] = $settings;
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
         $this->expectException(ContainerException::class);
         $this->container->get(ResourceServer::class);
     }
 
     public function testContainerContainsservices()
     {
-        $this->package->addToContainer($this->container);
+                $this->package->addToContainer($this->container);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
         self::assertTrue($this->container->has(ApiKeyController::class));
         self::assertInstanceOf(ApiKeyController::class, $this->container->get(ApiKeyController::class));
         self::assertTrue($this->container->has(AuthServerController::class));

@@ -48,6 +48,8 @@ class AuthServerController extends Controller implements SessionAwareInterface
 
         try {
             $userId = $session->get('user');
+            if (!$userId) { return new RedirectResponse('/login'); }
+            if (!$userId) { return new RedirectResponse('/login'); }
             $user = $this->userService->findUserById($userId);
             $authRequest = $server->validateAuthorizationRequest($request);
             $oauthUser = OAuthUser::createFromBaseUser($user);
@@ -72,7 +74,7 @@ class AuthServerController extends Controller implements SessionAwareInterface
             ], $status);
         }
 
-        $redirectUri = $response->getHeader('Location');
+        $redirectUri = $response ? $response->getHeader('Location') : null;
 
         if (!empty($redirectUri)) {
 

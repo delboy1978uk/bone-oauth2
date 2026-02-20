@@ -55,7 +55,7 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
         $user = $this->findOneBy(['email' => $email]);
 
         if ($user) {
-            $user = $user->toArray();
+            return $user->toArray();
         }
 
         return null;

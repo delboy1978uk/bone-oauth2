@@ -41,47 +41,53 @@ class AuthServerMiddleware implements MiddlewareInterface
         $continueAsUser = $request->getQueryParams()['continue'] ?? false;
 
         if ($continueAsUser === false) {
-            $authRequest = $this->authServer->validateAuthorizationRequest($request);
-            $client = $authRequest->getClient();
-            $request = $request->withAttribute('user', null);
-            $this->session->set('authRequest', \serialize($request));
+            try {
+                $authRequest = $this->authServer->validateAuthorizationRequest($request);
+                $client = $authRequest->getClient();
+                $request = $request->withAttribute('user', null);
+                $this->session->set('authRequest', \serialize($request));
 
-            if (!$client->isProprietary()) {
-                $scopes = $authRequest->getScopes();
-                $userScopes = $this->permissionService->getScopes($user, $client);
-                $missingScopes = array_diff_key($scopes, $userScopes);
-                $approvedCount = count($scopes) - count($missingScopes);
-                $method = $request->getMethod();
+                if (!$client->isProprietary()) {
+                    $scopes = $authRequest->getScopes() ?: [];
+                    $userScopes = $this->permissionService->getScopes($user, $client) ?: [];
+                    $missingScopes = array_diff_key($scopes, $userScopes);
+                    $approvedCount = count($scopes) - count($missingScopes);
+                    $method = $request->getMethod();
 
-                if (count($missingScopes) && $method === 'GET') {
-                    $body = $this->view->render('boneoauth2::authorize', [
-                        'scopes' => $scopes,
-                        'approvedCount' => $approvedCount,
-                        'missingScopes' => $missingScopes,
-                        'client' => $client,
-                        'user' => $user,
-                    ]);
+                    if (count($missingScopes) && $method === 'GET') {
+                        $body = $this->view->render('boneoauth2::authorize', [
+                            'scopes' => $scopes,
+                            'approvedCount' => $approvedCount,
+                            'missingScopes' => $missingScopes,
+                            'client' => $client,
+                            'user' => $user,
+                        ]);
 
-                    return new HtmlResponse($body);
-                }
+                        return new HtmlResponse($body ?: '');
+                    }
 
-                if ($method === 'GET') {
+                    if ($method === 'GET') {
+                        $body = $this->view->render('boneoauth2::continue', [
+                            'user' => $user,
+                        ]);
+
+                        return new HtmlResponse($body ?: '');
+                    }
+
+                    if (count($missingScopes) && $method === 'POST') {
+                        $this->permissionService->addScopes($user, $client, $missingScopes);
+                    }
+                } else {
                     $body = $this->view->render('boneoauth2::continue', [
                         'user' => $user,
                     ]);
 
-                    return new HtmlResponse($body);
+                    return new HtmlResponse($body ?: '');
                 }
-
-                if (count($missingScopes) && $method === 'POST') {
-                    $this->permissionService->addScopes($user, $client, $missingScopes);
-                }
-            } else {
-                $body = $this->view->render('boneoauth2::continue', [
-                    'user' => $user,
-                ]);
-
-                return new HtmlResponse($body);
+            } catch (OAuthServerException $e) {
+                return $e->generateHttpResponse(new \Laminas\Diactoros\Response());
+            } catch (Exception $e) {
+                return new HtmlResponse($e->getMessage(), 500);
             }
         }
 
