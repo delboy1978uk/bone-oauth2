@@ -45,9 +45,13 @@ class PackageTest extends Unit
     protected UnitTester $tester;
     private Container $container;
     private BoneOAuth2Package $package;
+    private string $cwd;
 
     protected function _before()
     {
+        $this->cwd = getcwd();
+        chdir('tests');
+
         $this->container = new Container();
         $userService = $this->createMock(UserService::class);
         $view = $this->createMock(ViewEngineInterface::class);
@@ -94,11 +98,14 @@ class PackageTest extends Unit
         $this->container[EntityManagerInterface::class] = $entityManager;
         $this->container[TranslatorInterface::class] = $translator;
         $this->package = new BoneOAuth2Package();
+        $this->createFiles();
     }
 
     public function _after()
     {
         unset($this->container);
+        $this->removeFiles();   
+        chdir($this->cwd);
     }
 
     public function testAddToContainer()
@@ -168,8 +175,6 @@ class PackageTest extends Unit
 
     public function testPostInstallWithKeys()
     {
-        $cwd = getcwd();
-        chdir('tests');
         $command = $this->createMock(Command::class);
         $this->createKeys();
         $io = $this->createMock(SymfonyStyle::class);
@@ -177,13 +182,10 @@ class PackageTest extends Unit
         $this->package->postInstall($command, $io);
         $this->fileAssertions();
         $this->removeFiles();
-        chdir($cwd);
     }
 
     public function testPostInstallWithoutKeys()
     {
-        $cwd = getcwd();
-        chdir('tests');
         $command = $this->createMock(Command::class);
         $io = $this->createMock(SymfonyStyle::class);
         $command->expects($this->any())->method('runProcess')->willReturnMap([
@@ -195,7 +197,6 @@ class PackageTest extends Unit
         $this->package->postInstall($command, $io);
         $this->fileAssertions();
         $this->removeFiles();
-        chdir($cwd);
     }
 
     private function fileAssertions(): void
@@ -219,10 +220,59 @@ class PackageTest extends Unit
         return $this->make(Process::class, ['getOutput' => 'xxx']);
     }
 
+    private function createFiles(): void
+    {
+        if (!file_exists('data/keys')) {
+            mkdir('data/keys', 0777, true);
+        }
+        
+        file_put_contents('data/keys/private.key', 'fake');
+        file_put_contents('data/keys/public.key', 'fake');
+        
+        if (!file_exists('config')) {
+            mkdir('config', 0777, true);
+        }
+
+        file_put_contents('config/bone-oauth2.php', '<?php return [];');
+    }
+
     private function removeFiles(): void
     {
         unlink('data/keys/private.key');
         unlink('data/keys/public.key');
         unlink('config/bone-oauth2.php');
+        rmdir('data/keys');
+        rmdir('data');
+        rmdir('config');
+    }
+
+    public function testGetFixtures()
+    {
+        $fixtures = $this->package->getFixtures();
+        $this->assertIsArray($fixtures);
+        $this->assertCount(2, $fixtures);
+        $this->assertContains(LoadScopes::class, $fixtures);
+        $this->assertContains(LoadClients::class, $fixtures);
+    }
+
+    public function testGetSettingsFileName()
+    {
+        $fileName = $this->package->getSettingsFileName();
+        $this->assertIsString($fileName);
+        $this->assertStringEndsWith('data/config/bone-oauth2.php', $fileName);
+    }
+
+    public function testGetRequiredPackages()
+    {
+        $packages = $this->package->getRequiredPackages();
+        $this->assertIsArray($packages);
+        $this->assertCount(7, $packages);
+        $this->assertContains('Bone\\Mail\\MailPackage', $packages);
+        $this->assertContains('Bone\\BoneDoctrine\\BoneDoctrinePackage', $packages);
+        $this->assertContains('Bone\\Paseto\\PasetoPackage', $packages);
+        $this->assertContains('Del\\Person\\PersonPackage', $packages);
+        $this->assertContains('Del\\UserPackage', $packages);
+        $this->assertContains('Bone\\User\\BoneUserPackage', $packages);
+        $this->assertContains(BoneOAuth2Package::class, $packages);
     }
 }
