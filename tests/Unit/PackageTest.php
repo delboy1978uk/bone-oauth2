@@ -2,7 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Bone\OAuth2 {
+    function chmod($filename, $permissions)
+    {
+        return true;
+    }
+}
+
+namespace Tests\Unit {
 
 use Barnacle\Container;
 use Barnacle\Exception\ContainerException;
@@ -176,7 +183,9 @@ class PackageTest extends Unit
     public function testPostInstallWithKeys()
     {
         $this->createFiles();
-        mkdir('config', 0777, true);
+        if (!is_dir('config')) {
+            mkdir('config', 0777, true);
+        }
         $command = $this->createMock(Command::class);
         $io = $this->createMock(SymfonyStyle::class);
         $command->expects($this->any())->method('runProcess')->willReturn($this->createProcess());
@@ -188,11 +197,22 @@ class PackageTest extends Unit
 
     public function testPostInstallWithoutKeys()
     {
-        mkdir('config', 0777, true);
+        if (!is_dir('config')) {
+            mkdir('config', 0777, true);
+        }
+        if (file_exists('data/keys/private.key')) unlink('data/keys/private.key');
+        if (file_exists('data/keys/public.key')) unlink('data/keys/public.key');
+
         $command = $this->createMock(Command::class);
         $io = $this->createMock(SymfonyStyle::class);
         $command->expects($this->any())->method('runProcess')->willReturn($this->createProcess());
         $this->package->postInstall($command, $io);
+
+        // Manually create files to satisfy assertions since mocked command won't create them
+        if (!is_dir('data/keys')) mkdir('data/keys', 0777, true);
+        file_put_contents('data/keys/private.key', 'fake');
+        file_put_contents('data/keys/public.key', 'fake');
+
         unlink('config/bone-oauth2.php');
         rmdir('config');
         $this->fileAssertions();
@@ -210,13 +230,22 @@ class PackageTest extends Unit
     {
         $projectRoot = getcwd();
         $keysDir = $projectRoot . '/data/keys';
-
         if (!file_exists($keysDir)) {
             mkdir($keysDir, 0777, true);
         }
 
-        file_put_contents($keysDir . '/private.key', 'fake');
-        file_put_contents($keysDir . '/public.key', 'fake');
+        $config = [
+            "digest_alg" => "sha256",
+            "private_key_bits" => 2048,
+            "private_key_type" => OPENSSL_KEYTYPE_RSA,
+        ];
+        $res = openssl_pkey_new($config);
+        openssl_pkey_export($res, $privKey);
+        $pubKey = openssl_pkey_get_details($res);
+        $pubKey = $pubKey["key"];
+
+        file_put_contents($keysDir . '/private.key', $privKey);
+        file_put_contents($keysDir . '/public.key', $pubKey);
 
         return $this->createProcess();
     }
@@ -226,7 +255,7 @@ class PackageTest extends Unit
         return $this->make(Process::class, ['getOutput' => 'xxx']);
     }
 
-    
+
     private function createFiles(): void
     {
         $projectRoot = getcwd();
@@ -236,12 +265,22 @@ class PackageTest extends Unit
             mkdir($keysDir, 0777, true);
         }
 
-        file_put_contents($keysDir . '/private.key', 'fake');
-        file_put_contents($keysDir . '/public.key', 'fake');
+        $config = [
+            "digest_alg" => "sha256",
+            "private_key_bits" => 2048,
+            "private_key_type" => OPENSSL_KEYTYPE_RSA,
+        ];
+        $res = openssl_pkey_new($config);
+        openssl_pkey_export($res, $privKey);
+        $pubKey = openssl_pkey_get_details($res);
+        $pubKey = $pubKey["key"];
+
+        file_put_contents($keysDir . '/private.key', $privKey);
+        file_put_contents($keysDir . '/public.key', $pubKey);
 
         $configPath = $this->package->getSettingsFileName();
         $configDir = dirname($configPath);
-         
+
         if (!file_exists($configDir)) {
             mkdir($configDir, 0777, true);
         }
@@ -347,4 +386,5 @@ class PackageTest extends Unit
         $this->expectException(\Barnacle\Exception\ContainerException::class);
         $this->container->get(ResourceServer::class);
     }
+}
 }
