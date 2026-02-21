@@ -14,6 +14,7 @@ class ScopeTest extends Unit
     protected function _before()
     {
         $this->scope = new Scope();
+        $this->scope->setId(1);
     }
 
     public function testSetAndGetIdentifier()
@@ -31,8 +32,7 @@ class ScopeTest extends Unit
 
     public function testGetId()
     {
-        // ID is null initially as it's set by Doctrine
-        $this->assertNull($this->scope->getId());
+        $this->assertEquals(1, $this->scope->getId());
     }
 
     public function testJsonSerialize()
