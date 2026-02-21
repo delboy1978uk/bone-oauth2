@@ -52,7 +52,6 @@ use Del\Service\UserService;
 use Del\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\CryptKey;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
@@ -184,7 +183,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $function = function (Container $c) {
             $publicKeyPath = $c->get('oauth2')['publicKeyPath'];
 
-            if (!($publicKeyPath instanceof CryptKey) && !file_exists($publicKeyPath)) {
+            if (!file_exists($publicKeyPath)) {
                 throw new \Exception("Key not found. Create one! In `$publicKeyPath`, run:\nopenssl genrsa -out private.key 2048\nopenssl rsa -in private.key -pubout -out public.key\nchmod 660 public.key\nchmod 660 private.key\n");
             }
 
@@ -327,7 +326,6 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $regex = '#\'encryptionKey\'\s=>\s\'[a-f|\d]+\'#';
         $replacement = "'encryptionKey' => '$key'";
         $config = \preg_replace($regex, $replacement, $config);
-        codecept_debug($fileName);
         file_put_contents('config/' . $fileName, $config);
     }
 }
