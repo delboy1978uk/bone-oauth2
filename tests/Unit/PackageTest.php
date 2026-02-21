@@ -371,3 +371,4 @@ class PackageTest extends Unit
         $this->assertInstanceOf(ApiKeyController::class, $this->container->get(ApiKeyController::class));
     }
 }
+}
