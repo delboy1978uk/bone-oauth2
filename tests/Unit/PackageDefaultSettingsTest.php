@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-function fileperms($filename)
-{
-    return 0600;
-}
-
 namespace Tests\Unit;
 
 use Barnacle\Container;
