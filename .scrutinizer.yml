@@ -1,13 +1,11 @@
 tools:
     external_code_coverage: true
 build:
-    image: default-bionic
+    image: ubuntu:22.04
     environment:
         php: 8.4.12
         apt_packages:
             - libssl-dev
-            - pkg-config
-            - build-essential
             - zlib1g-dev
     nodes:
         analysis:
