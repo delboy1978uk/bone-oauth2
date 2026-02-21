@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Repository;
 
+use Bone\OAuth2\Entity\OAuthUser;
 use Del\Entity\User;
 use Del\Repository\UserRepository as UserRepo;
-use Laminas\Crypt\Password\Bcrypt;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use Bone\OAuth2\Entity\Client;
+
+use function password_verify;
 
 class UserRepository extends UserRepo implements UserRepositoryInterface
 {
@@ -18,20 +19,17 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
         $email,
         $password,
         $grantType,
-        ClientEntityInterface $client
+        ClientEntityInterface $clientEntity
     ): ?UserEntityInterface
     {
         $user = $this->findOneBy(['email' => $email]);
 
         if ($user) {
-            $bcrypt = new Bcrypt();
-            $bcrypt->setCost(14);
-
-            if(!$bcrypt->verify($password, $user->getPassword())) {
+            if(!password_verify($password, $user->getPassword())) {
                 return null;
             }
 
-            return $user;
+            return OAuthUser::createFromBaseUser($user);
         }
 
         return null;
@@ -39,10 +37,11 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
 
     public function checkUserCredentials(string $email, string $password): mixed
     {
+        /** @var User $user */
         $user = $this->findOneBy(['email' => $email]);
 
         if ($user) {
-            return $user->verifyPassword($password);
+            return password_verify($password, $user->getPassword());
         }
 
         return false;
@@ -56,7 +55,7 @@ class UserRepository extends UserRepo implements UserRepositoryInterface
         $user = $this->findOneBy(['email' => $email]);
 
         if ($user) {
-            $user = $user->toArray();
+            return $user->toArray();
         }
 
         return null;

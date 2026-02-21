@@ -12,11 +12,12 @@
     "php": "^8.2",
     "ext-curl": "*",
     "ext-json": "*",
-    "laminas/laminas-diactoros": "^3.3",
-    "league/oauth2-server": "^8.5",
     "boneframework/bone": "^3.11",
+    "boneframework/contracts": "^1.8",
     "delboy1978uk/bone-doctrine": "^2.0",
     "delboy1978uk/bone-user": "^2.4",
+    "laminas/laminas-diactoros": "^3.3",
+    "league/oauth2-server": "^8.5",
     "laminas/laminas-uri": "^2.11"
   }
   ,
@@ -26,9 +27,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Bone\\OAuth2\\": "src/",
-      "Tests\\": "tests/"
+      "Bone\\OAuth2\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "Tests\\": "tests/"
   },
   "suggest": {
     "delboy1978uk/bone-open-api": "Open API documentation"
