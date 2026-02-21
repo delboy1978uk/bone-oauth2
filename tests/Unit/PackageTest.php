@@ -24,6 +24,7 @@ use Bone\OAuth2\Repository\RefreshTokenRepository;
 use Bone\OAuth2\Repository\ScopeRepository;
 use Bone\OAuth2\Repository\UserApprovedScopeRepository;
 use Bone\OAuth2\Repository\UserRepository;
+use Bone\OAuth2\Service\PermissionService;
 use Bone\Router\Router;
 use Bone\Server\SiteConfig;
 use Bone\User\Http\Middleware\SessionAuth;
@@ -81,8 +82,8 @@ class PackageTest extends Unit
             'authCodeTTL' => 'PT1M',
             'accessTokenTTL' => 'PT5M',
             'refreshTokenTTL' => 'P1M',
-            'privateKeyPath' =>  'data/keys/private.key',
-            'publicKeyPath' => 'data/keys/public.key',
+            'privateKeyPath' => getcwd() . '/Support/Data/private.key',
+            'publicKeyPath' => getcwd() . '/Support/Data/public.key',
             'encryptionKey' => 'def000002e113a725ebc60dc305541e09588776f65a17cf3258d8f7194bc3c38f62b0fe818cc026833bd1226b52e721534dee4e9db832977e1bc9ce764b848ad9fb3581f',
         ];
         $siteConfig = $this->createMock(SiteConfig::class);
@@ -209,9 +210,11 @@ class PackageTest extends Unit
     {
         $projectRoot = getcwd();
         $keysDir = $projectRoot . '/data/keys';
+
         if (!file_exists($keysDir)) {
             mkdir($keysDir, 0777, true);
         }
+
         file_put_contents($keysDir . '/private.key', 'fake');
         file_put_contents($keysDir . '/public.key', 'fake');
 
@@ -223,6 +226,7 @@ class PackageTest extends Unit
         return $this->make(Process::class, ['getOutput' => 'xxx']);
     }
 
+    
     private function createFiles(): void
     {
         $projectRoot = getcwd();
@@ -242,7 +246,7 @@ class PackageTest extends Unit
             mkdir($configDir, 0777, true);
         }
 
-        file_put_contents($configPath, '<?php return ["oauth2" => ["encryptionKey" => ""]];');
+        file_put_contents($configPath, file_get_contents('../data/config/bone-oauth2.php'));
     }
 
     private function removeFiles(): void
@@ -291,5 +295,56 @@ class PackageTest extends Unit
         $this->assertContains('Del\\UserPackage', $packages);
         $this->assertContains('Bone\\User\\BoneUserPackage', $packages);
         $this->assertContains(BoneOAuth2Package::class, $packages);
+    }
+
+    public function testServiceFactories()
+    {
+        $this->package->addToContainer($this->container);
+
+        // Mock AuthorizationServer and ResourceServer to bypass permission checks
+        unset($this->container[AuthorizationServer::class]);
+        unset($this->container[ResourceServer::class]);
+        $this->container[AuthorizationServer::class] = $this->createMock(AuthorizationServer::class);
+        $this->container[ResourceServer::class] = $this->createMock(ResourceServer::class);
+
+        // Trigger factories
+        $this->assertInstanceOf(AccessTokenRepository::class, $this->container->get(AccessTokenRepository::class));
+        $this->assertInstanceOf(AuthCodeRepository::class, $this->container->get(AuthCodeRepository::class));
+        $this->assertInstanceOf(ClientRepository::class, $this->container->get(ClientRepository::class));
+        $this->assertInstanceOf(\Bone\OAuth2\Service\ClientService::class, $this->container->get(\Bone\OAuth2\Service\ClientService::class));
+        $this->assertInstanceOf(RefreshTokenRepository::class, $this->container->get(RefreshTokenRepository::class));
+        $this->assertInstanceOf(ScopeRepository::class, $this->container->get(ScopeRepository::class));
+        $this->assertInstanceOf(UserApprovedScopeRepository::class, $this->container->get(UserApprovedScopeRepository::class));
+
+        // PermissionService
+        $this->assertInstanceOf(PermissionService::class, $this->container->get(PermissionService::class));
+
+        // AuthServerController
+        $this->assertInstanceOf(AuthServerController::class, $this->container->get(AuthServerController::class));
+
+        // AuthServerMiddleware
+        $this->assertInstanceOf(\Bone\OAuth2\Http\Middleware\AuthServerMiddleware::class, $this->container->get(\Bone\OAuth2\Http\Middleware\AuthServerMiddleware::class));
+
+        // ResourceServerMiddleware
+        $this->assertInstanceOf(\Bone\OAuth2\Http\Middleware\ResourceServerMiddleware::class, $this->container->get(\Bone\OAuth2\Http\Middleware\ResourceServerMiddleware::class));
+
+        // ApiKeyController
+        $this->assertInstanceOf(ApiKeyController::class, $this->container->get(ApiKeyController::class));
+    }
+
+    public function testAuthorizationServerRequiring0660Permissions()
+    {
+        $this->package->addToContainer($this->container);
+        // Permissions in docker are being weird, the keys need to be 0660.
+        // expect an exception when trying to read the keys with insufficient permissions
+        $this->expectException(\Barnacle\Exception\ContainerException::class);
+        $this->container->get(AuthorizationServer::class);
+    }
+
+    public function testResourceServerRequiring0660Permissions()
+    {
+        $this->package->addToContainer($this->container);
+        $this->expectException(\Barnacle\Exception\ContainerException::class);
+        $this->container->get(ResourceServer::class);
     }
 }
