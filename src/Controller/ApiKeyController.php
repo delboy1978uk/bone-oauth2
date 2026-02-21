@@ -23,7 +23,7 @@ class ApiKeyController extends Controller
     ) {
     }
 
-    public function myApiKeysAction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function myApiKeysAction(ServerRequestInterface $request): ResponseInterface
     {
         $user = $request->getAttribute('user');
         $clients = $this->clientService->getClientRepository()->findBy(['user' => $user->getId()]);
@@ -32,7 +32,7 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    public function deleteConfirmAction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function deleteConfirmAction(ServerRequestInterface $request): ResponseInterface
     {
         $id = $request->getAttribute('id');
         $client = $this->clientService->getClientRepository()->find($id);
@@ -42,7 +42,7 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    public function deleteAction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function deleteAction(ServerRequestInterface $request): ResponseInterface
     {
         $clientId = $request->getAttribute('id');
         $client = $this->clientService->getClientRepository()->find($clientId);
@@ -63,7 +63,7 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    public function addAction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function addAction(ServerRequestInterface $request): ResponseInterface
     {
         $form = new ApiKeyForm('addkey', $this->getTranslator());
         $body = $this->getView()->render('boneoauth2::add-key', ['form' => $form->render()]);
@@ -71,7 +71,7 @@ class ApiKeyController extends Controller
         return new HtmlResponse($body);
     }
 
-    public function addSubmitAction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function addSubmitAction(ServerRequestInterface $request): ResponseInterface
     {
         $form = new ApiKeyForm('addkey', $this->getTranslator());
         $post = $request->getParsedBody();

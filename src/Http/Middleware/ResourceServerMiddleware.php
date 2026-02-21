@@ -10,12 +10,10 @@ use Del\Service\UserService;
 use Exception;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Laminas\Diactoros\Response\JsonResponse;
 
 class ResourceServerMiddleware implements MiddlewareInterface
 {
