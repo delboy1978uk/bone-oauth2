@@ -61,30 +61,6 @@ class PackageDefaultSettingsTest extends Unit
         $this->container[SiteConfig::class] = $this->createMock(SiteConfig::class);
         $this->container[ViewEngineInterface::class] = $this->createMock(ViewEngineInterface::class);
 
-        // Create a valid private key file for CryptKey
-        $keyPath = codecept_data_dir('private.key');
-        if (!file_exists($keyPath)) {
-             $config = [
-                "digest_alg" => "sha256",
-                "private_key_bits" => 2048,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
-            ];
-            $res = openssl_pkey_new($config);
-            openssl_pkey_export($res, $privKey);
-            file_put_contents($keyPath, $privKey);
-        }
-
-        $pubKeyPath = codecept_data_dir('public.key');
-        if (!file_exists($pubKeyPath)) {
-             $config = [
-                "digest_alg" => "sha256",
-                "private_key_bits" => 2048,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
-            ];
-            $res = openssl_pkey_new($config);
-            $pubKey = openssl_pkey_get_details($res);
-            file_put_contents($pubKeyPath, $pubKey['key']);
-        }
 
         // Minimal settings to trigger defaults
         // We use a CryptKey object to bypass permission checks for BOTH keys
@@ -104,6 +80,8 @@ class PackageDefaultSettingsTest extends Unit
 
     public function testAddToContainerWithDefaultSettings()
     {
+        chmod(getcwd() . '/tests/Support/Data/private.key', 0600);
+        chmod(getcwd() . '/tests/Support/Data/public.key', 0600);
         $this->package->addToContainer($this->container);
 
         // This should trigger the factory and use default TTLs
