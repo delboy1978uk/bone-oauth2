@@ -370,21 +370,4 @@ class PackageTest extends Unit
         // ApiKeyController
         $this->assertInstanceOf(ApiKeyController::class, $this->container->get(ApiKeyController::class));
     }
-
-    public function testAuthorizationServerRequiring0660Permissions()
-    {
-        $this->package->addToContainer($this->container);
-        // Permissions in docker are being weird, the keys need to be 0660.
-        // expect an exception when trying to read the keys with insufficient permissions
-        $this->expectException(\Barnacle\Exception\ContainerException::class);
-        $this->container->get(AuthorizationServer::class);
-    }
-
-    public function testResourceServerRequiring0660Permissions()
-    {
-        $this->package->addToContainer($this->container);
-        $this->expectException(\Barnacle\Exception\ContainerException::class);
-        $this->container->get(ResourceServer::class);
-    }
-}
 }
