@@ -113,7 +113,7 @@ class ClientServiceRegisterTest extends Unit
             ->with($this->callback(function ($client) {
                 return $client instanceof Client
                     && str_contains($client->getName(), 'Minimal Client')
-                    && $client->getRedirectUri() === 'https://example.com/callback';
+                    && $client->hasCallbackUrl('https://example.com/callback');
             }));
 
         $form = new RegisterClientForm('reg');
