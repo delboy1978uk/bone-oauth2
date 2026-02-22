@@ -27,7 +27,7 @@ class ScopeRepository extends EntityRepository implements ScopeRepositoryInterfa
     /**
      * @return ScopeEntityInterface[]
      */
-    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, ?string $userIdentifier = null, ?string $authCodeId = null): array
+    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null, ?string $authCodeId = null): array
     {
         /** @var Client $clientEntity */
         $clientScopes = $clientEntity->getScopes()->getValues();

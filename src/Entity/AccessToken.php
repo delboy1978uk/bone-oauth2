@@ -59,6 +59,22 @@ class AccessToken implements AccessTokenEntityInterface
     public function addScope(ScopeEntityInterface $scope): void
     {
         $this->scopes->add($scope);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /** @return ScopeEntityInterface[]  */
@@ -84,7 +100,7 @@ class AccessToken implements AccessTokenEntityInterface
 
     public function getUserIdentifier(): ?string
     {
-        return (string) $this->userIdentifier;
+        return $this->userIdentifier ? (string) $this->userIdentifier : null;
     }
 
     public function getClient(): ClientEntityInterface

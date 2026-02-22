@@ -46,13 +46,13 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null): AccessToken
     {
         if (!$userIdentifier) {
-            $userIdentifier = (string) $clientEntity->getUser()->getId();
+            try { $user = $clientEntity->getUser(); $userIdentifier = $user ? (string) $user->getId() : null; } catch (\Error $e) { $userIdentifier = null; }
         }
 
         $accessToken = new AccessToken();
         $accessToken->setClient($clientEntity);
         $accessToken->setScopes(new ArrayCollection($scopes));
-        $accessToken->setUserIdentifier($userIdentifier);
+        $accessToken->setUserIdentifier((string) $userIdentifier);
 
         return $accessToken;
     }

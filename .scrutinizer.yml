@@ -1,0 +1,17 @@
+tools:
+    external_code_coverage: true
+build:
+    image: default-jammy
+    environment:
+        php: 8.4.12
+        apt_packages:
+            - libssl-dev
+            - zlib1g-dev
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
+filter:
+    paths:
+        - src/*

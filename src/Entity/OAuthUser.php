@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Entity;
 
 use Del\Entity\UserInterface;
+
 use League\OAuth2\Server\Entities\UserEntityInterface;
 
 class OAuthUser implements UserEntityInterface
@@ -22,5 +23,10 @@ class OAuthUser implements UserEntityInterface
         $instance->user = $baseUser;
 
         return $instance;
+    }
+
+    public function getUser(): UserInterface
+    {
+        return $this->user;
     }
 }

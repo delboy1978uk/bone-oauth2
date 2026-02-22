@@ -84,7 +84,7 @@ class AuthCode implements AuthCodeEntityInterface
 
     public function getUserIdentifier(): ?string
     {
-        return (string) $this->userIdentifier;
+        return $this->userIdentifier === null ? null : (string) $this->userIdentifier;
     }
 
     public function getClient(): ClientEntityInterface
