@@ -68,7 +68,7 @@ class ScopeRepositoryTest extends Unit
         
         $requestedScopes = [$scope1, $scope2];
         
-        $result = $this->repository->finalizeScopes($requestedScopes, 'authorization_code', $client, 123);
+        $result = $this->repository->finalizeScopes($requestedScopes, 'authorization_code', $client, '123');
         
         $this->assertCount(2, $result);
     }
@@ -93,7 +93,7 @@ class ScopeRepositoryTest extends Unit
         $this->expectExceptionMessage('Scopes not authorised.');
         $this->expectExceptionCode(403);
         
-        $this->repository->finalizeScopes($requestedScopes, 'authorization_code', $client, 123);
+        $this->repository->finalizeScopes($requestedScopes, 'authorization_code', $client, '123');
     }
 
     public function testCreate()

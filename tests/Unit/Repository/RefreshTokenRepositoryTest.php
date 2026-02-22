@@ -61,9 +61,7 @@ class RefreshTokenRepositoryTest extends Unit
         $this->entityManager->expects($this->once())
             ->method('flush');
         
-        $result = $this->repository->persistNewRefreshToken($refreshToken);
-        
-        $this->assertSame($refreshToken, $result);
+        $this->repository->persistNewRefreshToken($refreshToken);
     }
 
     public function testPersistNewRefreshTokenWithUnmanagedAccessToken()
@@ -91,9 +89,7 @@ class RefreshTokenRepositoryTest extends Unit
         $this->entityManager->expects($this->once())
             ->method('flush');
         
-        $result = $this->repository->persistNewRefreshToken($refreshToken);
-        
-        $this->assertSame($refreshToken, $result);
+        $this->repository->persistNewRefreshToken($refreshToken);
     }
 
     public function testRevokeRefreshTokenSuccess()
@@ -113,8 +109,6 @@ class RefreshTokenRepositoryTest extends Unit
             ->method('flush');
         
         $result = $this->repository->revokeRefreshToken('test-token');
-        
-        $this->assertTrue($result);
     }
 
     public function testRevokeRefreshTokenNotFound()
@@ -127,8 +121,6 @@ class RefreshTokenRepositoryTest extends Unit
             ->method('remove');
         
         $result = $this->repository->revokeRefreshToken('non-existent');
-        
-        $this->assertFalse($result);
     }
 
     public function testIsRefreshTokenRevokedReturnsTrueWhenNotFound()

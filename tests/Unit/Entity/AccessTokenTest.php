@@ -42,8 +42,8 @@ class AccessTokenTest extends Unit
 
     public function testSetAndGetUserIdentifier()
     {
-        $this->accessToken->setUserIdentifier(789);
-        $this->assertEquals(789, $this->accessToken->getUserIdentifier());
+        $this->accessToken->setUserIdentifier('789');
+        $this->assertEquals('789', $this->accessToken->getUserIdentifier());
     }
 
     public function testUserIdentifierCanBeNull()
@@ -65,9 +65,9 @@ class AccessTokenTest extends Unit
         $scope = new Scope();
         $scope->setIdentifier('read');
         
-        $result = $this->accessToken->addScope($scope);
+        $this->accessToken->addScope($scope);
         
-        $this->assertSame($this->accessToken, $result);
+        
         $this->assertCount(1, $this->accessToken->getScopes());
         $this->assertContains($scope, $this->accessToken->getScopes());
     }

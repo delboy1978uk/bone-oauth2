@@ -150,6 +150,16 @@ class PackageTest extends Unit
         self::assertStringContainsString('bone-oauth2/src/Entity', $this->package->getEntityPath());
     }
 
+    public function testFixtures()
+    {
+        self::assertIsArray($this->package->getFixtures());
+    }
+
+    public function testSettings()
+    {
+        self::assertIsString($this->package->getSettingsFileName());
+    }
+    
     public function testMissingKeys()
     {
         $settings = [
@@ -209,9 +219,10 @@ class PackageTest extends Unit
         $this->package->postInstall($command, $io);
 
         // Manually create files to satisfy assertions since mocked command won't create them
-        if (!is_dir('data/keys')) mkdir('data/keys', 0777, true);
-        file_put_contents('data/keys/private.key', 'fake');
-        file_put_contents('data/keys/public.key', 'fake');
+        $projectRoot = getcwd();
+        if (!is_dir($projectRoot . '/data/keys')) mkdir($projectRoot . '/data/keys', 0777, true);
+        file_put_contents($projectRoot . '/data/keys/private.key', 'fake');
+        file_put_contents($projectRoot . '/data/keys/public.key', 'fake');
 
         unlink('config/bone-oauth2.php');
         rmdir('config');

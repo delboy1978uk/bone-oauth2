@@ -24,8 +24,10 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
+
+use function parse_str;
+use function str_replace;
 
 class AuthServerController extends Controller implements SessionAwareInterface
 {
@@ -79,8 +81,8 @@ class AuthServerController extends Controller implements SessionAwareInterface
         if (!empty($redirectUri)) {
 
             if ($redirectUri[0][0] === '?') {
-                $uri = \str_replace('?', '', $redirectUri[0]);
-                \parse_str($uri, $vars);
+                $uri = str_replace('?', '', $redirectUri[0]);
+                parse_str($uri, $vars);
                 $response = new JsonResponse($vars);
             }
         }

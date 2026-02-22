@@ -44,9 +44,7 @@ class AccessTokenRepositoryTest extends Unit
         $this->entityManager->expects($this->once())
             ->method('flush');
         
-        $result = $this->repository->persistNewAccessToken($accessToken);
-        
-        $this->assertSame($accessToken, $result);
+        $this->repository->persistNewAccessToken($accessToken);
     }
 
     public function testRevokeAccessToken()

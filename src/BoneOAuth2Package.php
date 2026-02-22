@@ -24,7 +24,6 @@ use Bone\OAuth2\Fixtures\LoadScopes;
 use Bone\OAuth2\Http\Middleware\AuthServerMiddleware;
 use Bone\OAuth2\Http\Middleware\ScopeCheck;
 use Bone\Router\RouterConfigInterface;
-use Bone\View\ViewEngine;
 use Bone\OAuth2\Controller\ApiKeyController;
 use Bone\OAuth2\Controller\AuthServerController;
 use Bone\OAuth2\Controller\ExampleController;
@@ -59,6 +58,7 @@ use League\OAuth2\Server\ResourceServer;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function file_exists;
+use function preg_replace;
 
 class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface, CommandRegistrationInterface,
                                    EntityRegistrationInterface, FixtureProviderInterface, DefaultSettingsProviderInterface,
@@ -218,12 +218,11 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         });
 
         $c[AuthServerMiddleware::class] = $c->factory(function (Container $c) {
-            $userService = $c->get(UserService::class);
             $view = $c->get(ViewEngineInterface::class);
             $authServer = $c->get(AuthorizationServer::class);
             $permissionService = $c->get(PermissionService::class);
 
-            return new AuthServerMiddleware($userService, $view, SessionManager::getInstance(), $authServer, $permissionService);
+            return new AuthServerMiddleware($view, SessionManager::getInstance(), $authServer, $permissionService);
         });
 
         $c[ResourceServerMiddleware::class] = $c->factory(function (Container $c) {
@@ -325,7 +324,7 @@ class BoneOAuth2Package implements RegistrationInterface, RouterConfigInterface,
         $config = file_get_contents($filePath);
         $regex = '#\'encryptionKey\'\s=>\s\'[a-f|\d]+\'#';
         $replacement = "'encryptionKey' => '$key'";
-        $config = \preg_replace($regex, $replacement, $config);
+        $config = preg_replace($regex, $replacement, $config);
         file_put_contents('config/' . $fileName, $config);
     }
 }

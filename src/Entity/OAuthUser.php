@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Bone\OAuth2\Entity;
 
-use Del\Entity\User;
+use Del\Entity\UserInterface;
+
 use League\OAuth2\Server\Entities\UserEntityInterface;
 
 class OAuthUser implements UserEntityInterface
 {
-    private User $user;
+    private UserInterface $user;
 
-    public function getIdentifier(): int
+    public function getIdentifier(): string
     {
-        return $this->user->getId();
+        return (string) $this->user->getId();
     }
 
-    public static function createFromBaseUser(User $baseUser): self
+    public static function createFromBaseUser(UserInterface $baseUser): self
     {
         $instance = new self();
         $instance->user = $baseUser;
@@ -24,7 +25,7 @@ class OAuthUser implements UserEntityInterface
         return $instance;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }

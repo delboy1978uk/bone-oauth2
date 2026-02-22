@@ -38,13 +38,7 @@ class AuthServerMiddlewareUncoveredTest extends Unit
         $this->authServer = $this->createMock(AuthorizationServer::class);
         $this->permissionService = $this->createMock(PermissionService::class);
 
-        $this->middleware = new AuthServerMiddleware(
-            $this->userService,
-            $this->view,
-            $this->session,
-            $this->authServer,
-            $this->permissionService
-        );
+        $this->middleware = new AuthServerMiddleware($this->view, $this->session, $this->authServer, $this->permissionService);
     }
 
     public function testProcessWithXBoneUserActivateHeader()
