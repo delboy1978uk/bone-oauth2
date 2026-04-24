@@ -23,7 +23,7 @@ class LoadClients implements FixtureInterface
         $entity->setDescription('Client used in Bone React Native Project');
         $entity->setIcon('https://raw.githubusercontent.com/boneframework/skeleton/refs/heads/master/public/img/skull_and_crossbones.png');
         $entity->setGrantType('auth_code');
-        $entity->setRedirectUri('exp://192.168.0.204:8081/--/oauth2/callback');
+        $entity->setRedirectUri('exp+bone-native://bone-native.docker:8081/--/oauth2/callback');
         $entity->setIdentifier(\md5($entity->getName()));
         $time = \microtime();
         $name = $entity->getName();
