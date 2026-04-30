@@ -200,8 +200,11 @@ class PackageTest extends Unit
         $io = $this->createMock(SymfonyStyle::class);
         $command->expects($this->any())->method('runProcess')->willReturn($this->createProcess());
         $this->package->postInstall($command, $io);
-        unlink('config/bone-oauth2.php');
-        rmdir('config');
+        // Clean up config directory safely - recursively remove if not empty
+        $configDir = 'config';
+        if (is_dir($configDir)) {
+            $this->recursiveRemove($configDir);
+        }
         $this->fileAssertions();
     }
 
@@ -225,7 +228,11 @@ class PackageTest extends Unit
         file_put_contents($projectRoot . '/data/keys/public.key', 'fake');
 
         unlink('config/bone-oauth2.php');
-        rmdir('config');
+        // Clean up config directory safely - recursively remove if not empty
+        $configDir = 'config';
+        if (is_dir($configDir)) {
+            $this->recursiveRemove($configDir);
+        }
         $this->fileAssertions();
     }
 

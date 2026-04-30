@@ -74,17 +74,40 @@ class ClientScopeCommandTest extends Unit
             ->with('test-client')
             ->willReturn($client);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(7);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                [$this->stringContains('Listing scopes for Test Client')],
-                [' - read'],
-                [' - write'],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('Listing scopes for Test Client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertEquals(' - read', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 6) {
+                    $this->assertEquals(' - write', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 7) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -108,16 +131,36 @@ class ClientScopeCommandTest extends Unit
             ->with('test-client')
             ->willReturn($client);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(6);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                [$this->stringContains('Listing scopes for Test Client')],
-                [$this->stringContains('No scopes set')],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('Listing scopes for Test Client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString('No scopes set', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 6) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -136,15 +179,32 @@ class ClientScopeCommandTest extends Unit
             ->with('non-existent')
             ->willReturn(null);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(5);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                ['No client found'],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('No client found', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -180,16 +240,36 @@ class ClientScopeCommandTest extends Unit
             ->method('save')
             ->with($client);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(6);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                [$this->stringContains('Adding read scope')],
-                [$this->stringContains('read scope added')],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('Adding read scope', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString('read scope added', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 6) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -210,15 +290,32 @@ class ClientScopeCommandTest extends Unit
             ->with('non-existent')
             ->willReturn(null);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(5);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                ['No client found'],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('No client found', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -246,15 +343,32 @@ class ClientScopeCommandTest extends Unit
             ->with('non-existent')
             ->willReturn(null);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(5);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                ['No scope found.'],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('No scope found.', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -301,15 +415,32 @@ class ClientScopeCommandTest extends Unit
             ->method('save')
             ->with($client);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(5);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                [$this->stringContains('read scope removed')],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('read scope removed', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -330,15 +461,32 @@ class ClientScopeCommandTest extends Unit
             ->with('non-existent')
             ->willReturn(null);
 
-        $this->output->expects($this->atLeastOnce())
+        // Replace withConsecutive() with willReturnCallback()
+        $invokedCount = $this->exactly(5);
+        $this->output->expects($invokedCount)
             ->method('writeln')
-            ->withConsecutive(
-                [' '],
-                ['Client scope administration'],
-                [$this->stringContains('Fetching client')],
-                ['No client found'],
-                [' ']
-            );
+            ->willReturnCallback(function ($parameters) use ($invokedCount) {
+                if ($invokedCount->numberOfInvocations() === 1) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 2) {
+                    $this->assertStringContainsString('Client scope administration', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 3) {
+                    $this->assertStringContainsString('Fetching client', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 4) {
+                    $this->assertStringContainsString('No client found', $parameters);
+                    return null;
+                }
+                if ($invokedCount->numberOfInvocations() === 5) {
+                    $this->assertStringContainsString(' ', $parameters);
+                    return null;
+                }
+            });
 
         $result = $this->command->run($this->input, $this->output);
 
