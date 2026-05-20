@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bone\OAuth2\Service;
 
 use Bone\OAuth2\Entity\Client;
+use Bone\OAuth2\Entity\ClientCallbackUrl;
 use Del\Entity\User;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Form\RegisterClientForm;
@@ -43,7 +44,7 @@ class ClientService
     }
 
     /**
-     * @param array<string,string|bool> $data
+     * @param array<string,string|bool|array> $data
      */
     public function createFromArray(array $data, User $user): Client
     {
@@ -52,10 +53,25 @@ class ClientService
         $client->setDescription($data['description']);
         $client->setIcon($data['icon']);
         $client->setIdentifier(md5($data['name']));
-        $client->setRedirectUri($data['redirectUri']);
         $client->setGrantType($data['grantType']);
         $client->setUser($user);
         $this->generateSecret($client);
+
+        // Handle callback URLs - support both old single redirectUri and new multiple callbackUrls
+        if (isset($data['callbackUrls']) && is_array($data['callbackUrls'])) {
+            foreach ($data['callbackUrls'] as $url) {
+                $callbackUrl = new ClientCallbackUrl();
+                $callbackUrl->setUrl($url);
+                $client->addCallbackUrl($callbackUrl);
+            }
+        } elseif (isset($data['redirectUri'])) {
+            // Backward compatibility: convert single redirectUri to callback URL
+            $callbackUrl = new ClientCallbackUrl();
+            $callbackUrl->setUrl($data['redirectUri']);
+            $client->addCallbackUrl($callbackUrl);
+            // Also set the deprecated field for backward compatibility
+            $client->setRedirectUri($data['redirectUri']);
+        }
 
         if ($data['confidential'] === true || $data['confidential'] === 'confidential') {
             $client->setConfidential(true);
@@ -68,10 +84,17 @@ class ClientService
     {
         if ($form->isValid()) {
             $formData = $form->getValues();
+            
+            // Parse redirect_uris - could be comma-separated or array
+            $redirectUris = $formData['redirect_uris'];
+            if (is_string($redirectUris)) {
+                $redirectUris = array_map('trim', explode(',', $redirectUris));
+            }
+            
             $data = [
                 'name' => $formData['client_name'] . microtime(),
                 'description' => 'auto registered client',
-                'redirectUri' => $formData['redirect_uris'],
+                'callbackUrls' => $redirectUris,
                 'grantType' => 'auth_code',
                 'icon' => $formData['logo_uri'],
                 'confidential' => false,

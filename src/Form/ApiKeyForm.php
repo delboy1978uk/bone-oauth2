@@ -27,9 +27,11 @@ class ApiKeyForm extends Form
         $icon->setRequired(true);
         $icon->setLabel('App Icon');
 
-        $redirectUrl = new Text('redirectUri');
-        $redirectUrl->setRequired(true);
-        $redirectUrl->setLabel('Redirect Uri');
+        $callbackUrls = new TextArea('callbackUrls');
+        $callbackUrls->setRequired(true);
+        $callbackUrls->setLabel('Callback URLs');
+        $callbackUrls->setAttribute('placeholder', 'Enter one URL per line or comma-separated');
+        $callbackUrls->setAttribute('rows', '3');
 
         $radio = new Radio('grantType');
         $radio->setRequired(true);
@@ -56,7 +58,7 @@ class ApiKeyForm extends Form
         $this->addField($name);
         $this->addField($description);
         $this->addField($icon);
-        $this->addField($redirectUrl);
+        $this->addField($callbackUrls);
         $this->addField($radio);
         $this->addField($radio2);
         $this->addField($submit);

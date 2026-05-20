@@ -122,7 +122,7 @@ class ApiKeyControllerTest extends Unit
             'name' => 'Test API Key',
             'description' => 'Test Description',
             'icon' => 'your-face.jpg',
-            'redirectUri' => 'https://example.com/callback',
+            'callbackUrls' => 'https://example.com/callback',
             'grantType' => 'client_credentials',
             'confidential' => true,
         ]);

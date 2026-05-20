@@ -6,7 +6,6 @@ build:
         php: 8.4.12
         apt_packages:
             - libssl-dev
-            - zlib1g-dev
     nodes:
         analysis:
             tests:

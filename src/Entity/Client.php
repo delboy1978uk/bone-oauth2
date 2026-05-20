@@ -32,8 +32,11 @@ class Client implements ClientEntityInterface
     #[ORM\Column(type: 'string', length: 20)]
     private string $grantType;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $redirectUri;
+    /**
+     * @deprecated Use callbackUrls collection instead
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $redirectUri = null;
 
     #[ORM\Column(type: 'string', length: 40)]
     private string $identifier;
@@ -56,9 +59,13 @@ class Client implements ClientEntityInterface
     #[ORM\InverseJoinColumn(name: 'scope_id', referencedColumnName: 'id')]
     private Collection $scopes;
 
+    #[ORM\OneToMany(targetEntity: 'Bone\OAuth2\Entity\ClientCallbackUrl', mappedBy: 'client', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $callbackUrls;
+
     public function __construct()
     {
         $this->scopes = new ArrayCollection();
+        $this->callbackUrls = new ArrayCollection();
     }
 
     public function getIdentifier():  string
@@ -79,7 +86,10 @@ class Client implements ClientEntityInterface
         return $this->name;
     }
 
-    public function getRedirectUri(): string
+    /**
+     * @deprecated Use getCallbackUrls() instead
+     */
+    public function getRedirectUri(): ?string
     {
         return $this->redirectUri;
     }
@@ -89,6 +99,9 @@ class Client implements ClientEntityInterface
         $this->name = $name;
     }
 
+    /**
+     * @deprecated Use addCallbackUrl() instead
+     */
     public function setRedirectUri(string $redirectUri): void
     {
         $this->redirectUri = $redirectUri;
@@ -182,5 +195,53 @@ class Client implements ClientEntityInterface
     public function setProprietary(bool $proprietary): void
     {
         $this->proprietary = $proprietary;
+    }
+
+    public function getCallbackUrls(): Collection
+    {
+        return $this->callbackUrls;
+    }
+
+    public function setCallbackUrls(Collection $callbackUrls): void
+    {
+        $this->callbackUrls = $callbackUrls;
+    }
+
+    public function addCallbackUrl(ClientCallbackUrl $callbackUrl): void
+    {
+        if (!$this->callbackUrls->contains($callbackUrl)) {
+            $this->callbackUrls->add($callbackUrl);
+            $callbackUrl->setClient($this);
+        }
+    }
+
+    public function removeCallbackUrl(ClientCallbackUrl $callbackUrl): void
+    {
+        if ($this->callbackUrls->contains($callbackUrl)) {
+            $this->callbackUrls->removeElement($callbackUrl);
+        }
+    }
+
+    /**
+     * Get all callback URLs as an array of strings
+     * 
+     * @return string[]
+     */
+    public function getCallbackUrlStrings(): array
+    {
+        return $this->callbackUrls->map(fn(ClientCallbackUrl $url) => $url->getUrl())->toArray();
+    }
+
+    /**
+     * Check if a specific URL is registered as a callback URL
+     */
+    public function hasCallbackUrl(string $url): bool
+    {
+        foreach ($this->callbackUrls as $callbackUrl) {
+            if ($callbackUrl->getUrl() === $url) {
+                return true;
+            }
+        }
+        return false;
     }
 }
