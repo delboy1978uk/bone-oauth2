@@ -58,7 +58,10 @@ class ClientRepository extends EntityRepository implements ClientRepositoryInter
     {
         /** @var Client $client */
         $client = $this->getClientEntity($clientIdentifier);
+        $isConfidential = $client->isConfidential();
+        $passwordMatch = $clientSecret === $client->getSecret();
+        $grantMatch = $grantType === $client->getGrantType();
 
-        return !($client->isConfidential() && $clientSecret !== $client->getSecret());
+        return $isConfidential ? $passwordMatch && $grantMatch : $grantMatch;
     }
 }
