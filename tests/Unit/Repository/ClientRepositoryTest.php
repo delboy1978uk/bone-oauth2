@@ -103,6 +103,7 @@ class ClientRepositoryTest extends Unit
         $client->setIdentifier('test-client');
         $client->setSecret('correct-secret');
         $client->setConfidential(true);
+        $client->setGrantType('authorization_code');
         
         $this->repository->method('findOneBy')
             ->with(['identifier' => 'test-client'])
@@ -119,6 +120,7 @@ class ClientRepositoryTest extends Unit
         $client->setIdentifier('test-client');
         $client->setSecret('correct-secret');
         $client->setConfidential(true);
+        $client->setGrantType('authorization_code');
         
         $this->repository->method('findOneBy')
             ->with(['identifier' => 'test-client'])
@@ -134,12 +136,13 @@ class ClientRepositoryTest extends Unit
         $client = new Client();
         $client->setIdentifier('test-client');
         $client->setConfidential(false);
+        $client->setGrantType('client_credentials');
         
         $this->repository->method('findOneBy')
             ->with(['identifier' => 'test-client'])
             ->willReturn($client);
         
-        $result = $this->repository->validateClient('test-client', null, 'authorization_code');
+        $result = $this->repository->validateClient('test-client', null, 'client_credentials');
         
         $this->assertTrue($result);
     }
