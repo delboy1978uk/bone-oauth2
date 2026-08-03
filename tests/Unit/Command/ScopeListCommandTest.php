@@ -53,14 +53,21 @@ class ScopeListCommandTest extends Unit
         $this->scopeRepository->method('findAll')
             ->willReturn($scopes);
 
+        $expectedCalls = [
+            ['Listing scopes...'],
+            [' - read'],
+            [' - write'],
+            [' - admin']
+        ];
+        
+        $callCount = 0;
         $this->output->expects($this->exactly(4))
             ->method('writeln')
-            ->withConsecutive(
-                ['Listing scopes...'],
-                [' - read'],
-                [' - write'],
-                [' - admin']
-            );
+            ->with($this->callback(function($message) use (&$callCount, $expectedCalls) {
+                $result = $message === $expectedCalls[$callCount][0];
+                $callCount++;
+                return $result;
+            }));
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -72,12 +79,19 @@ class ScopeListCommandTest extends Unit
         $this->scopeRepository->method('findAll')
             ->willReturn([]);
 
+        $expectedCalls = [
+            ['Listing scopes...'],
+            ['No scopes found.']
+        ];
+        
+        $callCount = 0;
         $this->output->expects($this->exactly(2))
             ->method('writeln')
-            ->withConsecutive(
-                ['Listing scopes...'],
-                ['No scopes found.']
-            );
+            ->with($this->callback(function($message) use (&$callCount, $expectedCalls) {
+                $result = $message === $expectedCalls[$callCount][0];
+                $callCount++;
+                return $result;
+            }));
 
         $result = $this->command->run($this->input, $this->output);
 
@@ -92,12 +106,19 @@ class ScopeListCommandTest extends Unit
         $this->scopeRepository->method('findAll')
             ->willReturn([$scope]);
 
+        $expectedCalls = [
+            ['Listing scopes...'],
+            [' - read']
+        ];
+        
+        $callCount = 0;
         $this->output->expects($this->exactly(2))
             ->method('writeln')
-            ->withConsecutive(
-                ['Listing scopes...'],
-                [' - read']
-            );
+            ->with($this->callback(function($message) use (&$callCount, $expectedCalls) {
+                $result = $message === $expectedCalls[$callCount][0];
+                $callCount++;
+                return $result;
+            }));
 
         $result = $this->command->run($this->input, $this->output);
 

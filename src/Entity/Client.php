@@ -56,9 +56,11 @@ class Client implements ClientEntityInterface
     #[ORM\InverseJoinColumn(name: 'scope_id', referencedColumnName: 'id')]
     private Collection $scopes;
 
+
     public function __construct()
     {
         $this->scopes = new ArrayCollection();
+        
     }
 
     public function getIdentifier():  string

@@ -56,11 +56,25 @@ class AccessToken implements AccessTokenEntityInterface
         $this->identifier = $identifier;
     }
 
-    public function addScope(ScopeEntityInterface $scope): AccessToken
+    public function addScope(ScopeEntityInterface $scope): void
     {
         $this->scopes->add($scope);
 
-        return $this;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /** @return ScopeEntityInterface[]  */
@@ -79,14 +93,14 @@ class AccessToken implements AccessTokenEntityInterface
         $this->expiryDateTime = $dateTime;
     }
 
-    public function setUserIdentifier($identifier): void
+    public function setUserIdentifier(string $identifier): void
     {
-        $this->userIdentifier = $identifier;
+        $this->userIdentifier = (int) $identifier;
     }
 
-    public function getUserIdentifier(): ?int
+    public function getUserIdentifier(): ?string
     {
-        return $this->userIdentifier;
+        return $this->userIdentifier ? (string) $this->userIdentifier : null;
     }
 
     public function getClient(): ClientEntityInterface

@@ -7,10 +7,8 @@ use Bone\OAuth2\Entity\Client;
 use Bone\OAuth2\Entity\Scope;
 use Bone\OAuth2\Service\PermissionService;
 use Bone\View\ViewEngineInterface;
-use Del\Service\UserService;
 use Del\SessionManager;
 use Codeception\Test\Unit;
-use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -24,7 +22,6 @@ class AuthServerMiddlewareTest extends Unit
     private function getMiddleware($authServer, $view = null, $session = null)
     {
         return new AuthServerMiddleware(
-            $this->createMock(UserService::class),
             $view ?: $this->createMock(ViewEngineInterface::class),
             $session ?: SessionManager::getInstance(),
             $authServer,

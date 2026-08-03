@@ -64,12 +64,19 @@ class ScopeCreateCommandTest extends Unit
                     && $scope->getDescription() === 'Read access to resources';
             }));
 
-        $this->output->expects($this->atLeastOnce())
+        $expectedCalls = [
+            ['Bone API scope creator'],
+            ['Scope created.']
+        ];
+        
+        $callCount = 0;
+        $this->output->expects($this->exactly(2))
             ->method('writeln')
-            ->withConsecutive(
-                ['Bone API scope creator'],
-                ['Scope created.']
-            );
+            ->with($this->callback(function($message) use (&$callCount, $expectedCalls) {
+                $result = $message === $expectedCalls[$callCount][0];
+                $callCount++;
+                return $result;
+            }));
 
         $result = $this->command->run($this->input, $this->output);
 

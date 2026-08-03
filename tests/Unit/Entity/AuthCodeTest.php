@@ -35,8 +35,8 @@ class AuthCodeTest extends Unit
 
     public function testSetAndGetUserIdentifier()
     {
-        $this->authCode->setUserIdentifier(123);
-        $this->assertEquals(123, $this->authCode->getUserIdentifier());
+        $this->authCode->setUserIdentifier('123');
+        $this->assertEquals('123', $this->authCode->getUserIdentifier());
     }
 
     public function testSetAndGetClient()

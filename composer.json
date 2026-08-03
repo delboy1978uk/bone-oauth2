@@ -17,8 +17,7 @@
     "delboy1978uk/bone-doctrine": "^2.0",
     "delboy1978uk/bone-user": "^2.4",
     "laminas/laminas-diactoros": "^3.3",
-    "league/oauth2-server": "^8.5",
-    "laminas/laminas-uri": "^2.11"
+    "league/oauth2-server": "^9.0"
   }
   ,
   "require-dev": {
